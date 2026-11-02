@@ -251,6 +251,16 @@ public class MainActivity extends Activity {
             }
         }
 
+        @JavascriptInterface
+        public long getAppLastUpdateTime() {
+            try {
+                PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                return pInfo.lastUpdateTime;
+            } catch (Exception e) {
+                return 0L;
+            }
+        }
+
         /**
          * Native HTTP fetch: bypasses browser CORS and sandbox restrictions
          */

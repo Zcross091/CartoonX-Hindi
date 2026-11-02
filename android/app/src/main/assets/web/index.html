@@ -1029,13 +1029,63 @@
 
     let pendingStartupUpdate = null;
 
+    function isNewerRelease(data, currentVersion) {
+      if (!data) return false;
+      const latestTag = (data.tag_name || '').trim();
+      const cleanLatest = latestTag.replace(/^v/i, '').trim();
+      const cleanCurrent = (currentVersion || '1.0.0').replace(/^v/i, '').trim();
+
+      // Check 1: Semantic Versioning comparison (e.g. 1.0.1, 1.2.0, 2.0.0)
+      const semverRegex = /^\d+(\.\d+)+$/;
+      if (semverRegex.test(cleanLatest) && semverRegex.test(cleanCurrent)) {
+        const lParts = cleanLatest.split('.').map(n => parseInt(n, 10));
+        const cParts = cleanCurrent.split('.').map(n => parseInt(n, 10));
+        const maxLen = Math.max(lParts.length, cParts.length);
+        for (let i = 0; i < maxLen; i++) {
+          const l = lParts[i] || 0;
+          const c = cParts[i] || 0;
+          if (l > c) return true;
+          if (l < c) return false;
+        }
+        return false; // Equal or older semver
+      }
+
+      // Check 2: Timestamp-based comparison for rolling 'latest' tag
+      // Compare the GitHub release publication time against the native app install/update time
+      if (data.published_at && window.AndroidApp && window.AndroidApp.getAppLastUpdateTime) {
+        try {
+          const releaseTime = new Date(data.published_at).getTime();
+          const appInstallTime = Number(window.AndroidApp.getAppLastUpdateTime());
+          // If the app was installed after or at the release time (with 3-minute grace margin),
+          // this installed app is already current.
+          if (appInstallTime > 0 && appInstallTime >= (releaseTime - 180000)) {
+            return false;
+          }
+          // If the app was installed before this release was published, it is a genuine new release!
+          if (appInstallTime > 0 && releaseTime > (appInstallTime + 180000)) {
+            return true;
+          }
+        } catch (e) {
+          console.warn("Error comparing install and release timestamps:", e);
+        }
+      }
+
+      // Default safety: Do NOT trigger a false positive popup on startup!
+      return false;
+    }
+
     async function checkStartupAppUpdate() {
+      // Never trigger native APK update prompts in local web browser testing
+      if (!window.AndroidApp) {
+        return;
+      }
+
       try {
         const splashStatus = document.getElementById('splash-status');
         let rawJson = '';
         const apiUrl = 'https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest';
 
-        if (window.AndroidApp && window.AndroidApp.fetch) {
+        if (window.AndroidApp.fetch) {
           rawJson = window.AndroidApp.fetch(apiUrl);
         } else {
           const res = await fetch(apiUrl);
@@ -1043,21 +1093,27 @@
         }
 
         const data = JSON.parse(rawJson);
-        const latestTag = (data.tag_name || '').trim();
-        const currentVersion = (window.AndroidApp ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
+        const releaseId = String(data.id || data.published_at || data.tag_name || 'latest');
 
-        const cleanLatest = latestTag.replace(/^v/i, '');
-        const cleanCurrent = currentVersion.replace(/^v/i, '');
+        // Check if user previously dismissed this release with 'Later'
+        const dismissed = localStorage.getItem('cartoonx_dismissed_update');
+        if (dismissed && dismissed === releaseId) {
+          return;
+        }
 
-        if (cleanLatest && cleanLatest !== cleanCurrent && data.assets && data.assets.length > 0) {
-          const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets[0];
+        const currentVersion = (window.AndroidApp.getAppVersion ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
+
+        if (isNewerRelease(data, currentVersion) && data.assets && data.assets.length > 0) {
+          const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets.find(a => a.name.endsWith('.apk'));
           if (apkAsset) {
+            const displayVersion = data.name && !data.name.toLowerCase().includes('latest') ? data.name : (data.tag_name !== 'latest' ? data.tag_name : 'New Build (' + (data.published_at ? data.published_at.substring(0, 10) : '') + ')');
             pendingStartupUpdate = {
-              version: latestTag,
+              id: releaseId,
+              version: displayVersion,
               apkUrl: apkAsset.browser_download_url
             };
             if (splashStatus) {
-              splashStatus.textContent = `New update ${latestTag} found!`;
+              splashStatus.textContent = `New update available!`;
             }
           }
         }
@@ -1069,6 +1125,7 @@
     function showUpdateDialog(updateInfo) {
       window.latestApkUrl = updateInfo.apkUrl;
       window.latestVersionName = updateInfo.version;
+      window.latestReleaseId = updateInfo.id;
       document.getElementById('update-version-text').textContent = 
         `New version ${updateInfo.version} is available with updated cartoon catalogs and player enhancements!`;
       document.getElementById('update-modal').classList.remove('hidden');
@@ -2248,10 +2305,16 @@
     // ================= IN-APP UPDATER =================
     async function checkForAppUpdates() {
       try {
+        if (!window.AndroidApp) {
+          showFeedback('Web preview mode: Native updates are installed on Android TV.');
+          return;
+        }
+
+        showFeedback('Checking for updates...');
         let rawJson = '';
         const apiUrl = 'https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest';
 
-        if (window.AndroidApp && window.AndroidApp.fetch) {
+        if (window.AndroidApp.fetch) {
           rawJson = window.AndroidApp.fetch(apiUrl);
         } else {
           const res = await fetch(apiUrl);
@@ -2259,17 +2322,16 @@
         }
 
         const data = JSON.parse(rawJson);
-        const latestTag = (data.tag_name || '').trim();
-        const currentVersion = (window.AndroidApp ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
+        const currentVersion = (window.AndroidApp.getAppVersion ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
 
-        const cleanLatest = latestTag.replace(/^v/i, '');
-        const cleanCurrent = currentVersion.replace(/^v/i, '');
-
-        if (cleanLatest && cleanLatest !== cleanCurrent && data.assets && data.assets.length > 0) {
-          const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets[0];
+        if (isNewerRelease(data, currentVersion) && data.assets && data.assets.length > 0) {
+          const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets.find(a => a.name.endsWith('.apk'));
           if (apkAsset) {
+            const releaseId = String(data.id || data.published_at || data.tag_name || 'latest');
+            const displayVersion = data.name && !data.name.toLowerCase().includes('latest') ? data.name : (data.tag_name !== 'latest' ? data.tag_name : 'New Build (' + (data.published_at ? data.published_at.substring(0, 10) : '') + ')');
             showUpdateDialog({
-              version: latestTag,
+              id: releaseId,
+              version: displayVersion,
               apkUrl: apkAsset.browser_download_url
             });
             return;
@@ -2297,6 +2359,9 @@
 
     function closeUpdateModal() {
       document.getElementById('update-modal').classList.add('hidden');
+      if (window.latestReleaseId) {
+        localStorage.setItem('cartoonx_dismissed_update', window.latestReleaseId);
+      }
     }
 
     window.onUpdateProgress = function(percent, current, total) {
