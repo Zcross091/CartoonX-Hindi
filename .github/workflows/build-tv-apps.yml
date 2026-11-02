@@ -41,6 +41,7 @@ jobs:
           cat android/local.properties
           if [ -x "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" ]; then
             yes | "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
+            yes | "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" 2>/dev/null || true
           fi
 
       - name: Set up Gradle
@@ -78,18 +79,25 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'cartoonx123' }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease assembleDebug --stacktrace --no-daemon 2>&1 | tee ../gradle_build.log || {
-            echo "### ❌ Gradle Build Failed" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            tail -n 80 ../gradle_build.log >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          }
+          set +e
+          ./gradlew assembleRelease assembleDebug --stacktrace --no-daemon > ../gradle_build.log 2>&1
+          GRADLE_EXIT=$?
+          set -e
+          echo "### 📋 Gradle Build Output (Tail)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 120 ../gradle_build.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $GRADLE_EXIT -ne 0 ]; then
+            cat ../gradle_build.log
+            exit $GRADLE_EXIT
+          fi
 
       - name: Locate and Package Signed APK
         id: locate_apk
         run: |
           mkdir -p build_output
+          echo "Listing all generated APK files:"
+          find android -name "*.apk" -ls || true
           RELEASE_APK=$(find android/app/build/outputs/apk/release -name "*.apk" 2>/dev/null | head -n 1)
           DEBUG_APK=$(find android/app/build/outputs/apk/debug -name "*.apk" 2>/dev/null | head -n 1)
           
