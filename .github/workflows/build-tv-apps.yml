@@ -32,13 +32,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Configure Android local.properties
+      - name: Configure Android SDK Location
         run: |
-          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          SDK_PATH="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "Using Android SDK at: $SDK_PATH"
+          echo "sdk.dir=$SDK_PATH" > android/local.properties
           cat android/local.properties
+          yes | "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
