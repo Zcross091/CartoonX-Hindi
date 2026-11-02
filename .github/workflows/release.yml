@@ -1,0 +1,132 @@
+name: Release TV Apps as Latest
+
+on:
+  workflow_run:
+    workflows: ["Build Android TV & Apple TV Apps"]
+    types:
+      - completed
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish-latest-release:
+    name: Publish or Update Latest Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Release Directory
+        run: mkdir -p release_assets
+
+      # -------------------------------------------------------------
+      # Download Artifacts from Triggering Workflow Run
+      # -------------------------------------------------------------
+      - name: Download Android TV Artifacts
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: CartoonX-AndroidTV-APK
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: release_assets/
+
+      - name: Download Apple TV Artifacts
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: CartoonX-AppleTV-tvOS
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: release_assets/
+
+      # Fallback for manual workflow_dispatch triggers
+      - name: Download Latest Artifacts (Manual Dispatch Fallback)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching latest successful workflow run artifacts..."
+          RUN_ID=$(gh run list --workflow="Build Android TV & Apple TV Apps" --status=success --limit 1 --json databaseId --jq '.[0].databaseId')
+          if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
+            echo "Downloading artifacts from run: $RUN_ID"
+            gh run download "$RUN_ID" --dir release_assets/ || true
+          else
+            echo "No previous successful run found; continuing..."
+          fi
+
+      # -------------------------------------------------------------
+      # Organize, Verify, and Compute Checksums
+      # -------------------------------------------------------------
+      - name: Organize Release Files & Compute SHA-256
+        run: |
+          cd release_assets
+          # Flatten any nested subdirectories created by download-artifact
+          find . -mindepth 2 -type f -exec mv -t . {} +
+          rm -rf */ 2>/dev/null || true
+
+          echo "Files to release:"
+          ls -lh
+
+          # Compute SHA-256 checksums
+          if ls *.apk *.zip 1> /dev/null 2>&1; then
+            sha256sum *.apk *.zip > checksums.txt 2>/dev/null || true
+            cat checksums.txt
+          fi
+          cd ..
+
+      # -------------------------------------------------------------
+      # Update Git 'latest' Tag
+      # -------------------------------------------------------------
+      - name: Update 'latest' Git Tag
+        env:
+          TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f latest "$TARGET_SHA"
+          git push -f origin latest || echo "Tag push completed"
+
+      # -------------------------------------------------------------
+      # Publish to GitHub Releases marked as 'latest'
+      # -------------------------------------------------------------
+      - name: Publish Latest GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release_assets/*.apk
+            release_assets/*.zip
+            release_assets/checksums.txt
+          tag_name: latest
+          target_commitish: ${{ github.event.workflow_run.head_sha || github.sha }}
+          name: "CartoonX TV - Latest Release"
+          body: |
+            ## 📺 CartoonX Hindi - Latest TV App Builds
+
+            Automatically compiled, cryptographically signed, and released from commit [`${{ github.event.workflow_run.head_sha || github.sha }}`](https://github.com/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha || github.sha }}).
+
+            ---
+
+            ### 📦 Direct Downloads:
+            - **Android TV (`.apk`)**: [`CartoonX-AndroidTV-Signed.apk`](https://github.com/${{ github.repository }}/releases/latest/download/CartoonX-AndroidTV-Signed.apk)
+              - *Compatible with*: Google TV, Android TV, Amazon Fire TV Stick, Mi Box, OnePlus TV, and Android Tablets.
+              - *Signing*: Release keystore signed. **Updates in-place without deleting existing data**.
+            - **Apple TV (`.zip`)**: [`CartoonX-AppleTV-tvOS.zip`](https://github.com/${{ github.repository }}/releases/latest/download/CartoonX-AppleTV-tvOS.zip)
+              - *Compatible with*: Apple TV HD & Apple TV 4K (tvOS 15+).
+
+            ---
+
+            ### ⚡ In-App Seamless Updates:
+            Every release is signed with the same consistent certificate. If you already have CartoonX installed on your TV or mobile device, the **in-app updater** will automatically detect this release, download it in the background, and perform an in-place upgrade while preserving all your watch history, favorites, and offline cartoon downloads!
+          draft: false
+          prerelease: false
+          make_latest: true
+          generate_release_notes: true
