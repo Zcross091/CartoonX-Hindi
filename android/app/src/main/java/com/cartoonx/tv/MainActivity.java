@@ -10,24 +10,32 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import androidx.webkit.WebViewAssetLoader;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends Activity {
     private static final String TAG = "CartoonX-MainActivity";
     private WebView webView;
     private UpdateManager updateManager;
+    private WebViewAssetLoader assetLoader;
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Hide system UI for immersive TV experience
+        // Hide system UI for 100% immersive Android TV Leanback experience
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -46,6 +54,12 @@ public class MainActivity extends Activity {
 
         updateManager = new UpdateManager(this);
 
+        // Configure WebViewAssetLoader to securely serve local assets under HTTPS
+        // This ensures Web Crypto, IndexedDB, and Hls.js run without browser restrictions
+        assetLoader = new WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+            .build();
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -63,14 +77,18 @@ public class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return assetLoader.shouldInterceptRequest(request.getUrl());
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return false; // Load all routes in-app
             }
         });
 
-        // Load the local or hosted CartoonX platform
-        // In local development or packaged build, loads root URL
-        webView.loadUrl("https://raretoonindia.in/");
+        // Load the self-contained native CartoonX TV application
+        webView.loadUrl("https://appassets.androidplatform.net/assets/web/index.html");
     }
 
     /**
@@ -99,6 +117,36 @@ public class MainActivity extends Activity {
                 return pInfo.versionCode;
             } catch (Exception e) {
                 return 1;
+            }
+        }
+
+        /**
+         * Native HTTP fetch: bypasses any browser CORS limitations
+         */
+        @JavascriptInterface
+        public String fetch(String targetUrl) {
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL(targetUrl);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10; TV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+                conn.setConnectTimeout(12000);
+                conn.setReadTimeout(18000);
+                conn.connect();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                reader.close();
+                return sb.toString();
+            } catch (Exception e) {
+                Log.e(TAG, "Native fetch failed for " + targetUrl, e);
+                return "{\"error\":\"" + e.getMessage() + "\"}";
+            } finally {
+                if (conn != null) conn.disconnect();
             }
         }
 
@@ -143,14 +191,26 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Handle TV Remote Back button
+        // TV Remote Back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (webView != null && webView.canGoBack()) {
-                webView.goBack();
-                return true;
-            }
+            webView.evaluateJavascript("if (window.onTVBack) { window.onTVBack(); } else if (history.length > 1) { history.back(); }", null);
+            return true;
+        }
+        // TV Remote Media Play / Pause
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+            webView.evaluateJavascript("if (window.togglePlayPause) { window.togglePlayPause(); }", null);
+            return true;
+        }
+        // TV Remote Media Fast Forward (+10s)
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+            webView.evaluateJavascript("if (window.seekForward) { window.seekForward(10); }", null);
+            return true;
+        }
+        // TV Remote Media Rewind (-10s)
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
+            webView.evaluateJavascript("if (window.seekRewind) { window.seekRewind(10); }", null);
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
 }
-
