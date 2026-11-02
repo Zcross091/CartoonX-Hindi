@@ -68,6 +68,11 @@ const CHARACTER_PUBLIC_META: Record<string, { poster: string; backdrop: string; 
     backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/223/558648.jpg',
     desc: 'Classic animated cartoon adventures from Disney Channel in full Hindi dubbed audio.'
   },
+  'Huddy': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/602/1506577.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/222/556875.jpg',
+    desc: 'In this iconic Cartoon Network Hindi classic, dimwitted Billy and cynical Mandy win a bet with Grim Reaper (Huddy) over a sick hamster, making him their reluctant best friend forever.'
+  },
   'Dragon Ball': {
     poster: 'https://static.tvmaze.com/uploads/images/original_untouched/11/29190.jpg',
     backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/225/563551.jpg',
@@ -105,6 +110,7 @@ function detectCharacter(title: string): string {
   if (t.includes('disney')) return 'Disney';
   if (t.includes('ben 10') || t.includes('ben10')) return 'Ben 10';
   if (t.includes('courage')) return 'Courage';
+  if (t.includes('huddy') || t.includes('billy') || t.includes('mandy')) return 'Huddy';
   if (t.includes('dragon ball') || t.includes('goku')) return 'Dragon Ball';
   return 'Toon Heroes';
 }
