@@ -16,11 +16,13 @@ import {
 } from 'lucide-react';
 import { useSettingsStore } from '@/lib/store';
 import { ParentalModal } from './ParentalModal';
+import { TVDownloadModal } from './TVDownloadModal';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { isParentalEnabled, isParentalLocked, lockParental } = useSettingsStore();
   const [showPinModal, setShowPinModal] = useState(false);
+  const [showTVModal, setShowTVModal] = useState(false);
 
   const navLinks = [
     { href: '/', label: 'Home', hindiLabel: 'होम', icon: Home, color: 'text-blue-400' },
@@ -117,6 +119,19 @@ export const Navbar: React.FC = () => {
               </button>
             ) : null}
 
+            {/* TV Apps Direct Download Trigger */}
+            <button
+              onClick={() => setShowTVModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-indigo-500/20 hover:from-amber-500/30 hover:to-indigo-500/30 text-amber-300 border border-amber-500/40 shadow-sm active:scale-95 transition-all cursor-pointer"
+              title="Download CartoonX for Android TV & Apple TV"
+            >
+              <Tv className="w-3.5 h-3.5 text-amber-400" />
+              <span>TV Apps</span>
+              <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-[9px] px-1.5 py-0.2 rounded-md shadow-sm">
+                Direct
+              </span>
+            </button>
+
             <div className="hidden sm:flex items-center gap-1 bg-amber-500/10 border border-amber-500/20 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Kids Safe Mode</span>
@@ -149,6 +164,12 @@ export const Navbar: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* TV Apps Download Modal */}
+      <TVDownloadModal
+        isOpen={showTVModal}
+        onClose={() => setShowTVModal(false)}
+      />
 
       {/* Parental PIN Modal */}
       {showPinModal && (

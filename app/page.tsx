@@ -5,6 +5,7 @@ import { HeroSpotlight } from '@/components/HeroSpotlight';
 import { ContinueWatching } from '@/components/ContinueWatching';
 import { CharacterBubbles } from '@/components/CharacterBubbles';
 import { CartoonCard } from '@/components/CartoonCard';
+import { TVBanner } from '@/components/TVBanner';
 import { Sparkles, Film, Flame } from 'lucide-react';
 
 export const revalidate = 300; // Revalidate every 5 minutes
@@ -23,10 +24,13 @@ export default async function HomePage() {
       {/* 1. Hero Spotlight */}
       {spotlightShow && <HeroSpotlight show={spotlightShow} />}
 
-      {/* 2. Continue Watching Shelf */}
+      {/* 2. Big Screen TV Direct Download Banner */}
+      <TVBanner />
+
+      {/* 3. Continue Watching Shelf */}
       <ContinueWatching />
 
-      {/* 3. Character Quick Filter Bubbles */}
+      {/* 4. Character Quick Filter Bubbles */}
       <CharacterBubbles />
 
       {/* 4. Recommendation Sections */}

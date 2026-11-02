@@ -13,7 +13,9 @@ import {
   Info,
   Tv,
   ArrowUpCircle,
-  RefreshCw
+  RefreshCw,
+  Download,
+  Apple
 } from 'lucide-react';
 import { useSettingsStore } from '@/lib/store';
 import { db } from '@/lib/db';
@@ -244,7 +246,74 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* 5. Storage & Cache Management */}
+      {/* 5. Big Screen TV Applications (Direct Downloads) */}
+      <div className="glass-panel rounded-3xl p-6 border border-slate-700/60 shadow-xl space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-extrabold text-white text-base flex items-center gap-2">
+              <Tv className="w-5 h-5 text-amber-400" />
+              <span>Big Screen TV Apps (डायरेक्ट डाउनलोड)</span>
+            </h3>
+            <p className="text-xs text-slate-400 font-medium">
+              Direct instant download for your television. Files download immediately to your device without leaving this page.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          {/* Android TV Card */}
+          <div className="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/30 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                  <Tv className="w-4 h-4 text-emerald-400" /> Android TV & Google TV
+                </span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded-md">
+                  Signed APK
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Sony, Mi TV, OnePlus, Fire TV, Realme & all Android smart TVs. Keystore signed for seamless in-place updates.
+              </p>
+            </div>
+            <a
+              href="/api/download/android"
+              download="CartoonX-AndroidTV-v1.0.0.apk"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Direct Download APK (~5.4 MB)</span>
+            </a>
+          </div>
+
+          {/* Apple TV Card */}
+          <div className="p-4 rounded-2xl bg-slate-900/80 border border-blue-500/30 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                  <Apple className="w-4 h-4 text-blue-400" /> Apple TV (tvOS)
+                </span>
+                <span className="text-[10px] bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 rounded-md">
+                  tvOS App
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Apple TV HD and Apple TV 4K running tvOS 15+. Fast 60fps streaming bundle ready for sideloading.
+              </p>
+            </div>
+            <a
+              href="/api/download/apple"
+              download="CartoonX-AppleTV-tvOS-v1.0.0.zip"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white font-black text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Direct Download ZIP (~3.8 MB)</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Storage & Cache Management */}
       <div className="glass-panel rounded-3xl p-6 border border-slate-700/60 shadow-xl space-y-4">
         <h3 className="font-extrabold text-white text-base">Storage Management</h3>
         <div className="flex flex-wrap gap-3">
