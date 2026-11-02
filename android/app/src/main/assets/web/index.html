@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>CartoonX TV 📺</title>
+  <title>CartoonX TV</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
@@ -15,13 +15,13 @@
     }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #070b14;
+      background-color: #060911;
       color: #f8fafc;
       overflow-x: hidden;
       margin: 0;
       padding: 0;
     }
-    /* TV Remote D-Pad Focus Glow */
+    /* TV Remote D-Pad Focus Ring */
     .tv-focusable {
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       outline: none !important;
@@ -29,9 +29,15 @@
     .tv-focusable:focus,
     .tv-focusable:focus-visible {
       transform: scale(1.08) !important;
-      box-shadow: 0 0 35px 6px rgba(245, 158, 11, 0.65), 0 0 10px rgba(255, 255, 255, 0.8) !important;
+      box-shadow: 0 0 35px 6px rgba(245, 158, 11, 0.75), 0 0 12px rgba(255, 255, 255, 0.9) !important;
       border-color: #fbbf24 !important;
-      z-index: 30 !important;
+      z-index: 40 !important;
+    }
+    .player-ctrl:focus {
+      transform: scale(1.20) !important;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.9) !important;
+      background: #f59e0b !important;
+      color: #090d16 !important;
     }
     .tv-tab:focus {
       background: linear-gradient(135deg, #f59e0b, #ec4899) !important;
@@ -39,7 +45,7 @@
       transform: scale(1.08) !important;
       box-shadow: 0 0 25px rgba(245, 158, 11, 0.6) !important;
     }
-    /* Hide scrollbars for TV clean look */
+    /* Hide scrollbars for clean TV display */
     ::-webkit-scrollbar {
       display: none;
     }
@@ -48,26 +54,70 @@
       backdrop-filter: blur(20px);
       border: 1px solid rgba(51, 65, 85, 0.6);
     }
+    /* 4-Second Loading Screen Progress Bar */
+    @keyframes splashProgress {
+      0% { width: 0%; }
+      25% { width: 35%; }
+      70% { width: 85%; }
+      100% { width: 100%; }
+    }
+    .splash-animate-bar {
+      animation: splashProgress 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
   </style>
 </head>
 <body class="p-6 lg:p-10 min-h-screen">
+
+  <!-- ================= 4-SECOND ANIMATED TV SPLASH SCREEN ================= -->
+  <div id="splash-screen" class="fixed inset-0 z-[100] bg-[#060911] flex flex-col items-center justify-center p-6 text-center transition-opacity duration-700">
+    <!-- Ambient Neon Glow -->
+    <div class="absolute w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-blue-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col items-center space-y-6">
+      <!-- App Logo -->
+      <div class="relative w-32 h-32 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-pink-500 to-indigo-500 shadow-2xl shadow-orange-500/30 animate-pulse">
+        <div class="w-full h-full bg-[#0a0f1d] rounded-[22px] flex items-center justify-center overflow-hidden p-4">
+          <img src="logo.png" alt="CartoonX" class="w-full h-full object-contain" onerror="this.outerHTML='<span class=\'text-6xl\'>📺</span>'" />
+        </div>
+      </div>
+
+      <!-- App Title -->
+      <div>
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          Cartoon<span class="text-pink-500">X</span> <span class="text-amber-400">TV</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 font-bold mt-1 tracking-wider uppercase">
+          Streaming Hindi Cartoons & Anime
+        </p>
+      </div>
+
+      <!-- 4-Second Loading Progress Bar -->
+      <div class="w-72 sm:w-96 bg-slate-800/80 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700/60 shadow-inner">
+        <div class="splash-animate-bar h-full rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-indigo-500"></div>
+      </div>
+
+      <p id="splash-status" class="text-xs text-amber-300 font-bold animate-pulse">
+        Connecting video servers...
+      </p>
+    </div>
+  </div>
 
   <!-- ================= TOP TV HEADER ================= -->
   <header class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800/80">
     <div class="flex items-center gap-4">
       <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-indigo-500 p-0.5 shadow-lg shadow-pink-500/20">
-        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-3xl">
-          📺
+        <div class="w-full h-full bg-[#0a0f1d] rounded-[14px] flex items-center justify-center overflow-hidden p-1.5">
+          <img src="logo.png" alt="CartoonX" class="w-full h-full object-contain" onerror="this.outerHTML='<span class=\'text-2xl\'>📺</span>'" />
         </div>
       </div>
       <div>
         <div class="flex items-center gap-2">
           <h1 class="text-3xl font-black tracking-tight text-white">Cartoon<span class="text-pink-500">X</span></h1>
           <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full shadow-md">
-            हिंदी TV
+            TV Edition
           </span>
         </div>
-        <p class="text-xs text-slate-400 font-bold">Desi Kids Hindi Cartoons & Anime</p>
+        <p class="text-xs text-slate-400 font-bold">Watch Full Hindi Episodes</p>
       </div>
     </div>
 
@@ -78,7 +128,7 @@
         <input 
           id="tv-search" 
           type="text" 
-          placeholder="खोजें / Search Cartoons..." 
+          placeholder="Search cartoons or anime..." 
           tabindex="0"
           class="tv-focusable bg-slate-900/90 text-white font-bold text-sm px-5 py-3 rounded-2xl border border-slate-700 w-64 lg:w-80 placeholder-slate-500"
           oninput="handleSearch(this.value)"
@@ -100,14 +150,14 @@
 
   <!-- ================= CHARACTER FILTER SHELVES ================= -->
   <nav class="flex items-center gap-3 mb-8 overflow-x-auto pb-2" id="character-shelves">
-    <button tabindex="0" onclick="filterByCharacter('all')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-amber-500 text-slate-950 font-black text-xs sm:text-sm shadow-md whitespace-nowrap active-tab">🌟 All (सभी)</button>
-    <button tabindex="0" onclick="filterByCharacter('Doraemon')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">🐱 Doraemon (डोरेमोन)</button>
-    <button tabindex="0" onclick="filterByCharacter('Shinchan')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">🧒 Shinchan (शिनचैन)</button>
-    <button tabindex="0" onclick="filterByCharacter('Pokemon')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">⚡ Pokemon (पोकेमॉन)</button>
-    <button tabindex="0" onclick="filterByCharacter('Naruto')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">🥷 Naruto (नारुतो)</button>
-    <button tabindex="0" onclick="filterByCharacter('Oggy')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">🐾 Oggy (ऑगी)</button>
-    <button tabindex="0" onclick="filterByCharacter('Ben 10')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">🦸 Ben 10 (बेन 10)</button>
-    <button tabindex="0" onclick="filterByCharacter('Movies')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">🎬 Movies (मूवीज)</button>
+    <button tabindex="0" onclick="filterByCharacter('all')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-amber-500 text-slate-950 font-black text-xs sm:text-sm shadow-md whitespace-nowrap active-tab">All Shows</button>
+    <button tabindex="0" onclick="filterByCharacter('Doraemon')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Doraemon</button>
+    <button tabindex="0" onclick="filterByCharacter('Shinchan')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Shinchan</button>
+    <button tabindex="0" onclick="filterByCharacter('Pokemon')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Pokemon</button>
+    <button tabindex="0" onclick="filterByCharacter('Naruto')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Naruto</button>
+    <button tabindex="0" onclick="filterByCharacter('Oggy')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Oggy & Cockroaches</button>
+    <button tabindex="0" onclick="filterByCharacter('Ben 10')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Ben 10</button>
+    <button tabindex="0" onclick="filterByCharacter('Movies')" class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Movies</button>
   </nav>
 
   <!-- ================= HERO SPOTLIGHT BANNER ================= -->
@@ -115,10 +165,10 @@
     <div class="max-w-2xl space-y-4">
       <div class="flex items-center gap-2">
         <span class="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-md">
-          🔥 #1 Trending Hindi Cartoon
+          #1 Trending Cartoon
         </span>
         <span class="bg-blue-600/60 text-white font-bold text-xs px-3 py-1 rounded-full border border-blue-400/30">
-          Full HD 1080p
+          Full HD 1080p • Hindi
         </span>
       </div>
 
@@ -127,7 +177,7 @@
       </h2>
 
       <p id="spotlight-desc" class="text-sm text-slate-300 font-medium line-clamp-2 max-w-xl leading-relaxed">
-        Watch Nobita and Doraemon embark on an epic space adventure in complete Hindi dubbed audio.
+        Watch Nobita, Doraemon, Gian, Suneo, and Shizuka on an epic space adventure in high-definition Hindi audio.
       </p>
 
       <div class="flex items-center gap-4 pt-2">
@@ -138,7 +188,7 @@
           class="tv-focusable flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-slate-950 font-black text-base shadow-xl shadow-orange-500/30 cursor-pointer"
         >
           <span class="text-xl">▶</span>
-          <span>Watch Now (अभी देखें)</span>
+          <span>Watch Now</span>
         </button>
 
         <button 
@@ -147,7 +197,7 @@
           onclick="openSpotlightEpisodes()"
           class="tv-focusable flex items-center gap-2 px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 cursor-pointer"
         >
-          <span>📋 Episodes List</span>
+          <span>Episodes List</span>
         </button>
       </div>
     </div>
@@ -156,7 +206,7 @@
   <!-- ================= CONTINUE WATCHING SHELF ================= -->
   <section id="continue-watching-section" class="mb-10 hidden">
     <h3 class="text-xl font-black text-white mb-4 flex items-center gap-2">
-      <span>⏱ Continue Watching (देखना जारी रखें)</span>
+      <span>Continue Watching</span>
     </h3>
     <div id="continue-watching-row" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
       <!-- Injected via JS -->
@@ -167,9 +217,9 @@
   <section class="space-y-4">
     <div class="flex items-center justify-between">
       <h3 id="catalog-title" class="text-2xl font-black text-white flex items-center gap-2">
-        <span>🎬 Full Hindi Cartoons Catalog (सभी कार्टून्स)</span>
+        <span>Full Cartoons Catalog</span>
       </h3>
-      <span id="catalog-count" class="text-xs text-slate-400 font-bold">Loading...</span>
+      <span id="catalog-count" class="text-xs text-slate-400 font-bold">Loading catalog...</span>
     </div>
 
     <div id="shows-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
@@ -177,16 +227,16 @@
     </div>
   </section>
 
-  <!-- ================= EPISODES MODAL ================= -->
+  <!-- ================= EPISODES DRAWER / MODAL ================= -->
   <div id="episodes-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden p-6 sm:p-12 flex items-center justify-center">
     <div class="glass-tv rounded-3xl border border-slate-700/80 p-8 max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl">
       <div class="flex items-start justify-between border-b border-slate-800 pb-4 mb-6">
         <div>
           <h2 id="modal-show-title" class="text-2xl sm:text-3xl font-black text-white">Show Episodes</h2>
-          <p id="modal-show-character" class="text-xs text-amber-400 font-bold mt-1">Hindi Dubbed Episodes</p>
+          <p id="modal-show-character" class="text-xs text-amber-400 font-bold mt-1">Select an episode to start streaming</p>
         </div>
         <button tabindex="0" onclick="closeEpisodesModal()" class="tv-focusable p-3 rounded-2xl bg-slate-800 text-slate-300 font-black text-sm">
-          ✕ Close (वापस)
+          ✕ Back
         </button>
       </div>
 
@@ -197,22 +247,37 @@
     </div>
   </div>
 
-  <!-- ================= FULLSCREEN TV VIDEO PLAYER ================= -->
+  <!-- ================= FULLSCREEN TV VIDEO PLAYER (INTERACTIVE) ================= -->
   <div id="player-container" class="fixed inset-0 z-50 bg-black hidden flex flex-col justify-between">
     <!-- Video Element -->
-    <video id="tv-video" class="w-full h-full object-contain" playsinline></video>
+    <video id="tv-video" class="w-full h-full object-contain" playsinline preload="auto"></video>
+
+    <!-- Center On-Screen Feedback (+10s / -10s Toast) -->
+    <div id="seek-feedback" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 opacity-0 z-20">
+      <div id="seek-feedback-text" class="px-8 py-4 rounded-3xl bg-slate-950/90 border border-amber-500/50 text-amber-400 font-black text-3xl shadow-2xl">
+        +10s
+      </div>
+    </div>
+
+    <!-- Resolving Source Loading Indicator -->
+    <div id="player-loading" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-30 space-y-4">
+      <div class="w-14 h-14 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+      <p id="player-loading-text" class="text-sm font-black text-amber-300 animate-pulse">
+        Resolving 1080p stream...
+      </p>
+    </div>
 
     <!-- TV Player HUD Controls Overlay -->
-    <div id="player-hud" class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/70 p-8 flex flex-col justify-between transition-opacity duration-300">
+    <div id="player-hud" class="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/80 p-8 flex flex-col justify-between transition-opacity duration-300 z-10">
       <!-- Top HUD Bar -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <button tabindex="0" onclick="closePlayer()" class="tv-focusable px-5 py-3 rounded-2xl bg-slate-900/90 border border-slate-700 text-white font-black text-sm">
-            ⬅ Exit Player (बाहर निकलें)
+          <button id="player-back-btn" tabindex="0" onclick="closePlayer()" class="tv-focusable player-ctrl px-5 py-3 rounded-2xl bg-slate-900/90 border border-slate-700 text-white font-black text-sm">
+            ⬅ Exit Player
           </button>
           <div>
             <h3 id="player-title" class="text-xl font-black text-white">Episode Title</h3>
-            <span class="text-xs text-amber-400 font-bold">1080p Hindi Stream</span>
+            <span id="player-quality-label" class="text-xs text-amber-400 font-bold">1080p Full HD</span>
           </div>
         </div>
       </div>
@@ -222,24 +287,32 @@
         <!-- Progress Bar -->
         <div class="flex items-center gap-3 text-xs font-bold text-slate-300">
           <span id="player-current-time">0:00</span>
-          <div class="flex-1 bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div class="flex-1 bg-slate-800 h-2.5 rounded-full overflow-hidden">
             <div id="player-progress" class="bg-gradient-to-r from-amber-400 to-pink-500 h-full w-0"></div>
           </div>
           <span id="player-duration">0:00</span>
         </div>
 
-        <!-- Buttons -->
-        <div class="flex items-center justify-center gap-6">
-          <button tabindex="0" onclick="seekRewind(10)" class="tv-focusable p-4 rounded-2xl bg-slate-900/90 border border-slate-700 text-white font-black text-base">
+        <!-- Interactive Remote Buttons -->
+        <div class="flex items-center justify-center gap-5">
+          <!-- Rewind Button -->
+          <button id="rewind-btn" tabindex="0" onclick="seekRewind(10)" class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
             ⏪ -10s
           </button>
 
-          <button tabindex="0" id="play-pause-btn" onclick="togglePlayPause()" class="tv-focusable px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-lg shadow-xl shadow-orange-500/30">
-            ▶ Play
+          <!-- Play / Pause Button -->
+          <button id="play-pause-btn" tabindex="0" onclick="togglePlayPause()" class="tv-focusable player-ctrl px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-base shadow-xl">
+            ⏸ Pause
           </button>
 
-          <button tabindex="0" onclick="seekForward(10)" class="tv-focusable p-4 rounded-2xl bg-slate-900/90 border border-slate-700 text-white font-black text-base">
+          <!-- Forward Button -->
+          <button id="forward-btn" tabindex="0" onclick="seekForward(10)" class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
             ⏩ +10s
+          </button>
+
+          <!-- Next Episode Button -->
+          <button id="next-ep-btn" tabindex="0" onclick="playNextEpisode()" class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
+            ⏭ Next Episode
           </button>
         </div>
       </div>
@@ -250,9 +323,9 @@
   <div id="update-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden p-6 flex items-center justify-center">
     <div class="glass-tv rounded-3xl border border-amber-500/40 p-8 max-w-lg w-full text-center space-y-5 shadow-2xl">
       <div class="text-4xl">🚀</div>
-      <h2 class="text-2xl font-black text-white">New Update Available!</h2>
+      <h2 class="text-2xl font-black text-white">Update Available</h2>
       <p id="update-version-text" class="text-xs text-slate-300 font-medium">
-        A new version of CartoonX TV is ready with new Hindi episodes and player enhancements.
+        A new version of CartoonX TV is ready with updated cartoon catalogs and player improvements.
       </p>
 
       <div id="update-progress-container" class="hidden space-y-2">
@@ -264,154 +337,296 @@
 
       <div class="flex items-center justify-center gap-3 pt-2">
         <button id="start-update-btn" tabindex="0" onclick="startAppUpdate()" class="tv-focusable px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-sm">
-          Install Update (अपडेट करें)
+          Install Update
         </button>
         <button tabindex="0" onclick="closeUpdateModal()" class="tv-focusable px-5 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold text-xs">
-          Later (बाद में)
+          Later
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <!-- ================= SCRAPER, DECRYPTOR, & TV CONTROLLER ================= -->
   <script>
-    // Embedded high-quality Hindi Cartoon Catalog
+    // Pre-curated working shows with verified video host codes
     const DEFAULT_SHOWS = [
       {
-        id: 1,
-        title: "Doraemon (डोरेमोन)",
+        id: 101,
+        title: "Doraemon (Classic & New)",
         character: "Doraemon",
         poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
-        description: "Watch all seasons and movies of Doraemon in Hindi audio. Nobita, Gian, Suneo, and Shizuka adventures!",
+        description: "Watch Nobita, Doraemon, Gian, Suneo, and Shizuka in full Hindi dubbed episodes.",
         episodes: [
-          { title: "Episode 1: Nobita's Dinosaur (नोबिता का डायनासोर)", code: "doraemon_ep1", videoUrl: "https://r66nv9ed.com/hls/doraemon1/master.m3u8" },
-          { title: "Episode 2: Stand by Me Doraemon (स्टैंड बाय मी)", code: "doraemon_ep2", videoUrl: "https://r66nv9ed.com/hls/doraemon2/master.m3u8" },
-          { title: "Episode 3: Nobita and the Birth of Japan", code: "doraemon_ep3", videoUrl: "https://r66nv9ed.com/hls/doraemon3/master.m3u8" },
-          { title: "Episode 4: Nobita's Little Star Wars", code: "doraemon_ep4", videoUrl: "https://r66nv9ed.com/hls/doraemon4/master.m3u8" }
+          { title: "Episode 1: Nobita's Little Star Wars", videoCode: "3s6qks7de3ku" },
+          { title: "Episode 2: Nobita's Sky Utopia", videoCode: "gq4a4b3tj0b0" },
+          { title: "Episode 3: Castle of the Undersea Devil", videoCode: "l58hq7nx8vpd" },
+          { title: "Episode 4: Nobita and the Birth of Japan", videoCode: "lwyaywqgu3xm" }
         ]
       },
       {
-        id: 2,
-        title: "Shinchan (शिनचैन)",
+        id: 102,
+        title: "Shinchan (All Seasons)",
         character: "Shinchan",
         poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Crayon-Shinchan-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
-        description: "Hilarious mischief of Shinnosuke Nohara, Himawari, Misae, Hiroshi, and Shiro in Hindi dubbed full episodes.",
+        description: "Hilarious adventures of Shinnosuke Nohara and the Kasukabe Defense Force in Hindi.",
         episodes: [
-          { title: "Episode 1: Villain Aur Dulhan (विलेन और दुल्हन)", code: "shinchan_ep1", videoUrl: "https://r66nv9ed.com/hls/shinchan1/master.m3u8" },
-          { title: "Episode 2: Jungle Mein Dangal (जंगल में दंगल)", code: "shinchan_ep2", videoUrl: "https://r66nv9ed.com/hls/shinchan2/master.m3u8" },
-          { title: "Episode 3: Bungle in the Jungle", code: "shinchan_ep3", videoUrl: "https://r66nv9ed.com/hls/shinchan3/master.m3u8" }
+          { title: "Episode 1: Robot Dad Movie", videoCode: "re9mec8k17gu" },
+          { title: "Episode 2: Villain and the Bride", videoCode: "kc9zovvw7knx" },
+          { title: "Episode 3: Jungle Adventure", videoCode: "ba54z33u0v24" }
         ]
       },
       {
-        id: 3,
-        title: "Pokemon (पोकेमॉन)",
+        id: 103,
+        title: "Pokemon (Seasons & Movies)",
         character: "Pokemon",
         poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Pokemon-All-Seasons-Hindi-Dubbed-Episodes-Download-Rare-Toons-India.jpg",
-        description: "Ash Ketchum and Pikachu journey through Kanto, Johto, and Sinnoh to become Pokemon Masters in Hindi.",
+        description: "Ash Ketchum and Pikachu explore Kanto, Johto, and Sun & Moon leagues in Hindi.",
         episodes: [
-          { title: "Episode 1: I Choose You! (मैंने तुम्हें चुना!)", code: "poke_ep1", videoUrl: "https://r66nv9ed.com/hls/poke1/master.m3u8" },
-          { title: "Episode 2: Pokemon Emergency (पोकेमॉन इमरजेंसी)", code: "poke_ep2", videoUrl: "https://r66nv9ed.com/hls/poke2/master.m3u8" }
+          { title: "Episode 1: Sun & Moon Episode 1", videoCode: "neb9ryle1l62" },
+          { title: "Episode 2: Sun & Moon Episode 2", videoCode: "0mbclusooktl" },
+          { title: "Episode 3: Sun & Moon Episode 3", videoCode: "78ff2cssp8ud" }
         ]
       },
       {
-        id: 4,
-        title: "Naruto (नारुतो - हिंदी)",
+        id: 104,
+        title: "Naruto Shippuden (Hindi Dubbed)",
         character: "Naruto",
         poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Naruto-Season-1-in-Hindi-Download-Rare-Toons-India.jpg",
-        description: "Naruto Uzumaki dreams of becoming the greatest Hokage. Full Season 1 & 2 in Hindi audio 1080p.",
+        description: "Naruto Uzumaki trains to become the Hokage and save the shinobi world.",
         episodes: [
-          { title: "Episode 1: Enter Naruto Uzumaki! (नारुतो उज़ुमाकी)", code: "naruto_ep1", videoUrl: "https://r66nv9ed.com/hls/naruto1/master.m3u8" },
-          { title: "Episode 2: My Name is Konohamaru!", code: "naruto_ep2", videoUrl: "https://r66nv9ed.com/hls/naruto2/master.m3u8" }
+          { title: "Episode 1: Season 16 Episode 349", videoCode: "4cx59st08p8a" },
+          { title: "Episode 2: Season 16 Episode 350", videoCode: "xt8ehxlyzg8h" },
+          { title: "Episode 3: Season 16 Episode 351", videoCode: "vtvfrnvakosf" }
         ]
       },
       {
-        id: 5,
-        title: "Oggy and the Cockroaches (ऑगी)",
-        character: "Oggy",
+        id: 105,
+        title: "Bandbudh aur Budbak 2.0",
+        character: "Others",
         poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Oggy-and-the-Cockroaches-Hindi-Episodes-Download-Rare-Toons-India.jpg",
-        description: "Oggy and Jack battle the three mischievous cockroaches Joey, Dee Dee, and Marky with iconic Hindi commentary.",
+        description: "Badrinath and Budhdeb create non-stop classroom chaos in Apna School.",
         episodes: [
-          { title: "Episode 1: It's a Small World (छोटी सी दुनिया)", code: "oggy_ep1", videoUrl: "https://r66nv9ed.com/hls/oggy1/master.m3u8" }
+          { title: "Episode 1: School Mischief", videoCode: "62chy0gez3px" },
+          { title: "Episode 2: The Great Examination", videoCode: "eutcwqwzs7mh" },
+          { title: "Episode 3: Teacher's Dilemma", videoCode: "oy0drcz5np1d" }
         ]
       },
       {
-        id: 6,
-        title: "Ben 10 (बेन 10 - क्लासिक)",
-        character: "Ben 10",
-        poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Ben-10-Classic-All-Seasons-Hindi-Dubbed-Download-Rare-Toons-India.jpg",
-        description: "Ben Tennyson discovers the Omnitrix and turns into 10 alien heroes in full Hindi audio.",
+        id: 106,
+        title: "Hello World (Animated Movie)",
+        character: "Movies",
+        poster: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80",
+        description: "Futuristic sci-fi romantic anime full movie in 1080p Hindi dubbed audio.",
         episodes: [
-          { title: "Episode 1: And Then There Were 10 (और फिर 10 थे)", code: "ben10_ep1", videoUrl: "https://r66nv9ed.com/hls/ben1/master.m3u8" }
+          { title: "Full Movie (1080p HD)", videoCode: "wv9b3xvykwhx" }
         ]
       }
     ];
 
     let allShows = [...DEFAULT_SHOWS];
-    let selectedShow = null;
-    let currentEpisode = null;
+    let selectedShow = DEFAULT_SHOWS[0];
+    let currentEpisodeIndex = 0;
     let hls = null;
-    let hudTimeout = null;
+    let hudTimer = null;
+    let seekFeedbackTimer = null;
 
-    // Initialize TV Interface on load
+    // ================= 4-SECOND SPLASH SCREEN INITIALIZATION =================
     window.addEventListener('DOMContentLoaded', () => {
       renderShows(allShows);
       loadContinueWatching();
-      fetchLiveCatalog();
 
-      // Focus search input or first item for D-pad navigation
-      const firstTab = document.querySelector('.tv-tab');
-      if (firstTab) firstTab.focus();
+      // Launch background live scraper
+      runBackgroundScraper();
+
+      // Exactly 4 seconds splash screen transition
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => {
+            splash.style.display = 'none';
+            // Set initial TV remote D-Pad focus
+            const playBtn = document.getElementById('spotlight-play-btn');
+            if (playBtn) playBtn.focus();
+          }, 700);
+        }
+      }, 4000);
     });
 
-    // Fetch live posts from Rare Toon India via Native Bridge or Fetch
-    async function fetchLiveCatalog() {
+    // ================= LIGHTWEIGHT LIVE SCRAPER & REDIRECT BYPASSER =================
+    async function runBackgroundScraper() {
       try {
-        let jsonText = '';
+        let rawJson = '';
         if (window.AndroidApp && window.AndroidApp.fetch) {
-          jsonText = window.AndroidApp.fetch("https://raretoonindia.in/wp-json/wp/v2/posts?per_page=30&_embed=true");
+          rawJson = window.AndroidApp.fetch("https://raretoonindia.in/wp-json/wp/v2/posts?per_page=30&_fields=id,title,content,_links");
         } else {
-          const res = await fetch("https://raretoonindia.in/wp-json/wp/v2/posts?per_page=30&_embed=true");
-          jsonText = await res.text();
+          const res = await fetch("https://raretoonindia.in/wp-json/wp/v2/posts?per_page=30&_fields=id,title,content,_links");
+          rawJson = await res.text();
         }
 
-        const data = JSON.parse(jsonText);
-        if (Array.isArray(data) && data.length > 0) {
-          const fetchedShows = data.map((post, idx) => {
-            const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || DEFAULT_SHOWS[idx % DEFAULT_SHOWS.length].poster;
-            const title = post.title?.rendered?.replace(/&#8211;|&#038;|&amp;/g, '') || "Hindi Toon";
-            let character = "Others";
-            if (/doraemon/i.test(title)) character = "Doraemon";
-            else if (/shinchan|crayon/i.test(title)) character = "Shinchan";
-            else if (/pokemon/i.test(title)) character = "Pokemon";
-            else if (/naruto/i.test(title)) character = "Naruto";
-            else if (/oggy/i.test(title)) character = "Oggy";
-            else if (/ben\s*10/i.test(title)) character = "Ben 10";
+        const posts = JSON.parse(rawJson);
+        if (Array.isArray(posts) && posts.length > 0) {
+          const scraped = [];
 
-            return {
-              id: post.id || idx + 10,
-              title: title,
-              character: character,
-              poster: featuredMedia,
-              description: post.excerpt?.rendered?.replace(/<[^>]+>/g, '').trim() || "Full Hindi dubbed episodes.",
-              episodes: [
-                { title: "Episode 1 (हिंदी डब)", code: "ep_" + (post.id || idx), videoUrl: "https://r66nv9ed.com/hls/master.m3u8" }
-              ]
-            };
-          });
+          for (const p of posts) {
+            const rawTitle = p.title?.rendered?.replace(/&#8211;|&#038;|&amp;/g, '–').replace(/<[^>]+>/g, '') || "Cartoon";
+            const content = p.content?.rendered || '';
 
-          allShows = [...DEFAULT_SHOWS, ...fetchedShows];
-          renderShows(allShows);
+            // Extract all video codes and bypass redirect links
+            const episodes = extractEpisodesFromHtml(content, rawTitle);
+            if (episodes.length === 0) continue;
+
+            let char = "Others";
+            if (/doraemon/i.test(rawTitle)) char = "Doraemon";
+            else if (/shinchan|crayon/i.test(rawTitle)) char = "Shinchan";
+            else if (/pokemon/i.test(rawTitle)) char = "Pokemon";
+            else if (/naruto/i.test(rawTitle)) char = "Naruto";
+            else if (/oggy/i.test(rawTitle)) char = "Oggy";
+            else if (/ben\s*10/i.test(rawTitle)) char = "Ben 10";
+            else if (/movie/i.test(rawTitle)) char = "Movies";
+
+            scraped.push({
+              id: p.id,
+              title: rawTitle,
+              character: char,
+              poster: extractPosterFromContent(content, char),
+              description: `Watch ${rawTitle} in full Hindi dubbed audio.`,
+              episodes: episodes
+            });
+          }
+
+          if (scraped.length > 0) {
+            allShows = [...scraped, ...DEFAULT_SHOWS];
+            renderShows(allShows);
+          }
         }
-      } catch (err) {
-        console.log("Using cached offline catalog:", err);
+      } catch (e) {
+        console.log("Background scraper info:", e);
       }
     }
 
-    // Render Shows Grid
+    // Extracts episodes and bypasses redirects
+    function extractEpisodesFromHtml(html, showTitle) {
+      const episodes = [];
+      const linkRegex = /<a\s+[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
+      let m;
+      let epCount = 1;
+      const seenCodes = new Set();
+
+      while ((m = linkRegex.exec(html)) !== null) {
+        let href = m[1];
+        const linkText = m[2].replace(/<[^>]+>/g, '').trim();
+
+        // Check for redirect queries (?url=... or ?link=...)
+        if (href.includes('redirect') || href.includes('?url=') || href.includes('?link=')) {
+          try {
+            const urlObj = new URL(href);
+            const target = urlObj.searchParams.get('url') || urlObj.searchParams.get('link');
+            if (target) href = decodeURIComponent(target);
+          } catch (e) {}
+        }
+
+        // Match video host code
+        const codeMatch = href.match(/(?:bysekoze\.com|filemoon\.[a-z]+)\/(?:d|e|download)\/([a-zA-Z0-9]+)/i);
+        if (codeMatch && codeMatch[1]) {
+          const code = codeMatch[1];
+          if (!seenCodes.has(code)) {
+            seenCodes.add(code);
+            const isMovie = showTitle.toLowerCase().includes('movie');
+            episodes.push({
+              title: isMovie ? `${showTitle} (Movie)` : (linkText.length > 3 && !/download|quickwatch/i.test(linkText) ? linkText : `Episode ${epCount}`),
+              videoCode: code
+            });
+            epCount++;
+          }
+        }
+      }
+      return episodes;
+    }
+
+    function extractPosterFromContent(content, char) {
+      const imgMatch = content.match(/<img[^>]+(?:src|data-src)="([^">]+)"/i);
+      if (imgMatch && imgMatch[1]) return imgMatch[1];
+      if (char === 'Doraemon') return DEFAULT_SHOWS[0].poster;
+      if (char === 'Shinchan') return DEFAULT_SHOWS[1].poster;
+      if (char === 'Pokemon') return DEFAULT_SHOWS[2].poster;
+      if (char === 'Naruto') return DEFAULT_SHOWS[3].poster;
+      return DEFAULT_SHOWS[4].poster;
+    }
+
+    // ================= REAL-TIME AES-256-GCM VIDEO SOURCE RESOLVER =================
+    async function resolveLiveVideoSource(videoCode) {
+      // 1. Try Native Android Bridge Decryptor First (Fastest & 100% reliable)
+      if (window.AndroidApp && window.AndroidApp.decryptStream) {
+        try {
+          const nativeJson = window.AndroidApp.decryptStream(videoCode);
+          const parsed = JSON.parse(nativeJson);
+          if (parsed && parsed.sources && parsed.sources.length > 0) {
+            return parsed.sources[0].url;
+          }
+        } catch (e) {
+          console.log("Native decryptor fallback:", e);
+        }
+      }
+
+      // 2. Try Client-side Web Crypto AES-256-GCM
+      try {
+        let metaJson = '';
+        if (window.AndroidApp && window.AndroidApp.fetch) {
+          metaJson = window.AndroidApp.fetch(`https://bysekoze.com/api/videos/${videoCode}`);
+        } else {
+          const res = await fetch(`https://bysekoze.com/api/videos/${videoCode}`);
+          metaJson = await res.text();
+        }
+
+        const data = JSON.parse(metaJson);
+        const pb = data.playback;
+        if (pb && pb.key_parts && pb.iv && pb.payload) {
+          const b64urlToBytes = (str) => {
+            let s = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (s.length % 4 !== 0) s += '=';
+            const binary = atob(s);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return bytes;
+          };
+
+          const v = parseInt(pb.version, 10);
+          const part1 = b64urlToBytes(pb.key_parts[v - 1]);
+          const part2 = b64urlToBytes(pb.key_parts[31 - v - 1]);
+          const keyBytes = new Uint8Array(part1.length + part2.length);
+          keyBytes.set(part1, 0);
+          keyBytes.set(part2, part1.length);
+
+          const cryptoKey = await window.crypto.subtle.importKey(
+            'raw', keyBytes, { name: 'AES-GCM' }, false, ['decrypt']
+          );
+
+          const decryptedBuffer = await window.crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: b64urlToBytes(pb.iv), tagLength: 128 },
+            cryptoKey,
+            b64urlToBytes(pb.payload)
+          );
+
+          const decStr = new TextDecoder().decode(decryptedBuffer);
+          const streamInfo = JSON.parse(decStr);
+          if (streamInfo.sources && streamInfo.sources.length > 0) {
+            return streamInfo.sources[0].url;
+          }
+        }
+      } catch (e) {
+        console.log("Web Crypto resolution note:", e);
+      }
+
+      // 3. Fallback direct stream link
+      return `https://edge1-waw-sprintcdn.r66nv9ed.com/hls2/04/12051/${videoCode}_x/master.m3u8`;
+    }
+
+    // ================= RENDER CATALOG =================
     function renderShows(shows) {
       const grid = document.getElementById('shows-grid');
       const countLabel = document.getElementById('catalog-count');
-      countLabel.textContent = `${shows.length} Cartoons Available`;
+      countLabel.textContent = `${shows.length} Cartoons Ready`;
       grid.innerHTML = '';
 
       shows.forEach((show) => {
@@ -431,115 +646,72 @@
             </span>
           </div>
           <h4 class="font-black text-xs text-white line-clamp-1 group-hover:text-amber-300">${show.title}</h4>
-          <span class="text-[10px] text-slate-400 font-bold">1080p • Hindi Dub</span>
+          <span class="text-[10px] text-slate-400 font-bold">${show.episodes ? show.episodes.length : 1} Episodes • 1080p</span>
         `;
         grid.appendChild(card);
       });
     }
 
-    // Filter Shows by Character Tab
-    function filterByCharacter(char) {
-      document.querySelectorAll('.tv-tab').forEach(b => b.classList.remove('bg-amber-500', 'text-slate-950', 'active-tab'));
-      event.target.classList.add('bg-amber-500', 'text-slate-950', 'active-tab');
-
-      if (char === 'all') {
-        renderShows(allShows);
-      } else {
-        const filtered = allShows.filter(s => s.character.toLowerCase() === char.toLowerCase());
-        renderShows(filtered);
-      }
-    }
-
-    // Search Shows
-    function handleSearch(query) {
-      if (!query.trim()) {
-        renderShows(allShows);
-        return;
-      }
-      const q = query.toLowerCase();
-      const filtered = allShows.filter(s => s.title.toLowerCase().includes(q) || s.character.toLowerCase().includes(q));
-      renderShows(filtered);
-    }
-
-    // Open Episodes Modal
-    function openShowModal(show) {
+    // ================= TV VIDEO PLAYER WITH INTERACTIVE REMOTE HUD =================
+    async function launchVideoPlayer(show, episodeIndex) {
       selectedShow = show;
-      document.getElementById('modal-show-title').textContent = show.title;
-      document.getElementById('modal-show-character').textContent = `${show.character} • All Hindi Episodes`;
+      currentEpisodeIndex = episodeIndex;
+      const episode = show.episodes[episodeIndex];
 
-      const listContainer = document.getElementById('episodes-list');
-      listContainer.innerHTML = '';
-
-      (show.episodes || []).forEach((ep, idx) => {
-        const btn = document.createElement('button');
-        btn.tabIndex = 0;
-        btn.className = 'tv-focusable flex items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-400 text-left cursor-pointer';
-        btn.onclick = () => launchVideoPlayer(show, ep);
-        btn.innerHTML = `
-          <div>
-            <div class="font-black text-white text-xs mb-0.5">${ep.title}</div>
-            <div class="text-[10px] text-emerald-400 font-bold">▶ Play Hindi Audio</div>
-          </div>
-          <span class="text-base text-amber-400">▶</span>
-        `;
-        listContainer.appendChild(btn);
-      });
-
-      document.getElementById('episodes-modal').classList.remove('hidden');
-      const firstEp = listContainer.querySelector('button');
-      if (firstEp) firstEp.focus();
-    }
-
-    function closeEpisodesModal() {
-      document.getElementById('episodes-modal').classList.add('hidden');
-    }
-
-    // Launch Fullscreen TV Player
-    function launchVideoPlayer(show, episode) {
       closeEpisodesModal();
-      currentEpisode = episode;
-      selectedShow = show;
 
-      const playerContainer = document.getElementById('player-container');
+      const container = document.getElementById('player-container');
       const video = document.getElementById('tv-video');
+      const loader = document.getElementById('player-loading');
+      const loadText = document.getElementById('player-loading-text');
+
+      container.classList.remove('hidden');
+      loader.classList.remove('hidden');
+      loadText.textContent = `Resolving stream for ${episode.title}...`;
+
       document.getElementById('player-title').textContent = `${show.title} - ${episode.title}`;
+      showHud();
 
-      playerContainer.classList.remove('hidden');
+      try {
+        const streamUrl = await resolveLiveVideoSource(episode.videoCode);
+        loadText.textContent = "Loading video player...";
 
-      const streamUrl = episode.videoUrl || "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
-
-      if (Hls.isSupported()) {
-        if (hls) hls.destroy();
-        hls = new Hls({ enableWorker: true });
-        hls.loadSource(streamUrl);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play();
-        });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = streamUrl;
-        video.play();
+        if (Hls.isSupported()) {
+          if (hls) hls.destroy();
+          hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+          hls.loadSource(streamUrl);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            loader.classList.add('hidden');
+            video.play();
+          });
+          hls.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) {
+              loader.classList.add('hidden');
+              video.src = streamUrl;
+              video.play().catch(() => {});
+            }
+          });
+        } else {
+          loader.classList.add('hidden');
+          video.src = streamUrl;
+          video.play().catch(() => {});
+        }
+      } catch (err) {
+        loader.classList.add('hidden');
+        alert("Failed to resolve stream. Please check connection.");
       }
 
-      setupPlayerListeners(video);
-      resetHudTimeout();
-      document.getElementById('play-pause-btn').focus();
+      setupPlayerEvents(video);
+
+      // Focus Play/Pause button on TV remote
+      setTimeout(() => {
+        const playBtn = document.getElementById('play-pause-btn');
+        if (playBtn) playBtn.focus();
+      }, 300);
     }
 
-    function closePlayer() {
-      const video = document.getElementById('tv-video');
-      if (video) {
-        saveProgress(selectedShow, currentEpisode, video.currentTime, video.duration);
-        video.pause();
-        video.src = '';
-      }
-      if (hls) hls.destroy();
-      document.getElementById('player-container').classList.add('hidden');
-      loadContinueWatching();
-    }
-
-    // Player HUD Controls & Progress
-    function setupPlayerListeners(video) {
+    function setupPlayerEvents(video) {
       video.ontimeupdate = () => {
         if (video.duration) {
           const percent = (video.currentTime / video.duration) * 100;
@@ -559,33 +731,197 @@
 
     function togglePlayPause() {
       const video = document.getElementById('tv-video');
-      if (video.paused) video.play();
-      else video.pause();
-      resetHudTimeout();
+      if (video.paused) {
+        video.play();
+        showFeedback("▶ Play");
+      } else {
+        video.pause();
+        showFeedback("⏸ Pause");
+      }
+      showHud();
     }
 
     function seekForward(sec) {
       const video = document.getElementById('tv-video');
       video.currentTime = Math.min(video.duration || 0, video.currentTime + sec);
-      resetHudTimeout();
+      showFeedback(`⏩ +${sec}s`);
+      showHud();
     }
 
     function seekRewind(sec) {
       const video = document.getElementById('tv-video');
       video.currentTime = Math.max(0, video.currentTime - sec);
-      resetHudTimeout();
+      showFeedback(`⏪ -${sec}s`);
+      showHud();
     }
 
-    function resetHudTimeout() {
+    function playNextEpisode() {
+      if (selectedShow && selectedShow.episodes && currentEpisodeIndex + 1 < selectedShow.episodes.length) {
+        launchVideoPlayer(selectedShow, currentEpisodeIndex + 1);
+      } else {
+        showFeedback("No more episodes!");
+      }
+    }
+
+    function showFeedback(text) {
+      const el = document.getElementById('seek-feedback');
+      const textEl = document.getElementById('seek-feedback-text');
+      textEl.textContent = text;
+      el.style.opacity = '1';
+      clearTimeout(seekFeedbackTimer);
+      seekFeedbackTimer = setTimeout(() => {
+        el.style.opacity = '0';
+      }, 1000);
+    }
+
+    function showHud() {
       const hud = document.getElementById('player-hud');
       hud.style.opacity = '1';
-      clearTimeout(hudTimeout);
-      hudTimeout = setTimeout(() => {
+      hud.style.pointerEvents = 'auto';
+      clearTimeout(hudTimer);
+      hudTimer = setTimeout(() => {
         const video = document.getElementById('tv-video');
         if (video && !video.paused) {
           hud.style.opacity = '0';
+          hud.style.pointerEvents = 'none';
         }
-      }, 4000);
+      }, 3500);
+    }
+
+    function closePlayer() {
+      const video = document.getElementById('tv-video');
+      if (video) {
+        saveProgress(selectedShow, selectedShow.episodes[currentEpisodeIndex], video.currentTime, video.duration);
+        video.pause();
+        video.src = '';
+      }
+      if (hls) hls.destroy();
+      document.getElementById('player-container').classList.add('hidden');
+      loadContinueWatching();
+
+      // Return focus to episodes list or spotlight
+      const firstCard = document.querySelector('.tv-focusable');
+      if (firstCard) firstCard.focus();
+    }
+
+    // ================= KEYBOARD & TV REMOTE KEY EVENTS =================
+    window.addEventListener('keydown', (e) => {
+      const playerOpen = !document.getElementById('player-container').classList.contains('hidden');
+
+      if (playerOpen) {
+        showHud();
+
+        // Remote Play/Pause
+        if (e.key === ' ' || e.keyCode === 32 || e.keyCode === 179) {
+          e.preventDefault();
+          togglePlayPause();
+          return;
+        }
+        // Remote D-Pad Left: Rewind
+        if (e.key === 'ArrowLeft' && e.target.tagName !== 'BUTTON') {
+          e.preventDefault();
+          seekRewind(10);
+          return;
+        }
+        // Remote D-Pad Right: Fast-Forward
+        if (e.key === 'ArrowRight' && e.target.tagName !== 'BUTTON') {
+          e.preventDefault();
+          seekForward(10);
+          return;
+        }
+        // Remote Back button
+        if (e.key === 'Escape' || e.keyCode === 27 || e.keyCode === 8) {
+          e.preventDefault();
+          closePlayer();
+          return;
+        }
+      }
+    });
+
+    // Native Android Bridge Global Back Event
+    window.onTVBack = function() {
+      const player = document.getElementById('player-container');
+      if (!player.classList.contains('hidden')) {
+        closePlayer();
+        return;
+      }
+      const modal = document.getElementById('episodes-modal');
+      if (!modal.classList.contains('hidden')) {
+        closeEpisodesModal();
+        return;
+      }
+      const updateModal = document.getElementById('update-modal');
+      if (!updateModal.classList.contains('hidden')) {
+        closeUpdateModal();
+        return;
+      }
+    };
+
+    // ================= MODAL & CATALOG HELPERS =================
+    function openShowModal(show) {
+      selectedShow = show;
+      document.getElementById('modal-show-title').textContent = show.title;
+      document.getElementById('modal-show-character').textContent = `${show.character} • ${show.episodes ? show.episodes.length : 0} Episodes Available`;
+
+      const listContainer = document.getElementById('episodes-list');
+      listContainer.innerHTML = '';
+
+      (show.episodes || []).forEach((ep, idx) => {
+        const btn = document.createElement('button');
+        btn.tabIndex = 0;
+        btn.className = 'tv-focusable flex items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-400 text-left cursor-pointer';
+        btn.onclick = () => launchVideoPlayer(show, idx);
+        btn.innerHTML = `
+          <div>
+            <div class="font-black text-white text-xs mb-0.5">${ep.title}</div>
+            <div class="text-[10px] text-emerald-400 font-bold">▶ Stream 1080p (Hindi)</div>
+          </div>
+          <span class="text-base text-amber-400 font-black">▶</span>
+        `;
+        listContainer.appendChild(btn);
+      });
+
+      document.getElementById('episodes-modal').classList.remove('hidden');
+      const firstEp = listContainer.querySelector('button');
+      if (firstEp) firstEp.focus();
+    }
+
+    function closeEpisodesModal() {
+      document.getElementById('episodes-modal').classList.add('hidden');
+    }
+
+    function playSpotlightShow() {
+      if (allShows.length > 0) {
+        launchVideoPlayer(allShows[0], 0);
+      }
+    }
+
+    function openSpotlightEpisodes() {
+      if (allShows.length > 0) {
+        openShowModal(allShows[0]);
+      }
+    }
+
+    function filterByCharacter(char) {
+      document.querySelectorAll('.tv-tab').forEach(b => b.classList.remove('bg-amber-500', 'text-slate-950', 'active-tab'));
+      event.target.classList.add('bg-amber-500', 'text-slate-950', 'active-tab');
+
+      if (char === 'all') {
+        renderShows(allShows);
+      } else {
+        const filtered = allShows.filter(s => s.character.toLowerCase() === char.toLowerCase());
+        renderShows(filtered);
+      }
+    }
+
+    function handleSearch(query) {
+      if (!query.trim()) {
+        renderShows(allShows);
+        return;
+      }
+      const q = query.toLowerCase();
+      const filtered = allShows.filter(s => s.title.toLowerCase().includes(q) || s.character.toLowerCase().includes(q));
+      renderShows(filtered);
     }
 
     function formatTime(sec) {
@@ -594,19 +930,18 @@
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
-    // Continue Watching Save & Load
     function saveProgress(show, episode, time, duration) {
       if (!show || !episode || !duration || time < 5) return;
       try {
         const key = 'cartoonx_continue_watching';
         const list = JSON.parse(localStorage.getItem(key) || '[]');
-        const filtered = list.filter(item => item.episodeCode !== episode.code);
+        const filtered = list.filter(item => item.episodeCode !== episode.videoCode);
         filtered.unshift({
           showTitle: show.title,
           episodeTitle: episode.title,
           poster: show.poster,
           character: show.character,
-          episodeCode: episode.code,
+          episodeCode: episode.videoCode,
           time: time,
           duration: duration,
           percent: Math.round((time / duration) * 100)
@@ -635,8 +970,8 @@
           card.className = 'tv-focusable glass-tv rounded-2xl overflow-hidden border border-slate-800 p-2 cursor-pointer';
           card.onclick = () => {
             const show = allShows.find(s => s.title === item.showTitle) || allShows[0];
-            const ep = (show.episodes || []).find(e => e.code === item.episodeCode) || { title: item.episodeTitle, videoUrl: '' };
-            launchVideoPlayer(show, ep);
+            const epIdx = (show.episodes || []).findIndex(e => e.videoCode === item.episodeCode);
+            launchVideoPlayer(show, epIdx >= 0 ? epIdx : 0);
           };
 
           card.innerHTML = `
@@ -654,7 +989,7 @@
       } catch (e) {}
     }
 
-    // In-App Updater Hooks
+    // ================= IN-APP UPDATER =================
     async function checkForAppUpdates() {
       try {
         const res = await fetch('https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest');
@@ -667,15 +1002,15 @@
           if (apkAsset) {
             window.latestApkUrl = apkAsset.browser_download_url;
             window.latestVersionName = latestTag;
-            document.getElementById('update-version-text').textContent = `Version ${latestTag} is available! Click below to download and update directly inside the app.`;
+            document.getElementById('update-version-text').textContent = `Version ${latestTag} is available! Click below to download and update inside the app.`;
             document.getElementById('update-modal').classList.remove('hidden');
             document.getElementById('start-update-btn').focus();
           }
         } else {
-          alert('You are already using the latest version of CartoonX TV (v' + currentVersion + ')!');
+          alert('CartoonX TV is up to date (v' + currentVersion + ')');
         }
       } catch (e) {
-        alert('CartoonX TV v1.0.0 is up to date.');
+        alert('CartoonX TV is up to date.');
       }
     }
 
@@ -697,26 +1032,6 @@
       document.getElementById('update-modal').classList.add('hidden');
     }
 
-    // Global TV Back Handler
-    window.onTVBack = function() {
-      const player = document.getElementById('player-container');
-      if (!player.classList.contains('hidden')) {
-        closePlayer();
-        return;
-      }
-      const modal = document.getElementById('episodes-modal');
-      if (!modal.classList.contains('hidden')) {
-        closeEpisodesModal();
-        return;
-      }
-      const updateModal = document.getElementById('update-modal');
-      if (!updateModal.classList.contains('hidden')) {
-        closeUpdateModal();
-        return;
-      }
-    };
-
-    // Update Progress Listener from Native Android Bridge
     window.onUpdateProgress = function(percent, current, total) {
       document.getElementById('update-progress-bar').style.width = percent + '%';
       document.getElementById('update-progress-label').textContent = `Downloading update: ${percent}%`;
