@@ -77,6 +77,8 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
+        settings.setSupportMultipleWindows(false);
+        settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setUserAgentString(settings.getUserAgentString() + " CartoonX-AndroidTV/1.0");
 
         webView.addJavascriptInterface(new AndroidAppBridge(), "AndroidApp");
@@ -90,7 +92,13 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return false; // Load all routes in-app
+                String host = request.getUrl().getHost();
+                // Strictly keep the TV app inside our native interface - block all external web/ad takeovers
+                if (host != null && host.equals("appassets.androidplatform.net")) {
+                    return false;
+                }
+                Log.d(TAG, "Blocked external web redirect from hijacking TV UI: " + request.getUrl());
+                return true;
             }
         });
 

@@ -357,10 +357,11 @@
         poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
         description: "Watch Nobita, Doraemon, Gian, Suneo, and Shizuka in full Hindi dubbed episodes.",
         episodes: [
-          { title: "Episode 1: Nobita's Little Star Wars", videoCode: "3s6qks7de3ku" },
-          { title: "Episode 2: Nobita's Sky Utopia", videoCode: "gq4a4b3tj0b0" },
-          { title: "Episode 3: Castle of the Undersea Devil", videoCode: "l58hq7nx8vpd" },
-          { title: "Episode 4: Nobita and the Birth of Japan", videoCode: "lwyaywqgu3xm" }
+          { title: "Episode 1: Nobita's Little Star Wars (2021 Remake)", videoCode: "w6vj66ncoto1" },
+          { title: "Episode 2: Season 14 Episode 1 (Sony Yay Dubbed)", videoCode: "ml8x0vmld7f4" },
+          { title: "Episode 3: Nobita's Sky Utopia", videoCode: "gq4a4b3tj0b0" },
+          { title: "Episode 4: Castle of the Undersea Devil", videoCode: "l58hq7nx8vpd" },
+          { title: "Episode 5: Nobita and the Birth of Japan", videoCode: "lwyaywqgu3xm" }
         ]
       },
       {
@@ -507,7 +508,7 @@
       }
     }
 
-    // Extracts episodes and bypasses redirects
+    // Extracts episodes and bypasses redirects (including shortxlinks, ad-shortener loops, and 301/302 redirects)
     function extractEpisodesFromHtml(html, showTitle) {
       const episodes = [];
       const linkRegex = /<a\s+[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
@@ -519,17 +520,43 @@
         let href = m[1];
         const linkText = m[2].replace(/<[^>]+>/g, '').trim();
 
-        // Check for redirect queries (?url=... or ?link=...)
-        if (href.includes('redirect') || href.includes('?url=') || href.includes('?link=')) {
+        // 1. Instantly unpack shortener redirects (?url=..., ?link=..., ?dest=...)
+        // Bypasses shortxlinks, adfly, and base64 wrapper links with 0 latency
+        if (href.includes('redirect') || href.includes('url=') || href.includes('link=') || href.includes('shortxlinks')) {
           try {
             const urlObj = new URL(href);
-            const target = urlObj.searchParams.get('url') || urlObj.searchParams.get('link');
-            if (target) href = decodeURIComponent(target);
+            const target = urlObj.searchParams.get('url') || urlObj.searchParams.get('link') || urlObj.searchParams.get('dest');
+            if (target) {
+              try {
+                const b64Decoded = atob(decodeURIComponent(target));
+                if (b64Decoded.startsWith('http')) {
+                  href = b64Decoded;
+                } else {
+                  href = decodeURIComponent(target);
+                }
+              } catch (e2) {
+                href = decodeURIComponent(target);
+              }
+            }
           } catch (e) {}
         }
 
-        // Match video host code
-        const codeMatch = href.match(/(?:bysekoze\.com|filemoon\.[a-z]+)\/(?:d|e|download)\/([a-zA-Z0-9]+)/i);
+        // 2. Check if video host code is present in href
+        let codeMatch = href.match(/(?:bysekoze\.com|filemoon\.[a-z]+)\/(?:d|e|download)\/([a-zA-Z0-9]+)/i);
+
+        // 3. If not found and link looks like an HTTP redirector, resolve through native bridge
+        if (!codeMatch && (href.includes('/go/') || href.includes('/redirect/') || href.includes('bit.ly') || href.includes('tinyurl.com'))) {
+          if (window.AndroidApp && window.AndroidApp.resolveRedirect) {
+            try {
+              const resolved = window.AndroidApp.resolveRedirect(href);
+              if (resolved && resolved !== href) {
+                href = resolved;
+                codeMatch = href.match(/(?:bysekoze\.com|filemoon\.[a-z]+)\/(?:d|e|download)\/([a-zA-Z0-9]+)/i);
+              }
+            } catch (e3) {}
+          }
+        }
+
         if (codeMatch && codeMatch[1]) {
           const code = codeMatch[1];
           if (!seenCodes.has(code)) {
