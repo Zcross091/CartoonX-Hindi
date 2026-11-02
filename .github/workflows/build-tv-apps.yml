@@ -35,16 +35,20 @@ jobs:
       - name: Configure Android SDK Location
         run: |
           SDK_PATH="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          echo "Using Android SDK at: $SDK_PATH"
+          echo "ANDROID_HOME=$SDK_PATH" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$SDK_PATH" >> $GITHUB_ENV
           echo "sdk.dir=$SDK_PATH" > android/local.properties
           cat android/local.properties
-          yes | "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
+          if [ -x "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$SDK_PATH/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
+          fi
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
           build-root-directory: android
+          cache-disabled: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -74,7 +78,13 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'cartoonx123' }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease assembleDebug --stacktrace
+          ./gradlew assembleRelease assembleDebug --stacktrace --no-daemon 2>&1 | tee ../gradle_build.log || {
+            echo "### ❌ Gradle Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 80 ../gradle_build.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
 
       - name: Locate and Package Signed APK
         id: locate_apk
