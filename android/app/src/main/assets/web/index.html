@@ -170,7 +170,7 @@
       </button>
     </nav>
 
-    <!-- Right: Search & Version -->
+    <!-- Right: Search -->
     <div class="flex items-center gap-3">
       <div class="relative">
         <input 
@@ -182,16 +182,6 @@
           oninput="handleSearch(this.value)"
         />
       </div>
-
-      <button 
-        id="tv-update-btn"
-        tabindex="0"
-        onclick="checkForAppUpdates()"
-        class="tv-focusable flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-black text-amber-300"
-      >
-        <span>v1.0.0</span>
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      </button>
     </div>
   </header>
 
@@ -1037,12 +1027,67 @@
       return show.episodes || [];
     }
 
+    let pendingStartupUpdate = null;
+
+    async function checkStartupAppUpdate() {
+      try {
+        const splashStatus = document.getElementById('splash-status');
+        let rawJson = '';
+        const apiUrl = 'https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest';
+
+        if (window.AndroidApp && window.AndroidApp.fetch) {
+          rawJson = window.AndroidApp.fetch(apiUrl);
+        } else {
+          const res = await fetch(apiUrl);
+          rawJson = await res.text();
+        }
+
+        const data = JSON.parse(rawJson);
+        const latestTag = (data.tag_name || '').trim();
+        const currentVersion = (window.AndroidApp ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
+
+        const cleanLatest = latestTag.replace(/^v/i, '');
+        const cleanCurrent = currentVersion.replace(/^v/i, '');
+
+        if (cleanLatest && cleanLatest !== cleanCurrent && data.assets && data.assets.length > 0) {
+          const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets[0];
+          if (apkAsset) {
+            pendingStartupUpdate = {
+              version: latestTag,
+              apkUrl: apkAsset.browser_download_url
+            };
+            if (splashStatus) {
+              splashStatus.textContent = `New update ${latestTag} found!`;
+            }
+          }
+        }
+      } catch (e) {
+        console.log("Startup update check:", e);
+      }
+    }
+
+    function showUpdateDialog(updateInfo) {
+      window.latestApkUrl = updateInfo.apkUrl;
+      window.latestVersionName = updateInfo.version;
+      document.getElementById('update-version-text').textContent = 
+        `New version ${updateInfo.version} is available with updated cartoon catalogs and player enhancements!`;
+      document.getElementById('update-modal').classList.remove('hidden');
+
+      setTimeout(() => {
+        const installBtn = document.getElementById('start-update-btn');
+        if (installBtn) installBtn.focus();
+      }, 200);
+    }
+
     // ================= 4-SECOND SPLASH SCREEN INITIALIZATION =================
     window.addEventListener('DOMContentLoaded', () => {
       renderShows(allShows);
       loadContinueWatching();
       updateLibraryBadge();
       updateDownloadsBadge();
+
+      // Check for updates on startup during the 4-second loading screen
+      checkStartupAppUpdate();
 
       // Launch background live scraper AFTER splash screen finishes
       setTimeout(() => {
@@ -1056,8 +1101,14 @@
           splash.style.opacity = '0';
           setTimeout(() => {
             splash.style.display = 'none';
-            const playBtn = document.getElementById('spotlight-play-btn');
-            if (playBtn) playBtn.focus();
+
+            // If an update was discovered on startup, prompt the user immediately
+            if (pendingStartupUpdate) {
+              showUpdateDialog(pendingStartupUpdate);
+            } else {
+              const playBtn = document.getElementById('spotlight-play-btn');
+              if (playBtn) playBtn.focus();
+            }
           }, 700);
         }
       }, 4000);
@@ -2197,23 +2248,34 @@
     // ================= IN-APP UPDATER =================
     async function checkForAppUpdates() {
       try {
-        const res = await fetch('https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest');
-        const data = await res.json();
-        const latestTag = data.tag_name || 'latest';
-        const currentVersion = window.AndroidApp ? window.AndroidApp.getAppVersion() : '1.0.0';
+        let rawJson = '';
+        const apiUrl = 'https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest';
 
-        if (latestTag !== currentVersion && data.assets) {
+        if (window.AndroidApp && window.AndroidApp.fetch) {
+          rawJson = window.AndroidApp.fetch(apiUrl);
+        } else {
+          const res = await fetch(apiUrl);
+          rawJson = await res.text();
+        }
+
+        const data = JSON.parse(rawJson);
+        const latestTag = (data.tag_name || '').trim();
+        const currentVersion = (window.AndroidApp ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
+
+        const cleanLatest = latestTag.replace(/^v/i, '');
+        const cleanCurrent = currentVersion.replace(/^v/i, '');
+
+        if (cleanLatest && cleanLatest !== cleanCurrent && data.assets && data.assets.length > 0) {
           const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets[0];
           if (apkAsset) {
-            window.latestApkUrl = apkAsset.browser_download_url;
-            window.latestVersionName = latestTag;
-            document.getElementById('update-version-text').textContent = `Version ${latestTag} is available! Click below to download and update inside the app.`;
-            document.getElementById('update-modal').classList.remove('hidden');
-            document.getElementById('start-update-btn').focus();
+            showUpdateDialog({
+              version: latestTag,
+              apkUrl: apkAsset.browser_download_url
+            });
+            return;
           }
-        } else {
-          showFeedback('CartoonX TV is up to date (v' + currentVersion + ')');
         }
+        showFeedback('CartoonX TV is up to date (v' + currentVersion + ')');
       } catch (e) {
         showFeedback('CartoonX TV is up to date.');
       }
