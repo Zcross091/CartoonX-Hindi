@@ -14,11 +14,11 @@ permissions:
 
 jobs:
   # ==========================================================
-  # JOB 1: Build Android TV Application (APK / AAB)
+  # JOB 1: Build Android TV Application (Signed Release & Debug)
   # Compatible with Android TV, Google TV, Fire TV, Mi TV Box
   # ==========================================================
   build-android-tv:
-    name: Build Android TV App
+    name: Build Signed Android TV App
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -49,186 +49,74 @@ jobs:
             echo "No package.json found, skipping npm install"
           fi
 
-      - name: Build Web Application Bundle (if applicable)
+      - name: Build Web Application Bundle
         run: |
           if [ -f package.json ] && grep -q '"build"' package.json; then
             npm run build
           fi
 
-      - name: Configure Android TV Project & Manifest
+      - name: Verify Android TV Keystore & Signing Config
         run: |
-          # If an android directory exists, ensure Android TV Leanback flags are present
-          if [ -d "android" ]; then
-            echo "Native Android directory found."
-            MANIFEST_PATH=$(find android -name "AndroidManifest.xml" | head -n 1)
-            if [ -n "$MANIFEST_PATH" ]; then
-              echo "Checking Android TV Leanback flags in $MANIFEST_PATH..."
-              # Ensure leanback feature is declared if not present
-              if ! grep -q "android.software.leanback" "$MANIFEST_PATH"; then
-                sed -i '/<application/i \    <uses-feature android:name="android.software.leanback" android:required="false" />\n    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />' "$MANIFEST_PATH"
-              fi
-              # Ensure LEANBACK_LAUNCHER intent filter is present for TV launchers
-              if ! grep -q "LEANBACK_LAUNCHER" "$MANIFEST_PATH"; then
-                sed -i '/android.intent.category.LAUNCHER/a \                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />' "$MANIFEST_PATH"
-              fi
-            fi
+          if [ -f android/app/release.keystore ]; then
+            echo "Release keystore found at android/app/release.keystore."
           else
-            echo "No native android/ folder committed yet. Scaffolding Android TV wrapper..."
-            mkdir -p android/app/src/main/res/values android/app/src/main/res/drawable
-            cat << 'EOF' > android/settings.gradle
-            rootProject.name = "CartoonX"
-            include ':app'
-EOF
-            cat << 'EOF' > android/build.gradle
-            buildscript {
-                repositories {
-                    google()
-                    mavenCentral()
-                }
-                dependencies {
-                    classpath 'com.android.tools.build:gradle:8.2.2'
-                }
-            }
-            allprojects {
-                repositories {
-                    google()
-                    mavenCentral()
-                }
-            }
-EOF
-            cat << 'EOF' > android/app/build.gradle
-            plugins {
-                id 'com.android.application'
-            }
-            android {
-                namespace 'com.cartoonx.tv'
-                compileSdk 34
-                defaultConfig {
-                    applicationId "com.cartoonx.tv"
-                    minSdk 21
-                    targetSdk 34
-                    versionCode 1
-                    versionName "1.0.0"
-                }
-                buildTypes {
-                    release {
-                        minifyEnabled false
-                        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-                    }
-                    debug {
-                        applicationIdSuffix ".debug"
-                    }
-                }
-            }
-            dependencies {
-                implementation 'androidx.appcompat:appcompat:1.6.1'
-                implementation 'androidx.leanback:leanback:1.0.0'
-                implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-            }
-EOF
-            cat << 'EOF' > android/app/src/main/AndroidManifest.xml
-            <?xml version="1.0" encoding="utf-8"?>
-            <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-                <uses-permission android:name="android.permission.INTERNET" />
-                <uses-feature android:name="android.software.leanback" android:required="false" />
-                <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-
-                <application
-                    android:allowBackup="true"
-                    android:icon="@android:drawable/sym_def_app_icon"
-                    android:banner="@android:drawable/sym_def_app_icon"
-                    android:label="CartoonX TV"
-                    android:supportsRtl="true"
-                    android:theme="@style/Theme.AppCompat.NoActionBar"
-                    android:usesCleartextTraffic="true">
-                    <activity
-                        android:name=".MainActivity"
-                        android:exported="true"
-                        android:screenOrientation="landscape"
-                        android:configChanges="keyboard|keyboardHidden|navigation">
-                        <intent-filter>
-                            <action android:name="android.intent.action.MAIN" />
-                            <category android:name="android.intent.category.LAUNCHER" />
-                            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-                        </intent-filter>
-                    </activity>
-                </application>
-            </manifest>
-EOF
-            mkdir -p android/app/src/main/java/com/cartoonx/tv
-            cat << 'EOF' > android/app/src/main/java/com/cartoonx/tv/MainActivity.java
-            package com.cartoonx.tv;
-
-            import android.annotation.SuppressLint;
-            import android.app.Activity;
-            import android.os.Bundle;
-            import android.webkit.WebSettings;
-            import android.webkit.WebView;
-            import android.webkit.WebViewClient;
-
-            public class MainActivity extends Activity {
-                private WebView webView;
-
-                @SuppressLint("SetJavaScriptEnabled")
-                @Override
-                protected void onCreate(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
-                    webView = new WebView(this);
-                    setContentView(webView);
-
-                    WebSettings settings = webView.getSettings();
-                    settings.setJavaScriptEnabled(true);
-                    settings.setDomStorageEnabled(true);
-                    settings.setMediaPlaybackRequiresUserGesture(false);
-                    settings.setUserAgentString(settings.getUserAgentString() + " CartoonX-AndroidTV/1.0");
-
-                    webView.setWebViewClient(new WebViewClient());
-                    webView.loadUrl("https://raretoonindia.in/");
-                }
-
-                @Override
-                public void onBackPressed() {
-                    if (webView != null && webView.canGoBack()) {
-                        webView.goBack();
-                    } else {
-                        super.onBackPressed();
-                    }
-                }
-            }
-EOF
+            echo "Generating release keystore for reproducible signing..."
+            keytool -genkeypair -v -keystore android/app/release.keystore \
+              -alias cartoonx -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass cartoonx123 -keypass cartoonx123 \
+              -dname "CN=CartoonX, OU=DesiKids, O=CartoonX, L=Delhi, ST=Delhi, C=IN"
           fi
 
-      - name: Build Android TV APK
+      - name: Build Signed Android TV APK
         working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'cartoonx123' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'cartoonx' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'cartoonx123' }}
         run: |
           if [ -f gradlew ]; then
             chmod +x gradlew
-            ./gradlew assembleDebug --stacktrace
           else
             gradle wrapper --gradle-version 8.5
             chmod +x gradlew
-            ./gradlew assembleDebug --stacktrace
           fi
+          # Build both release and debug signed with the release keystore
+          ./gradlew assembleRelease assembleDebug --stacktrace
 
-      - name: Locate and Package Android TV APK
+      - name: Locate and Package Signed APK
         id: locate_apk
         run: |
-          APK_PATH=$(find android -name "*debug*.apk" -o -name "*.apk" | head -n 1)
-          if [ -n "$APK_PATH" ]; then
-            echo "Found APK at: $APK_PATH"
-            mkdir -p build_output
-            cp "$APK_PATH" build_output/CartoonX-AndroidTV-Debug.apk
-            echo "apk_path=build_output/CartoonX-AndroidTV-Debug.apk" >> $GITHUB_OUTPUT
+          mkdir -p build_output
+          # Locate release APK first, fallback to debug APK (both signed with release.keystore)
+          RELEASE_APK=$(find android/app/build/outputs/apk/release -name "*.apk" 2>/dev/null | head -n 1)
+          DEBUG_APK=$(find android/app/build/outputs/apk/debug -name "*.apk" 2>/dev/null | head -n 1)
+          
+          if [ -n "$RELEASE_APK" ]; then
+            echo "Found Signed Release APK: $RELEASE_APK"
+            cp "$RELEASE_APK" build_output/CartoonX-AndroidTV-Signed.apk
+            cp "$RELEASE_APK" build_output/CartoonX-AndroidTV-Debug.apk
+          elif [ -n "$DEBUG_APK" ]; then
+            echo "Found Signed Debug APK: $DEBUG_APK"
+            cp "$DEBUG_APK" build_output/CartoonX-AndroidTV-Signed.apk
+            cp "$DEBUG_APK" build_output/CartoonX-AndroidTV-Debug.apk
           else
-            echo "Error: No APK found after build"
-            exit 1
+            ANY_APK=$(find android -name "*.apk" | head -n 1)
+            if [ -n "$ANY_APK" ]; then
+              cp "$ANY_APK" build_output/CartoonX-AndroidTV-Signed.apk
+              cp "$ANY_APK" build_output/CartoonX-AndroidTV-Debug.apk
+            else
+              echo "Error: No APK found after build"
+              exit 1
+            fi
           fi
+          
+          echo "apk_path=build_output/CartoonX-AndroidTV-Signed.apk" >> $GITHUB_OUTPUT
 
-      - name: Upload Android TV APK Artifact
+      - name: Upload Android TV APK Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: CartoonX-AndroidTV-APK
-          path: ${{ steps.locate_apk.outputs.apk_path }}
+          path: build_output/*.apk
           retention-days: 14
 
 
@@ -268,7 +156,6 @@ EOF
 
       - name: Configure Apple TV (tvOS) Project
         run: |
-          # Check for existing tvOS or iOS project
           XCODEPROJ=$(find . -maxdepth 3 -name "*.xcodeproj" | head -n 1)
           XCWORKSPACE=$(find . -maxdepth 3 -name "*.xcworkspace" | head -n 1)
 
@@ -341,7 +228,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, TVApplicationControllerDe
 
 UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(AppDelegate.self))
 EOF
-            # Generate minimal xcodeproj using SwiftPM or xcodebuild
             cat << 'EOF' > AppleTV/Package.swift
 // swift-tools-version:5.9
 import PackageDescription
@@ -370,14 +256,12 @@ EOF
             echo "Building tvOS package with SwiftPM..."
             swift build -c release --triple arm64-apple-tvos15.0 || swift build -c release
             cd ..
-            # Package into an installable tvOS bundle
             find AppleTV/.build -type f -perm +111 -name "CartoonXTV" | head -n 1 | xargs -I {} cp {} build_output/apple_tv/CartoonXTV_binary
           fi
 
-          # If an Xcode project or workspace is available, build via xcodebuild
           XCODEPROJ=$(find . -name "*.xcodeproj" | head -n 1)
           if [ -n "$XCODEPROJ" ]; then
-            echo "Building via xcodebuild for tvOS simulator/device..."
+            echo "Building via xcodebuild for tvOS..."
             xcodebuild build \
               -project "$XCODEPROJ" \
               -scheme "$(xcodebuild -list -project "$XCODEPROJ" | grep -A 1 "Schemes:" | tail -n 1 | tr -d ' ')" \
@@ -389,7 +273,6 @@ EOF
               CONFIGURATION_BUILD_DIR="build_output/apple_tv" || true
           fi
 
-          # Create a distributable Apple TV zip
           cd build_output
           zip -r CartoonX-AppleTV-tvOS.zip apple_tv/
           cd ..
@@ -403,16 +286,16 @@ EOF
 
 
   # ==========================================================
-  # JOB 3: Release Publisher (Optional on Tag / Main Commit)
+  # JOB 3: Release Publisher (Attaches Signed APK to Releases)
   # ==========================================================
   create-release:
     name: Publish Release Packages
     needs: [build-android-tv, build-apple-tv]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
 
     steps:
-      - name: Download Android TV Artifact
+      - name: Download Android TV Artifacts
         uses: actions/download-artifact@v4
         with:
           name: CartoonX-AndroidTV-APK
@@ -424,12 +307,12 @@ EOF
           name: CartoonX-AppleTV-tvOS
           path: release_assets/
 
-      - name: Create GitHub Release
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: release_assets/*
-          name: CartoonX TV Release ${{ github.ref_name }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'CartoonX TV Latest Release' }}
           draft: false
           prerelease: false
           generate_release_notes: true
-

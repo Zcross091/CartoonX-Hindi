@@ -11,7 +11,9 @@ import {
   Check, 
   HardDrive, 
   Info,
-  Tv
+  Tv,
+  ArrowUpCircle,
+  RefreshCw
 } from 'lucide-react';
 import { useSettingsStore } from '@/lib/store';
 import { db } from '@/lib/db';
@@ -36,19 +38,18 @@ export default function SettingsPage() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinModalMode, setPinModalMode] = useState<'set' | 'verify'>('set');
   const [statusMessage, setStatusMessage] = useState('');
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
 
   const flashMessage = (msg: string) => {
     setStatusMessage(msg);
-    setTimeout(() => setStatusMessage(''), 3000);
+    setTimeout(() => setStatusMessage(''), 3500);
   };
 
   const handleToggleParental = () => {
     if (isParentalEnabled) {
-      // Need PIN to disable
       setPinModalMode('verify');
       setShowPinModal(true);
     } else {
-      // Set new PIN
       setPinModalMode('set');
       setShowPinModal(true);
     }
@@ -68,6 +69,17 @@ export default function SettingsPage() {
     }
   };
 
+  const handleCheckUpdate = () => {
+    setIsCheckingUpdate(true);
+    flashMessage('Checking for latest updates...');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('check-for-updates'));
+    }
+    setTimeout(() => {
+      setIsCheckingUpdate(false);
+    }, 1500);
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
       <div className="border-b border-slate-800 pb-4">
@@ -76,7 +88,7 @@ export default function SettingsPage() {
           <span>App Settings (सेटिंग्स)</span>
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 font-medium">
-          Manage parental controls, download quality preferences, and storage
+          Manage parental controls, in-app updates, download quality, and storage
         </p>
       </div>
 
@@ -86,7 +98,37 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* 1. Parental Controls */}
+      {/* 1. In-App Updates Card */}
+      <div className="glass-panel rounded-3xl p-6 border border-amber-400/40 shadow-xl space-y-4 bg-gradient-to-tr from-amber-500/5 to-transparent">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <ArrowUpCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-white text-base">In-App Updates (ऐप अपडेट)</h3>
+              <p className="text-xs text-slate-400">
+                Downloads and updates the app in-place without deleting your data
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleCheckUpdate}
+            disabled={isCheckingUpdate}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black bg-amber-400 hover:bg-amber-300 text-slate-950 transition-all shadow-md active:scale-95 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isCheckingUpdate ? 'animate-spin' : ''}`} />
+            <span>{isCheckingUpdate ? 'Checking...' : 'Check for Update'}</span>
+          </button>
+        </div>
+        <div className="text-[11px] text-slate-400 flex items-center justify-between pt-1">
+          <span>Current Version: <strong>v1.0.0 (Release Signed)</strong></span>
+          <span className="text-emerald-400 font-bold">Auto-Updater Active</span>
+        </div>
+      </div>
+
+      {/* 2. Parental Controls */}
       <div className="glass-panel rounded-3xl p-6 border border-slate-700/60 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -132,7 +174,7 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {/* 2. Download Quality Preferences */}
+      {/* 3. Download Quality Preferences */}
       <div className="glass-panel rounded-3xl p-6 border border-slate-700/60 shadow-xl space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -178,7 +220,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* 3. Playback Preferences */}
+      {/* 4. Playback Preferences */}
       <div className="glass-panel rounded-3xl p-6 border border-slate-700/60 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -202,7 +244,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* 4. Storage & Cache Management */}
+      {/* 5. Storage & Cache Management */}
       <div className="glass-panel rounded-3xl p-6 border border-slate-700/60 shadow-xl space-y-4">
         <h3 className="font-extrabold text-white text-base">Storage Management</h3>
         <div className="flex flex-wrap gap-3">
@@ -223,11 +265,11 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* 5. About & Source Attributions */}
+      {/* 6. About & Source Attributions */}
       <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-2">
         <div className="flex items-center justify-center gap-2 text-white font-black text-sm">
           <Tv className="w-4 h-4 text-amber-400" />
-          <span>CartoonX v1.0.0</span>
+          <span>CartoonX v1.0.0 (Release Signed)</span>
         </div>
         <p className="text-xs text-slate-400 max-w-md mx-auto">
           Cartoons and anime are sourced & streamed from{' '}
@@ -263,4 +305,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

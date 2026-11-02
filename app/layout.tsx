@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
+import { UpdateNotifier } from '@/components/UpdateNotifier';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -12,7 +13,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'CartoonX - Hindi Cartoons for Indian Kids',
-  description: 'Stream Hindi dubbed cartoons, Doraemon, Shinchan, Pokemon, and animated movies safely with in-app downloads and continue watching.',
+  description: 'Stream Hindi dubbed cartoons, Doraemon, Shinchan, Pokemon, and animated movies safely with in-app downloads, in-app updater, and continue watching.',
   keywords: ['CartoonX', 'Hindi Cartoons', 'Doraemon in Hindi', 'Shinchan Hindi', 'Rare Toon India', 'Kids Cartoons India'],
 };
 
@@ -32,6 +33,8 @@ export default function RootLayout({
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </main>
+        {/* In-App Automatic Updater */}
+        <UpdateNotifier />
       </body>
     </html>
   );
