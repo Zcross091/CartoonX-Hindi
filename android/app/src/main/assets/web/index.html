@@ -201,8 +201,9 @@
     </nav>
 
     <!-- Hero Spotlight Banner -->
-    <section id="hero-spotlight" class="relative rounded-3xl overflow-hidden glass-tv border border-slate-700/80 p-8 sm:p-12 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent">
-      <div class="max-w-2xl space-y-4">
+    <section id="hero-spotlight" class="relative rounded-3xl overflow-hidden glass-tv border border-slate-700/80 p-8 sm:p-12 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent">
+      <div id="spotlight-backdrop" class="absolute inset-0 bg-cover bg-center opacity-30 filter blur-xs pointer-events-none transition-all duration-700" style="background-image: url('https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg');"></div>
+      <div class="relative z-10 max-w-2xl space-y-4">
         <div class="flex items-center gap-2">
           <span class="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-md">
             🔥 Peak Gen-Z Favorite
@@ -305,7 +306,7 @@
       <div class="relative z-10 flex flex-col md:flex-row items-start gap-8">
         <!-- Big Vertical Poster -->
         <div class="w-44 sm:w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-slate-900 flex-shrink-0 border-2 border-slate-700/80">
-          <img id="detail-poster-img" src="" alt="Show Poster" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
+          <img id="detail-poster-img" src="" alt="Show Poster" class="w-full h-full object-cover" onerror="this.src='https://static.tvmaze.com/uploads/images/original_untouched/6/16288.jpg'" />
         </div>
 
         <!-- Meta, Synopsis & Play Actions -->
@@ -670,340 +671,787 @@
   <script>
     // ================= FULL SHOWS CATALOG WITH MULTI-SEASON SUPPORT =================
     const DEFAULT_SHOWS = [
+  {
+    "id": "ben-10-classic",
+    "title": "Ben 10 (Classic 2005)",
+    "character": "Ben 10",
+    "network": "Cartoon Network",
+    "year": "2005–2008",
+    "rating": 8.2,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/6/16288.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg",
+    "description": "First premiering on Cartoon Network, Ben 10 follows 10-year-old Ben Tennyson on summer vacation with his cousin Gwen and Grandpa Max. When Ben discovers the Omnitrix—a high-tech alien device bonded to his wrist—he gains the power to transform into 10 unique alien superheroes to defend the planet against Vilgax and galactic evil.",
+    "seasons": [
       {
-        id: "ben-10-classic",
-        title: "Ben 10 (Classic 2005)",
-        character: "Ben 10",
-        network: "Cartoon Network",
-        year: "2005–2008",
-        poster: "https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg",
-        backdrop: "https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg",
-        description: "10-year-old Ben Tennyson discovers a mysterious alien watch called the Omnitrix during summer vacation. The device bonds to his wrist, granting him the power to transform into 10 extraordinary alien heroes with unique superpowers to defend Earth.",
-        seasons: [
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
           {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "S01 E01: And Then There Were 10", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s1e1", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E02: Washington B.C.", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s1e2", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E03: The Krakken", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s1e3", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E04: Permanent Retirement", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s1e4", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E05: Hunted", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s1e5", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E06: Tourist Trap", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s1e6", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E07: Kevin 11", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s1e7", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E08: The Alliance", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s1e8", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E09: Last Laugh", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s1e9", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E10: Lucky Girl", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s1e10", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E11: A Small Problem", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s1e11", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E12: Side Effects", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s1e12", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E13: Secrets", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s1e13", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" }
-            ]
+            "title": "S01 E01: And Then There Were 10",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s1e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           },
           {
-            seasonNumber: 2,
-            name: "Season 2",
-            episodes: [
-              { title: "S02 E01: Truth", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s2e1", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E02: The Big Tick", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s2e2", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E03: Framed", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s2e3", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E04: Gwen 10", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s2e4", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E05: Grudge Match", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s2e5", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E06: The Galactic Enforcers", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s2e6", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E07: Camp Fear", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s2e7", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E08: Ultimate Weapon", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s2e8", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E09: Tough Luck", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s2e9", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E10: They Lurk Below", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s2e10", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E11: Ghostfreaked Out", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s2e11", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E12: Dr. Animo and the Mutant Ray", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s2e12", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S02 E13: Back with a Vengeance", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s2e13", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" }
-            ]
+            "title": "S01 E02: Washington B.C.",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s1e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           },
           {
-            seasonNumber: 3,
-            name: "Season 3",
-            episodes: [
-              { title: "S03 E01: Ben 10,000", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s3e1", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E02: Midnight Madness", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s3e2", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E03: A Change of Face", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s3e3", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E04: Merry Christmas", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s3e4", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E05: Benwolf", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s3e5", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E06: Game Over", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s3e6", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E07: Super Alien Hero Buddy Adventures", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s3e7", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E08: Under Wraps", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s3e8", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E09: The Unnaturals", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s3e9", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E10: Monster Weather", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s3e10", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E11: The Return", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s3e11", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E12: Be Afraid of the Dark", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s3e12", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S03 E13: The Visitor", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s3e13", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" }
-            ]
+            "title": "S01 E03: The Krakken",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s1e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           },
           {
-            seasonNumber: 4,
-            name: "Season 4",
-            episodes: [
-              { title: "S04 E01: Perfect Day", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s4e1", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E02: Divided We Stand", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s4e2", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E03: Don't Drink the Water", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s4e3", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E04: Big Fat Alien Wedding", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s4e4", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E05: Ben 4 Good Buddy", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s4e5", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E06: Ready to Rumble", vidmolyCode: "ed0ahm3ejgbk", episodeId: "ben10_s4e6", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E07: Ken 10", vidmolyCode: "qalr3fczb02s", episodeId: "ben10_s4e7", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E08: Ben 10 vs. The Negative 10 (Part 1)", vidmolyCode: "nr8zw4tqx02k", episodeId: "ben10_s4e8", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E09: Ben 10 vs. The Negative 10 (Part 2)", vidmolyCode: "elgl2zi3eqzk", episodeId: "ben10_s4e9", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S04 E10: Goodbye and Good Riddance", vidmolyCode: "wtzcmis92316", episodeId: "ben10_s4e10", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "courage-the-cowardly-dog",
-        title: "Courage the Cowardly Dog",
-        character: "Courage",
-        network: "Cartoon Network",
-        year: "1999–2002",
-        poster: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg",
-        backdrop: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg",
-        description: "Courage is an easily frightened pink dog living in Nowhere, Kansas who constantly defends his elderly owners Muriel and Eustace Bagge from bizarre supernatural and extraterrestrial perils.",
-        seasons: [
-          {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "S01 E01: A Night at the Katz Motel", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s1e1", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" },
-              { title: "S01 E02: The Shadow of Courage", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s1e2", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" },
-              { title: "S01 E03: Courage Meets Bigfoot", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s1e3", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" },
-              { title: "S01 E04: The Demon in the Mattress", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s1e4", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" },
-              { title: "S01 E05: Night of the Weremole", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s1e5", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" }
-            ]
+            "title": "S01 E04: Permanent Retirement",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s1e4",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           },
           {
-            seasonNumber: 2,
-            name: "Season 2",
-            episodes: [
-              { title: "S02 E01: The Magic Tree of Nowhere", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s2e1", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" },
-              { title: "S02 E02: Robot Randy", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s2e2", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" },
-              { title: "S02 E03: The Curse of Shirley", vidmolyCode: "r9est7p21jb4", episodeId: "courage_s2e3", thumbnail: "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "ben-10-alien-force",
-        title: "Ben 10: Alien Force",
-        character: "Ben 10",
-        network: "Cartoon Network",
-        year: "2008–2010",
-        poster: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg",
-        backdrop: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg",
-        description: "Five years after the original series, a 15-year-old Ben Tennyson puts the recalibrated Omnitrix back on to search for his missing Grandpa Max and fight off the secret Highbreed alien invasion.",
-        seasons: [
-          {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "S01 E01: Ben 10 Returns (Part 1)", vidmolyCode: "1woyax9ocewb", episodeId: "ben10_af_s1e1", thumbnail: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg" },
-              { title: "S01 E02: Ben 10 Returns (Part 2)", vidmolyCode: "1woyax9ocewb", episodeId: "ben10_af_s1e2", thumbnail: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg" },
-              { title: "S01 E03: Everybody Talks About the Weather", vidmolyCode: "1woyax9ocewb", episodeId: "ben10_af_s1e3", thumbnail: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg" },
-              { title: "S01 E04: Kevin's Big Score", vidmolyCode: "1woyax9ocewb", episodeId: "ben10_af_s1e4", thumbnail: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg" }
-            ]
+            "title": "S01 E05: Hunted",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s1e5",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           },
           {
-            seasonNumber: 2,
-            name: "Season 2",
-            episodes: [
-              { title: "S02 E01: Darkstar Rising", vidmolyCode: "1woyax9ocewb", episodeId: "ben10_af_s2e1", thumbnail: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg" },
-              { title: "S02 E02: Alone Together", vidmolyCode: "1woyax9ocewb", episodeId: "ben10_af_s2e2", thumbnail: "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg" }
-            ]
+            "title": "S01 E06: Tourist Trap",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s1e6",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E07: Kevin 11",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s1e7",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E08: The Alliance",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s1e8",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E09: Last Laugh",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s1e9",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E10: Lucky Girl",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s1e10",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E11: A Small Problem",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s1e11",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E12: Side Effects",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s1e12",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E13: Secrets",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s1e13",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           }
         ]
       },
       {
-        id: "ben-10-ultimate-alien",
-        title: "Ben 10: Ultimate Alien",
-        character: "Ben 10",
-        network: "Cartoon Network",
-        year: "2010–2012",
-        poster: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg",
-        backdrop: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg",
-        description: "Ben's secret identity is exposed to the world, turning him into an international celebrity. Equipped with the Ultimatrix, he can evolve his alien transformations into hyper-powerful Ultimate forms.",
-        seasons: [
+        "seasonNumber": 2,
+        "name": "Season 2",
+        "episodes": [
           {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "S01 E01: Fame", vidmolyCode: "sotybrqunv2l", episodeId: "ben10_ua_s1e1", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E02: Duped", vidmolyCode: "sotybrqunv2l", episodeId: "ben10_ua_s1e2", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" },
-              { title: "S01 E03: Hit 'Em Where They Live", vidmolyCode: "sotybrqunv2l", episodeId: "ben10_ua_s1e3", thumbnail: "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg" }
-            ]
+            "title": "S02 E01: Truth",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s2e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E02: The Big Tick",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s2e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E03: Framed",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s2e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E04: Gwen 10",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s2e4",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E05: Grudge Match",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s2e5",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E06: The Galactic Enforcers",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s2e6",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E07: Camp Fear",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s2e7",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E08: Ultimate Weapon",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s2e8",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E09: Tough Luck",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s2e9",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E10: They Lurk Below",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s2e10",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E11: Ghostfreaked Out",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s2e11",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E12: Dr. Animo and the Mutant Ray",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s2e12",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S02 E13: Back with a Vengeance",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s2e13",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           }
         ]
       },
       {
-        id: "doraemon-classic",
-        title: "Doraemon (Classic & New)",
-        character: "Doraemon",
-        network: "Disney / Hungama",
-        year: "2005–Present",
-        poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
-        backdrop: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
-        description: "Watch Nobita, Doraemon, Gian, Suneo, and Shizuka on non-stop 22nd-century gadget adventures across full Hindi dubbed television seasons and cinematic movies.",
-        seasons: [
+        "seasonNumber": 3,
+        "name": "Season 3",
+        "episodes": [
           {
-            seasonNumber: 1,
-            name: "Season 14 (Sony Yay)",
-            episodes: [
-              { title: "Episode 1: Nobita's Little Star Wars", videoCode: "w6vj66ncoto1", episodeId: "doraemon_ep1", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 2: Season 14 Episode 1", videoCode: "ml8x0vmld7f4", episodeId: "doraemon_ep2", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 3: Nobita's Sky Utopia", videoCode: "gq4a4b3tj0b0", episodeId: "doraemon_ep3", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 4: Castle of the Undersea Devil", videoCode: "l58hq7nx8vpd", episodeId: "doraemon_ep4", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 5: Nobita and the Birth of Japan", videoCode: "lwyaywqgu3xm", episodeId: "doraemon_ep5", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Doraemon-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" }
-            ]
+            "title": "S03 E01: Ben 10,000",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s3e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E02: Midnight Madness",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s3e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E03: A Change of Face",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s3e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E04: Merry Christmas",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s3e4",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E05: Benwolf",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s3e5",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E06: Game Over",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s3e6",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E07: Super Alien Hero Buddy Adventures",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s3e7",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E08: Under Wraps",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s3e8",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E09: The Unnaturals",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s3e9",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E10: Monster Weather",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s3e10",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E11: The Return",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s3e11",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E12: Be Afraid of the Dark",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s3e12",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S03 E13: The Visitor",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s3e13",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           }
         ]
       },
       {
-        id: "shinchan-all",
-        title: "Shinchan (All Seasons)",
-        character: "Shinchan",
-        network: "Hungama TV",
-        year: "2006–Present",
-        poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Crayon-Shinchan-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
-        backdrop: "https://raretoonindia.in/wp-content/uploads/2021/01/Crayon-Shinchan-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg",
-        description: "Hilarious mischievous adventures of 5-year-old Shinnosuke Nohara, his parents Harry & Mitzi, dog Whitey, and the Kasukabe Defense Force in high-energy Hindi dub.",
-        seasons: [
+        "seasonNumber": 4,
+        "name": "Season 4",
+        "episodes": [
           {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "Episode 1: Robot Dad Movie", videoCode: "re9mec8k17gu", episodeId: "shinchan_ep1", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Crayon-Shinchan-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 2: Villain and the Bride", videoCode: "kc9zovvw7knx", episodeId: "shinchan_ep2", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Crayon-Shinchan-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 3: Jungle Adventure", videoCode: "ba54z33u0v24", episodeId: "shinchan_ep3", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Crayon-Shinchan-All-Episodes-in-Hindi-Download-Rare-Toons-India.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "pokemon-seasons",
-        title: "Pokemon (Seasons & Movies)",
-        character: "Pokemon",
-        network: "Cartoon Network / Hungama",
-        year: "2003–Present",
-        poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Pokemon-All-Seasons-Hindi-Dubbed-Episodes-Download-Rare-Toons-India.jpg",
-        backdrop: "https://raretoonindia.in/wp-content/uploads/2021/01/Pokemon-All-Seasons-Hindi-Dubbed-Episodes-Download-Rare-Toons-India.jpg",
-        description: "Ash Ketchum from Pallet Town sets out on his quest to become the world's greatest Pokemon Master alongside his partner Pikachu.",
-        seasons: [
+            "title": "S04 E01: Perfect Day",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s4e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
           {
-            seasonNumber: 1,
-            name: "Sun & Moon Season",
-            episodes: [
-              { title: "Episode 1: Sun & Moon Episode 1", videoCode: "neb9ryle1l62", episodeId: "pokemon_ep1", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Pokemon-All-Seasons-Hindi-Dubbed-Episodes-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 2: Sun & Moon Episode 2", videoCode: "0mbclusooktl", episodeId: "pokemon_ep2", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Pokemon-All-Seasons-Hindi-Dubbed-Episodes-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 3: Sun & Moon Episode 3", videoCode: "78ff2cssp8ud", episodeId: "pokemon_ep3", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Pokemon-All-Seasons-Hindi-Dubbed-Episodes-Download-Rare-Toons-India.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "naruto-shippuden",
-        title: "Naruto Shippuden (Hindi Dubbed)",
-        character: "Naruto",
-        network: "Sony YAY!",
-        year: "2007–2017",
-        poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Naruto-Season-1-in-Hindi-Download-Rare-Toons-India.jpg",
-        backdrop: "https://raretoonindia.in/wp-content/uploads/2021/01/Naruto-Season-1-in-Hindi-Download-Rare-Toons-India.jpg",
-        description: "Naruto Uzumaki returns to the Hidden Leaf Village after two and a half years of intense training to rescue his friend Sasuke and confront the Akatsuki threat.",
-        seasons: [
+            "title": "S04 E02: Divided We Stand",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s4e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
           {
-            seasonNumber: 1,
-            name: "Season 16",
-            episodes: [
-              { title: "Episode 1: Season 16 Episode 349", videoCode: "4cx59st08p8a", episodeId: "naruto_ep1", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Naruto-Season-1-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 2: Season 16 Episode 350", videoCode: "xt8ehxlyzg8h", episodeId: "naruto_ep2", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Naruto-Season-1-in-Hindi-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 3: Season 16 Episode 351", videoCode: "vtvfrnvakosf", episodeId: "naruto_ep3", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Naruto-Season-1-in-Hindi-Download-Rare-Toons-India.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "phineas-and-ferb",
-        title: "Phineas and Ferb (Disney Classic)",
-        character: "Disney & CN",
-        network: "Disney Channel",
-        year: "2007–2015",
-        poster: "https://image.tmdb.org/t/p/w780/oSLwJMOOQGAsyJNMi4Y3MO44iAJ.jpg",
-        backdrop: "https://image.tmdb.org/t/p/w780/oSLwJMOOQGAsyJNMi4Y3MO44iAJ.jpg",
-        description: "Stepbrothers Phineas and Ferb embark on creative grand summer projects each day of vacation while their pet platypus Perry secretly fights evil as Agent P.",
-        seasons: [
+            "title": "S04 E03: Don't Drink the Water",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s4e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
           {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "S01 E01: Rollercoaster", vidmolyCode: "wtzcmis92316", episodeId: "pf_s1e1", thumbnail: "https://image.tmdb.org/t/p/w780/oSLwJMOOQGAsyJNMi4Y3MO44iAJ.jpg" },
-              { title: "S01 E02: Lawn Gnome Beach Party", vidmolyCode: "ed0ahm3ejgbk", episodeId: "pf_s1e2", thumbnail: "https://image.tmdb.org/t/p/w780/oSLwJMOOQGAsyJNMi4Y3MO44iAJ.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "slugterra-classic",
-        title: "Slugterra (Disney XD)",
-        character: "Disney & CN",
-        network: "Disney XD",
-        year: "2012–2016",
-        poster: "https://image.tmdb.org/t/p/w780/q9l3y7cI6lbveFDXUw6LFey0J3v.jpg",
-        backdrop: "https://image.tmdb.org/t/p/w780/q9l3y7cI6lbveFDXUw6LFey0J3v.jpg",
-        description: "Eli Shane is determined to follow his father's legacy as the greatest Slugslinger in Slugterra, a wondrous high-tech underground world 100 miles beneath Earth's surface.",
-        seasons: [
+            "title": "S04 E04: Big Fat Alien Wedding",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s4e4",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
           {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "S01 E01: The World Beneath Our Feet (Part 1)", vidmolyCode: "elgl2zi3eqzk", episodeId: "slugterra_s1e1", thumbnail: "https://image.tmdb.org/t/p/w780/q9l3y7cI6lbveFDXUw6LFey0J3v.jpg" },
-              { title: "S01 E02: The World Beneath Our Feet (Part 2)", vidmolyCode: "qalr3fczb02s", episodeId: "slugterra_s1e2", thumbnail: "https://image.tmdb.org/t/p/w780/q9l3y7cI6lbveFDXUw6LFey0J3v.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "bandbudh-budbak",
-        title: "Bandbudh aur Budbak 2.0",
-        character: "Disney & CN",
-        network: "ZeeQ",
-        year: "2015–Present",
-        poster: "https://raretoonindia.in/wp-content/uploads/2021/01/Oggy-and-the-Cockroaches-Hindi-Episodes-Download-Rare-Toons-India.jpg",
-        backdrop: "https://raretoonindia.in/wp-content/uploads/2021/01/Oggy-and-the-Cockroaches-Hindi-Episodes-Download-Rare-Toons-India.jpg",
-        description: "Badrinath and Budhdeb create non-stop classroom and playground comedy in Apna School.",
-        seasons: [
+            "title": "S04 E05: Ben 4 Good Buddy",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s4e5",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
           {
-            seasonNumber: 1,
-            name: "Season 1",
-            episodes: [
-              { title: "Episode 1: School Mischief", videoCode: "62chy0gez3px", episodeId: "bb_ep1", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Oggy-and-the-Cockroaches-Hindi-Episodes-Download-Rare-Toons-India.jpg" },
-              { title: "Episode 2: The Great Examination", videoCode: "eutcwqwzs7mh", episodeId: "bb_ep2", thumbnail: "https://raretoonindia.in/wp-content/uploads/2021/01/Oggy-and-the-Cockroaches-Hindi-Episodes-Download-Rare-Toons-India.jpg" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "hello-world-movie",
-        title: "Hello World (Animated Movie)",
-        character: "Movies",
-        network: "Anime Movie",
-        year: "2019",
-        poster: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80",
-        backdrop: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80",
-        description: "Futuristic sci-fi romantic anime full movie in 1080p Hindi dubbed audio.",
-        seasons: [
+            "title": "S04 E06: Ready to Rumble",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "ben10_s4e6",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
           {
-            seasonNumber: 1,
-            name: "Full Movie",
-            episodes: [
-              { title: "Full Movie (1080p HD)", videoCode: "wv9b3xvykwhx", episodeId: "movie_hw", thumbnail: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80" }
-            ]
+            "title": "S04 E07: Ken 10",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "ben10_s4e7",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S04 E08: Ben 10 vs. The Negative 10 (Part 1)",
+            "vidmolyCode": "nr8zw4tqx02k",
+            "episodeId": "ben10_s4e8",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S04 E09: Ben 10 vs. The Negative 10 (Part 2)",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "ben10_s4e9",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S04 E10: Goodbye and Good Riddance",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "ben10_s4e10",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
           }
         ]
       }
-    ];
+    ]
+  },
+  {
+    "id": "courage-the-cowardly-dog",
+    "title": "Courage the Cowardly Dog",
+    "character": "Courage",
+    "network": "Cartoon Network",
+    "year": "1999–2002",
+    "rating": 8.3,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/609/1523655.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/227/568659.jpg",
+    "description": "The things he does for love! Courage is an easily frightened pink dog living in the middle of Nowhere, Kansas with kind old Muriel and grumbling Eustace Bagge. Despite his terrifying fears, Courage must constantly summon bravery to defend his home from ghosts, extraterrestrials, and paranormal perils.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "S01 E01: A Night at the Katz Motel",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s1e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          },
+          {
+            "title": "S01 E02: The Shadow of Courage",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s1e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          },
+          {
+            "title": "S01 E03: Courage Meets Bigfoot",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s1e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          },
+          {
+            "title": "S01 E04: The Demon in the Mattress",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s1e4",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          },
+          {
+            "title": "S01 E05: Night of the Weremole",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s1e5",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          }
+        ]
+      },
+      {
+        "seasonNumber": 2,
+        "name": "Season 2",
+        "episodes": [
+          {
+            "title": "S02 E01: The Magic Tree of Nowhere",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s2e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          },
+          {
+            "title": "S02 E02: Robot Randy",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s2e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          },
+          {
+            "title": "S02 E03: The Curse of Shirley",
+            "vidmolyCode": "r9est7p21jb4",
+            "episodeId": "courage_s2e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q1Cq9PtxkpOlryI8T2ydVvhiTSv.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ben-10-alien-force",
+    "title": "Ben 10: Alien Force",
+    "character": "Ben 10",
+    "network": "Cartoon Network",
+    "year": "2008–2010",
+    "rating": 7.9,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/7/18463.jpg",
+    "backdrop": "https://media.kitsu.app/anime/cover_images/6164/large.jpg",
+    "description": "Five years after the original series, a 15-year-old Ben Tennyson puts the recalibrated Omnitrix back on to search for his missing Grandpa Max and fight off the secret invasion of the Highbreed with the help of Gwen and former adversary Kevin Levin.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "S01 E01: Ben 10 Returns (Part 1)",
+            "vidmolyCode": "1woyax9ocewb",
+            "episodeId": "ben10_af_s1e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg"
+          },
+          {
+            "title": "S01 E02: Ben 10 Returns (Part 2)",
+            "vidmolyCode": "1woyax9ocewb",
+            "episodeId": "ben10_af_s1e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg"
+          },
+          {
+            "title": "S01 E03: Everybody Talks About the Weather",
+            "vidmolyCode": "1woyax9ocewb",
+            "episodeId": "ben10_af_s1e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg"
+          },
+          {
+            "title": "S01 E04: Kevin's Big Score",
+            "vidmolyCode": "1woyax9ocewb",
+            "episodeId": "ben10_af_s1e4",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg"
+          }
+        ]
+      },
+      {
+        "seasonNumber": 2,
+        "name": "Season 2",
+        "episodes": [
+          {
+            "title": "S02 E01: Darkstar Rising",
+            "vidmolyCode": "1woyax9ocewb",
+            "episodeId": "ben10_af_s2e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg"
+          },
+          {
+            "title": "S02 E02: Alone Together",
+            "vidmolyCode": "1woyax9ocewb",
+            "episodeId": "ben10_af_s2e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/78WIuyLWSAXoxhZt5cRR2gJIe6G.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ben-10-ultimate-alien",
+    "title": "Ben 10: Ultimate Alien",
+    "character": "Ben 10",
+    "network": "Cartoon Network",
+    "year": "2010–2012",
+    "rating": 7.8,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/7/18277.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/219/549783.jpg",
+    "description": "Ben Tennyson's secret identity is exposed to the world, turning him into an international celebrity. Armed with the Ultimatrix, which can evolve his alien transformations into hyper-powerful Ultimate forms, Ben battles Aggregor and cosmic threats.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "S01 E01: Fame",
+            "vidmolyCode": "sotybrqunv2l",
+            "episodeId": "ben10_ua_s1e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E02: Duped",
+            "vidmolyCode": "sotybrqunv2l",
+            "episodeId": "ben10_ua_s1e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          },
+          {
+            "title": "S01 E03: Hit 'Em Where They Live",
+            "vidmolyCode": "sotybrqunv2l",
+            "episodeId": "ben10_ua_s1e3",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/tkuZ2lITqsYR3RNXhNkdkeGC4Zw.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "doraemon-classic",
+    "title": "Doraemon (Classic & New)",
+    "character": "Doraemon",
+    "network": "Disney / Hungama",
+    "year": "2005–Present",
+    "rating": 8.1,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/321/803650.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg",
+    "description": "Sent back in time from the 22nd century to help young Nobita Nobi, the earless robotic cat Doraemon uses an endless array of fantastic gadgets pulled from his 4D pocket to overcome everyday school challenges, Gian's tantrums, and life's hurdles in full Hindi dubbed audio.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 14 (Sony Yay)",
+        "episodes": [
+          {
+            "title": "Episode 1: Nobita's Little Star Wars",
+            "videoCode": "w6vj66ncoto1",
+            "episodeId": "doraemon_ep1",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg"
+          },
+          {
+            "title": "Episode 2: Season 14 Episode 1",
+            "videoCode": "ml8x0vmld7f4",
+            "episodeId": "doraemon_ep2",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg"
+          },
+          {
+            "title": "Episode 3: Nobita's Sky Utopia",
+            "videoCode": "gq4a4b3tj0b0",
+            "episodeId": "doraemon_ep3",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg"
+          },
+          {
+            "title": "Episode 4: Castle of the Undersea Devil",
+            "videoCode": "l58hq7nx8vpd",
+            "episodeId": "doraemon_ep4",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg"
+          },
+          {
+            "title": "Episode 5: Nobita and the Birth of Japan",
+            "videoCode": "lwyaywqgu3xm",
+            "episodeId": "doraemon_ep5",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "shinchan-all",
+    "title": "Crayon Shin-chan (All Seasons)",
+    "character": "Shinchan",
+    "network": "Hungama TV",
+    "year": "2006–Present",
+    "rating": 8.2,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/116/291841.jpg",
+    "backdrop": "https://media.kitsu.app/anime/cover_images/7993/large.jpg",
+    "description": "The hilarious and cheeky misadventures of 5-year-old Shinnosuke \"Shin\" Nohara, his parents Hiroshi and Misae, baby sister Himawari, and dog Shiro in Kasukabe. Filled with high-energy humor, unforgettable catchphrases, and wild antics in full Hindi dub.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "Episode 1: Robot Dad Movie",
+            "videoCode": "re9mec8k17gu",
+            "episodeId": "shinchan_ep1",
+            "thumbnail": "https://media.kitsu.app/anime/cover_images/7993/large.jpg"
+          },
+          {
+            "title": "Episode 2: Villain and the Bride",
+            "videoCode": "kc9zovvw7knx",
+            "episodeId": "shinchan_ep2",
+            "thumbnail": "https://media.kitsu.app/anime/cover_images/7993/large.jpg"
+          },
+          {
+            "title": "Episode 3: Jungle Adventure",
+            "videoCode": "ba54z33u0v24",
+            "episodeId": "shinchan_ep3",
+            "thumbnail": "https://media.kitsu.app/anime/cover_images/7993/large.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pokemon-seasons",
+    "title": "Pokémon (Seasons & Movies)",
+    "character": "Pokemon",
+    "network": "Cartoon Network / Hungama",
+    "year": "2003–Present",
+    "rating": 7.6,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/630/1576025.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/222/557412.jpg",
+    "description": "Pocket Monsters! 10-year-old Ash Ketchum and his loyal partner Pikachu set out from Pallet Town to explore the Pokémon world, win gym badges, challenge rival trainers, and pursue the lifelong dream of becoming a Pokémon Master.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Sun & Moon Season",
+        "episodes": [
+          {
+            "title": "Episode 1: Sun & Moon Episode 1",
+            "videoCode": "neb9ryle1l62",
+            "episodeId": "pokemon_ep1",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/222/557412.jpg"
+          },
+          {
+            "title": "Episode 2: Sun & Moon Episode 2",
+            "videoCode": "0mbclusooktl",
+            "episodeId": "pokemon_ep2",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/222/557412.jpg"
+          },
+          {
+            "title": "Episode 3: Sun & Moon Episode 3",
+            "videoCode": "78ff2cssp8ud",
+            "episodeId": "pokemon_ep3",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/222/557412.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "naruto-shippuden",
+    "title": "Naruto: Shippūden",
+    "character": "Naruto",
+    "network": "Sony YAY!",
+    "year": "2007–2017",
+    "rating": 8.7,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/3/9413.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/223/557590.jpg",
+    "description": "Naruto Uzumaki returns to the Hidden Leaf Village after two and a half years of intense training under Master Jiraiya. Older, wiser, and stronger, Naruto faces the criminal Akatsuki syndicate while continuing his mission to rescue Sasuke Uchiha.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 16",
+        "episodes": [
+          {
+            "title": "Episode 1: Season 16 Episode 349",
+            "videoCode": "4cx59st08p8a",
+            "episodeId": "naruto_ep1",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/223/557590.jpg"
+          },
+          {
+            "title": "Episode 2: Season 16 Episode 350",
+            "videoCode": "xt8ehxlyzg8h",
+            "episodeId": "naruto_ep2",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/223/557590.jpg"
+          },
+          {
+            "title": "Episode 3: Season 16 Episode 351",
+            "videoCode": "vtvfrnvakosf",
+            "episodeId": "naruto_ep3",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/223/557590.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "phineas-and-ferb",
+    "title": "Phineas and Ferb (Disney Classic)",
+    "character": "Disney & CN",
+    "network": "Disney Channel",
+    "year": "2007–2015",
+    "rating": 8,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/595/1489325.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/223/558648.jpg",
+    "description": "Stepbrothers Phineas and Ferb make each day of summer vacation legendary by building rollercoasters, rocket ships, and fantastical inventions, while sister Candace tries to bust them and their pet platypus Perry secretly fights evil Dr. Doofenshmirtz as Agent P.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "S01 E01: Rollercoaster",
+            "vidmolyCode": "wtzcmis92316",
+            "episodeId": "pf_s1e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/oSLwJMOOQGAsyJNMi4Y3MO44iAJ.jpg"
+          },
+          {
+            "title": "S01 E02: Lawn Gnome Beach Party",
+            "vidmolyCode": "ed0ahm3ejgbk",
+            "episodeId": "pf_s1e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/oSLwJMOOQGAsyJNMi4Y3MO44iAJ.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "slugterra-classic",
+    "title": "Slugterra (Disney XD)",
+    "character": "Disney & CN",
+    "network": "Disney XD",
+    "year": "2012–2016",
+    "rating": 7.5,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/391/978213.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/391/978215.jpg",
+    "description": "Deep beneath Earth's surface lies Slugterra, a luminous subterranean cavern system where ammunition is alive! Eli Shane strives to become the greatest Slugslinger in history, mastering the powers of elemental slugs to defeat Dr. Blakk's corrupt dark water.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "S01 E01: The World Beneath Our Feet (Part 1)",
+            "vidmolyCode": "elgl2zi3eqzk",
+            "episodeId": "slugterra_s1e1",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q9l3y7cI6lbveFDXUw6LFey0J3v.jpg"
+          },
+          {
+            "title": "S01 E02: The World Beneath Our Feet (Part 2)",
+            "vidmolyCode": "qalr3fczb02s",
+            "episodeId": "slugterra_s1e2",
+            "thumbnail": "https://image.tmdb.org/t/p/w780/q9l3y7cI6lbveFDXUw6LFey0J3v.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "oggy-and-cockroaches",
+    "title": "Oggy and the Cockroaches",
+    "character": "Disney & CN",
+    "network": "Cartoon Network / Nickelodeon",
+    "year": "1999–Present",
+    "rating": 7.5,
+    "poster": "https://static.tvmaze.com/uploads/images/original_untouched/417/1043665.jpg",
+    "backdrop": "https://static.tvmaze.com/uploads/images/original_untouched/220/551843.jpg",
+    "description": "Oggy, an easygoing and lazy blue cat, wants nothing more than to watch television and eat snacks. His peaceful home life is perpetually disrupted by three mischievous, pesky cockroaches—Joey, Dee Dee, and Marky—in riotous slapstick comedy.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Season 1",
+        "episodes": [
+          {
+            "title": "Episode 1: School Mischief",
+            "videoCode": "62chy0gez3px",
+            "episodeId": "bb_ep1",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/220/551843.jpg"
+          },
+          {
+            "title": "Episode 2: The Great Examination",
+            "videoCode": "eutcwqwzs7mh",
+            "episodeId": "bb_ep2",
+            "thumbnail": "https://static.tvmaze.com/uploads/images/original_untouched/220/551843.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hello-world-movie",
+    "title": "Hello World (2019 Anime Movie)",
+    "character": "Movies",
+    "network": "Anime Movie",
+    "year": "2019",
+    "rating": 7.7,
+    "poster": "https://media.kitsu.app/anime/poster_images/42030/large.jpg",
+    "backdrop": "https://media.kitsu.app/anime/cover_images/42030/large.jpg",
+    "description": "In Kyoto in the year 2027, shy high schooler Naomi Katagaki meets a mysterious man claiming to be his future self from 10 years ahead. Together they embark on a reality-bending sci-fi mission to alter fate and save classmate Ruri Ichigyo from a tragic destiny.",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "name": "Full Movie",
+        "episodes": [
+          {
+            "title": "Full Movie (1080p HD)",
+            "videoCode": "wv9b3xvykwhx",
+            "episodeId": "movie_hw",
+            "thumbnail": "https://media.kitsu.app/anime/cover_images/42030/large.jpg"
+          }
+        ]
+      }
+    ]
+  }
+];
 
     let allShows = [...DEFAULT_SHOWS];
     let selectedShow = DEFAULT_SHOWS[0];
@@ -1139,6 +1587,7 @@
     // ================= 4-SECOND SPLASH SCREEN INITIALIZATION =================
     window.addEventListener('DOMContentLoaded', () => {
       renderShows(allShows);
+      updateSpotlight(allShows[0]);
       loadContinueWatching();
       updateLibraryBadge();
       updateDownloadsBadge();
@@ -1380,9 +1829,222 @@
     }
 
     function openSpotlightShowPage() {
-      if (allShows.length > 0) {
+      if (selectedShow) {
+        openShowDetailsPage(selectedShow);
+      } else if (allShows.length > 0) {
         openShowDetailsPage(allShows[0]);
       }
+    }
+
+    function playSpotlightShow() {
+      const show = selectedShow || allShows[0];
+      if (show) {
+        const allEps = getAllEpisodesOfShow(show);
+        if (allEps.length > 0) {
+          launchVideoPlayer(show, allEps, 0);
+        }
+      }
+    }
+
+    function updateSpotlight(show) {
+      if (!show) return;
+      selectedShow = show;
+      const titleElem = document.getElementById('spotlight-title');
+      const descElem = document.getElementById('spotlight-desc');
+      const bgElem = document.getElementById('spotlight-backdrop');
+
+      if (titleElem) titleElem.textContent = show.title;
+      if (descElem) descElem.textContent = show.description || `Stream ${show.title} in full 1080p Hindi dubbed audio.`;
+      if (bgElem && show.backdrop) {
+        bgElem.style.backgroundImage = `url('${show.backdrop}')`;
+      }
+    }
+
+    // ================= VERIFIED HIGH-RES METADATA & PUBLIC API SERVICE =================
+    const CHARACTER_DEFAULTS = {
+      "Ben 10": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/6/16288.jpg",
+        backdrop: "https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg",
+        desc: "10-year-old Ben Tennyson discovers the alien Omnitrix watch and defends Earth across epic adventures in full Hindi dubbed audio."
+      },
+      "Courage": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/609/1523655.jpg",
+        backdrop: "https://static.tvmaze.com/uploads/images/original_untouched/227/568659.jpg",
+        desc: "Courage the cowardly dog defends Muriel and Eustace from supernatural horrors in Nowhere, Kansas in full Hindi dubbed audio."
+      },
+      "Doraemon": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/321/803650.jpg",
+        backdrop: "https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg",
+        desc: "22nd-century robotic cat Doraemon brings fantastic futuristic gadgets to help Nobita in hilarious adventures in full Hindi dubbed audio."
+      },
+      "Shinchan": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/116/291841.jpg",
+        backdrop: "https://media.kitsu.app/anime/cover_images/7993/large.jpg",
+        desc: "5-year-old Shinnosuke Nohara brings wild comedy, cheeky jokes, and unforgettable antics in full Hindi dubbed audio."
+      },
+      "Pokemon": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/630/1576025.jpg",
+        backdrop: "https://static.tvmaze.com/uploads/images/original_untouched/222/557412.jpg",
+        desc: "Ash Ketchum and Pikachu explore diverse regions, battle gym leaders, and aim to become Pokémon Masters in full Hindi dubbed audio."
+      },
+      "Naruto": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/3/9413.jpg",
+        backdrop: "https://static.tvmaze.com/uploads/images/original_untouched/223/557590.jpg",
+        desc: "Naruto Uzumaki trains hard to become the greatest shinobi and master the Nine-Tails in full Hindi dubbed audio."
+      },
+      "Disney & CN": {
+        poster: "https://static.tvmaze.com/uploads/images/original_untouched/595/1489325.jpg",
+        backdrop: "https://static.tvmaze.com/uploads/images/original_untouched/223/558648.jpg",
+        desc: "Classic cartoon adventures from Cartoon Network and Disney Channel in full Hindi dubbed audio."
+      },
+      "Movies": {
+        poster: "https://media.kitsu.app/anime/poster_images/42030/large.jpg",
+        backdrop: "https://media.kitsu.app/anime/cover_images/42030/large.jpg",
+        desc: "Full-length animated cartoon and anime movies in 1080p Full HD with Hindi dubbed audio."
+      }
+    };
+
+    function cleanShowTitle(raw) {
+      let title = raw
+        .replace(/&#8211;|&#038;|&amp;/g, '-')
+        .replace(/<[^>]+>/g, '')
+        .replace(/rare\s*toons?\s*india/gi, '')
+        .replace(/toon\s*stream/gi, '')
+        .replace(/download/gi, '')
+        .replace(/all\s*episodes?/gi, '')
+        .replace(/episodes?/gi, '')
+        .replace(/in\s*hindi(?:\s*dubbed)?/gi, '')
+        .replace(/hindi\s*dubbed/gi, '')
+        .replace(/\[.*?\]|\(.*?\)/g, '')
+        .replace(/720p|1080p|hd|fhd|hevc/gi, '')
+        .replace(/[-–|]+/g, ' ')
+        .trim();
+
+      let seasonMatch = raw.match(/season\s*(\d+)/i) || raw.match(/s(\d+)/i);
+      let seasonStr = seasonMatch ? ` (Season ${seasonMatch[1]})` : '';
+
+      let searchKey = title;
+      if (/ben\s*10/i.test(title)) {
+        if (/alien\s*force/i.test(title)) searchKey = "Ben 10: Alien Force";
+        else if (/ultimate\s*alien/i.test(title)) searchKey = "Ben 10: Ultimate Alien";
+        else if (/omniverse/i.test(title)) searchKey = "Ben 10: Omniverse";
+        else searchKey = "Ben 10";
+      } else if (/doraemon/i.test(title)) {
+        searchKey = "Doraemon";
+      } else if (/shin\s*chan|crayon/i.test(title)) {
+        searchKey = "Crayon Shin-chan";
+      } else if (/pokemon/i.test(title)) {
+        searchKey = "Pokemon";
+      } else if (/naruto/i.test(title)) {
+        searchKey = /shippu/i.test(title) ? "Naruto Shippuden" : "Naruto";
+      } else if (/courage/i.test(title)) {
+        searchKey = "Courage the Cowardly Dog";
+      } else if (/slugterra/i.test(title)) {
+        searchKey = "Slugterra";
+      } else if (/oggy/i.test(title)) {
+        searchKey = "Oggy and the Cockroaches";
+      } else if (/phineas/i.test(title)) {
+        searchKey = "Phineas and Ferb";
+      }
+
+      return { searchKey, cleanDisplayTitle: searchKey + seasonStr };
+    }
+
+    const publicMetaCache = new Map();
+
+    async function fetchPublicShowMetadata(query) {
+      if (!query) return null;
+      const cleanKey = query.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (publicMetaCache.has(cleanKey)) return publicMetaCache.get(cleanKey);
+
+      try {
+        const stored = localStorage.getItem('cartoonx_pubmeta_' + cleanKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          publicMetaCache.set(cleanKey, parsed);
+          return parsed;
+        }
+      } catch (e) {}
+
+      try {
+        let meta = null;
+        let tvMazeUrl = 'https://api.tvmaze.com/singlesearch/shows?q=' + encodeURIComponent(query) + '&embed=images';
+        let rawJson = '';
+        if (window.AndroidApp && window.AndroidApp.fetch) {
+          rawJson = window.AndroidApp.fetch(tvMazeUrl);
+        } else {
+          const res = await fetch(tvMazeUrl);
+          if (res.ok) rawJson = await res.text();
+        }
+
+        if (rawJson) {
+          const data = JSON.parse(rawJson);
+          if (data && data.name) {
+            let bg = null;
+            if (data._embedded && data._embedded.images) {
+              const bgImg = data._embedded.images.find(i => i.type === 'background');
+              if (bgImg && bgImg.resolutions && bgImg.resolutions.original) {
+                bg = bgImg.resolutions.original.url;
+              }
+            }
+            meta = {
+              name: data.name,
+              poster: data.image ? (data.image.original || data.image.medium) : null,
+              backdrop: bg || (data.image ? data.image.original : null),
+              description: data.summary ? data.summary.replace(/<[^>]+>/g, '').trim() : '',
+              year: data.premiered ? data.premiered.substring(0, 4) : '',
+              rating: data.rating ? data.rating.average : null
+            };
+          }
+        }
+
+        // Kitsu fallback for anime or missing banners
+        if (!meta || !meta.backdrop) {
+          try {
+            const kUrl = 'https://kitsu.io/api/edge/anime?filter[text]=' + encodeURIComponent(query);
+            let kJson = '';
+            if (window.AndroidApp && window.AndroidApp.fetch) {
+              kJson = window.AndroidApp.fetch(kUrl);
+            } else {
+              const kRes = await fetch(kUrl);
+              if (kRes.ok) kJson = await kRes.text();
+            }
+            if (kJson) {
+              const kData = JSON.parse(kJson);
+              if (kData.data && kData.data.length > 0) {
+                const attr = kData.data[0].attributes;
+                if (!meta) {
+                  meta = {
+                    name: attr.canonicalTitle || query,
+                    poster: attr.posterImage ? (attr.posterImage.large || attr.posterImage.original) : null,
+                    backdrop: attr.coverImage ? (attr.coverImage.large || attr.coverImage.original) : null,
+                    description: attr.synopsis ? attr.synopsis.trim() : '',
+                    year: attr.startDate ? attr.startDate.substring(0, 4) : ''
+                  };
+                } else {
+                  if (!meta.backdrop && attr.coverImage) {
+                    meta.backdrop = attr.coverImage.large || attr.coverImage.original;
+                  }
+                  if (!meta.poster && attr.posterImage) {
+                    meta.poster = attr.posterImage.large;
+                  }
+                }
+              }
+            }
+          } catch (e2) {}
+        }
+
+        if (meta) {
+          publicMetaCache.set(cleanKey, meta);
+          try {
+            localStorage.setItem('cartoonx_pubmeta_' + cleanKey, JSON.stringify(meta));
+          } catch (e) {}
+          return meta;
+        }
+      } catch (err) {
+        console.warn("Public metadata lookup error for:", query, err);
+      }
+      return null;
     }
 
     // ================= DUAL-SCRAPER ENGINE (TOONSTREAM & RARETOON) =================
@@ -1416,15 +2078,16 @@
             else if (/ben\s*10/i.test(rawTitle)) char = "Ben 10";
             else if (/movie/i.test(rawTitle)) char = "Movies";
 
-            const posterImg = extractPosterFromContent(content, char);
+            const cleaned = cleanShowTitle(rawTitle);
+            const def = CHARACTER_DEFAULTS[char] || CHARACTER_DEFAULTS["Ben 10"];
 
-            scraped.push({
+            const newShow = {
               id: "rti-" + p.id,
-              title: rawTitle,
+              title: cleaned.cleanDisplayTitle,
               character: char,
-              poster: posterImg,
-              backdrop: posterImg,
-              description: `Watch ${rawTitle} in full Hindi dubbed audio.`,
+              poster: def.poster,
+              backdrop: def.backdrop,
+              description: def.desc,
               seasons: [
                 {
                   seasonNumber: 1,
@@ -1432,6 +2095,20 @@
                   episodes: episodes
                 }
               ]
+            };
+
+            scraped.push(newShow);
+
+            // Dynamically enrich in background using public API
+            fetchPublicShowMetadata(cleaned.searchKey).then(meta => {
+              if (meta) {
+                if (meta.poster) newShow.poster = meta.poster;
+                if (meta.backdrop) newShow.backdrop = meta.backdrop;
+                if (meta.description) newShow.description = meta.description;
+                if (currentActiveTab === 'home') {
+                  renderShows(allShows);
+                }
+              }
             });
           }
 
@@ -1503,13 +2180,12 @@
     }
 
     function extractPosterFromContent(content, char) {
+      const def = CHARACTER_DEFAULTS[char] || CHARACTER_DEFAULTS["Ben 10"];
       const imgMatch = content.match(/<img[^>]+(?:src|data-src)="([^">]+)"/i);
-      if (imgMatch && imgMatch[1]) return imgMatch[1];
-      if (char === 'Doraemon') return DEFAULT_SHOWS[4].poster;
-      if (char === 'Shinchan') return DEFAULT_SHOWS[5].poster;
-      if (char === 'Pokemon') return DEFAULT_SHOWS[6].poster;
-      if (char === 'Naruto') return DEFAULT_SHOWS[7].poster;
-      return DEFAULT_SHOWS[0].poster;
+      if (imgMatch && imgMatch[1] && !imgMatch[1].includes('raretoonindia') && !imgMatch[1].includes('toonstream')) {
+        return imgMatch[1];
+      }
+      return def.poster;
     }
 
     // ================= UNIFIED STREAM RESOLVER (VIDMOLY + BYSEKOZE + OFFLINE) =================
@@ -1615,6 +2291,8 @@
         card.tabIndex = 0;
         card.className = 'tv-focusable group relative rounded-2xl overflow-hidden glass-tv border border-slate-800 p-2 cursor-pointer';
         card.onclick = () => openShowDetailsPage(show);
+        card.onfocus = () => updateSpotlight(show);
+        card.onmouseenter = () => updateSpotlight(show);
         card.onkeydown = (e) => {
           if (e.key === 'Enter' || e.keyCode === 13) openShowDetailsPage(show);
         };

@@ -12,6 +12,7 @@ export interface ShowSummary {
   title: string;
   slug: string;
   poster: string;
+  backdrop: string;
   categories: string[];
   character: string;
   isMovie: boolean;
@@ -30,6 +31,49 @@ export interface ShowDetail extends ShowSummary {
 }
 
 const WP_API_BASE = 'https://raretoonindia.in/wp-json/wp/v2';
+
+const CHARACTER_PUBLIC_META: Record<string, { poster: string; backdrop: string; desc: string }> = {
+  'Ben 10': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/6/16288.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg',
+    desc: '10-year-old Ben Tennyson discovers the alien Omnitrix watch and defends Earth across epic adventures in full Hindi dubbed audio.'
+  },
+  'Courage': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/609/1523655.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/227/568659.jpg',
+    desc: 'Courage the cowardly dog defends Muriel and Eustace from supernatural horrors in Nowhere, Kansas.'
+  },
+  'Doraemon': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/321/803650.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/321/803651.jpg',
+    desc: '22nd-century robotic cat Doraemon brings fantastic futuristic gadgets to help Nobita in hilarious adventures.'
+  },
+  'Shinchan': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/116/291841.jpg',
+    backdrop: 'https://media.kitsu.app/anime/cover_images/7993/large.jpg',
+    desc: '5-year-old Shinnosuke Nohara brings wild comedy, cheeky jokes, and unforgettable antics in full Hindi dubbed audio.'
+  },
+  'Pokemon': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/630/1576025.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/222/557412.jpg',
+    desc: 'Ash Ketchum and Pikachu explore diverse regions, battle gym leaders, and aim to become Pokémon Masters.'
+  },
+  'Naruto': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/3/9413.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/223/557590.jpg',
+    desc: 'Naruto Uzumaki trains hard to become the greatest shinobi and master the Nine-Tails in full Hindi dubbed audio.'
+  },
+  'Disney': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/595/1489325.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/223/558648.jpg',
+    desc: 'Classic animated cartoon adventures from Disney Channel in full Hindi dubbed audio.'
+  },
+  'Dragon Ball': {
+    poster: 'https://static.tvmaze.com/uploads/images/original_untouched/11/29190.jpg',
+    backdrop: 'https://static.tvmaze.com/uploads/images/original_untouched/225/563551.jpg',
+    desc: 'Goku and the Z-Fighters defend Earth against powerful galactic warriors and androids.'
+  }
+};
 
 // In-memory cache for fast response times
 const cache = new Map<string, { data: any; expiry: number }>();
@@ -60,29 +104,24 @@ function detectCharacter(title: string): string {
   if (t.includes('motu') || t.includes('patlu')) return 'Motu Patlu';
   if (t.includes('disney')) return 'Disney';
   if (t.includes('ben 10') || t.includes('ben10')) return 'Ben 10';
+  if (t.includes('courage')) return 'Courage';
   if (t.includes('dragon ball') || t.includes('goku')) return 'Dragon Ball';
   return 'Toon Heroes';
 }
 
 function extractPoster(post: any): string {
-  // 1. Featured image if present
-  if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-    return post._embedded['wp:featuredmedia'][0].source_url;
-  }
-
-  // 2. First image in content
   const content = post.content?.rendered || '';
   const imgMatch = content.match(/<img[^>]+(?:src|data-src)="([^">]+)"/i);
-  if (imgMatch && imgMatch[1]) {
+  if (imgMatch && imgMatch[1] && !imgMatch[1].includes('raretoonindia') && !imgMatch[1].includes('toonstream')) {
     return imgMatch[1];
   }
-
-  // 3. Fallback kid-friendly themed poster
   const char = detectCharacter(post.title?.rendered || '');
-  if (char === 'Doraemon') return 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80';
-  if (char === 'Shinchan') return 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80';
-  if (char === 'Pokemon') return 'https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?w=600&auto=format&fit=crop&q=80';
-  return 'https://images.unsplash.com/photo-1563089145-599997674d42?w=600&auto=format&fit=crop&q=80';
+  return CHARACTER_PUBLIC_META[char]?.poster || 'https://static.tvmaze.com/uploads/images/original_untouched/6/16288.jpg';
+}
+
+function extractBackdrop(post: any): string {
+  const char = detectCharacter(post.title?.rendered || '');
+  return CHARACTER_PUBLIC_META[char]?.backdrop || 'https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg';
 }
 
 function cleanHtmlText(html: string): string {
@@ -207,6 +246,7 @@ export async function getCatalog(params?: {
       title: cleanTitle,
       slug: post.slug,
       poster: extractPoster(post),
+      backdrop: extractBackdrop(post),
       categories: [character, isMovie ? 'Movies' : 'TV Series', 'Hindi Dubbed'],
       character,
       isMovie,
@@ -258,6 +298,7 @@ export async function getShowBySlug(slug: string): Promise<ShowDetail | null> {
     title: cleanTitle,
     slug: post.slug,
     poster: extractPoster(post),
+    backdrop: extractBackdrop(post),
     categories: [character, isMovie ? 'Movies' : 'TV Series', 'Hindi Dubbed'],
     character,
     isMovie,
