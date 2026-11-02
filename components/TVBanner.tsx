@@ -24,10 +24,10 @@ export const TVBanner: React.FC = () => {
           <div className="space-y-3 max-w-xl">
             <div className="flex items-center gap-2">
               <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-[11px] px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
-                <Sparkles className="w-3.5 h-3.5" /> New: Big Screen Experience
+                <Sparkles className="w-3.5 h-3.5" /> Peak Gen-Z & Anime Edition
               </span>
               <span className="bg-slate-800 text-slate-300 font-bold text-[11px] px-2.5 py-1 rounded-full border border-slate-700">
-                1080p 60FPS TV Apps
+                Offline Downloads • Library • 1080p TV
               </span>
             </div>
 
@@ -36,7 +36,7 @@ export const TVBanner: React.FC = () => {
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-              Experience Doraemon, Shinchan, Pokemon, and Naruto with TV remote navigation, in-app updates, and zero ads. Download directly now!
+              Stream Ben 10, Courage the Cowardly Dog, Doraemon, Shinchan, and Pokemon with offline downloads, personal library, TV remote D-Pad controls, and zero ads!
             </p>
           </div>
 

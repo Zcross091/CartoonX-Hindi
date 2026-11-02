@@ -23,6 +23,8 @@ out/
 .gradle/
 android/app/build/
 android/.gradle/
+local.properties
+android/local.properties
 *.xcarchive
 AppleTV/.build/
 

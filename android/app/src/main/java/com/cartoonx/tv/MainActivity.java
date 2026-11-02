@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,10 +26,22 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
@@ -38,6 +52,8 @@ public class MainActivity extends Activity {
     private WebView webView;
     private UpdateManager updateManager;
     private WebViewAssetLoader assetLoader;
+    private final ExecutorService downloadExecutor = Executors.newFixedThreadPool(2);
+    private final ConcurrentHashMap<String, Boolean> activeDownloads = new ConcurrentHashMap<>();
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -63,9 +79,12 @@ public class MainActivity extends Activity {
 
         updateManager = new UpdateManager(this);
 
-        // Configure WebViewAssetLoader to securely serve local assets under HTTPS
+        File moviesDir = getStorageDir();
+
+        // Configure WebViewAssetLoader to securely serve local assets and downloads under HTTPS
         assetLoader = new WebViewAssetLoader.Builder()
             .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+            .addPathHandler("/downloads/", new DownloadsPathHandler(moviesDir))
             .build();
 
         WebSettings settings = webView.getSettings();
@@ -104,6 +123,103 @@ public class MainActivity extends Activity {
 
         // Load self-contained native CartoonX TV application
         webView.loadUrl("https://appassets.androidplatform.net/assets/web/index.html");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        downloadExecutor.shutdownNow();
+    }
+
+    /**
+     * Storage directory for offline downloads (movies/episodes)
+     */
+    public File getStorageDir() {
+        File dir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        if (dir == null) {
+            dir = new File(getFilesDir(), "movies");
+        }
+        File cartoonxDir = new File(dir, "CartoonX");
+        if (!cartoonxDir.exists()) {
+            cartoonxDir.mkdirs();
+        }
+        return cartoonxDir;
+    }
+
+    /**
+     * Custom PathHandler for WebViewAssetLoader to securely stream offline downloaded media.
+     * Prevents directory traversal attacks and maps .m3u8 and .ts files with exact MIME types.
+     */
+    public static class DownloadsPathHandler implements WebViewAssetLoader.PathHandler {
+        private final File baseDir;
+
+        public DownloadsPathHandler(File baseDir) {
+            this.baseDir = baseDir;
+        }
+
+        @Override
+        public WebResourceResponse handle(String path) {
+            try {
+                File file = new File(baseDir, path);
+                String canonicalBase = baseDir.getCanonicalPath();
+                String canonicalTarget = file.getCanonicalPath();
+                if (!canonicalTarget.startsWith(canonicalBase)) {
+                    Log.w(TAG, "Blocked directory traversal attempt: " + path);
+                    return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", null, null);
+                }
+                if (!file.exists() || file.isDirectory()) {
+                    return new WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", null, null);
+                }
+
+                String mimeType = "application/octet-stream";
+                if (path.endsWith(".m3u8")) {
+                    mimeType = "application/vnd.apple.mpegurl";
+                } else if (path.endsWith(".ts")) {
+                    mimeType = "video/mp2ts";
+                } else if (path.endsWith(".mp4")) {
+                    mimeType = "video/mp4";
+                } else if (path.endsWith(".json")) {
+                    mimeType = "application/json";
+                }
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Access-Control-Allow-Origin", "*");
+                headers.put("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+                headers.put("Access-Control-Allow-Headers", "*");
+
+                return new WebResourceResponse(mimeType, "UTF-8", 200, "OK", headers, new FileInputStream(file));
+            } catch (Exception e) {
+                Log.e(TAG, "Error handling download resource: " + path, e);
+                return new WebResourceResponse("text/plain", "UTF-8", 500, "Internal Error", null, null);
+            }
+        }
+    }
+
+    private void deleteRecursive(File fileOrDir) {
+        if (fileOrDir.isDirectory()) {
+            File[] children = fileOrDir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    deleteRecursive(child);
+                }
+            }
+        }
+        fileOrDir.delete();
+    }
+
+    private long getFolderSize(File dir) {
+        long size = 0;
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    size += f.isDirectory() ? getFolderSize(f) : f.length();
+                }
+            }
+        } else {
+            size = dir.length();
+        }
+        return size;
     }
 
     /**
@@ -264,6 +380,243 @@ public class MainActivity extends Activity {
             }
         }
 
+        /**
+         * Native HLS / MP4 Episode Downloader: saves streams for 100% offline TV playback
+         */
+        @JavascriptInterface
+        public String downloadEpisode(String episodeId, String showTitle, String episodeTitle, String videoUrl, String posterUrl) {
+            try {
+                final String safeId = episodeId.replaceAll("[^a-zA-Z0-9_-]", "_");
+
+                if (activeDownloads.containsKey(safeId)) {
+                    return "{\"status\":\"already_downloading\"}";
+                }
+
+                // Check TV storage: require at least 300MB free disk space
+                File storageDir = getStorageDir();
+                StatFs stat = new StatFs(storageDir.getPath());
+                long freeBytes = stat.getAvailableBytes();
+                if (freeBytes < 300L * 1024L * 1024L) {
+                    runOnUiThread(() -> webView.evaluateJavascript(
+                        "if (window.onDownloadError) { window.onDownloadError('" + safeId + "', 'Low TV Storage: At least 300MB free space required.'); }",
+                        null
+                    ));
+                    return "{\"error\":\"low_storage\"}";
+                }
+
+                activeDownloads.put(safeId, Boolean.TRUE);
+
+                downloadExecutor.submit(() -> {
+                    File epDir = new File(storageDir, safeId);
+                    if (!epDir.exists()) {
+                        epDir.mkdirs();
+                    }
+
+                    try {
+                        long totalDownloadedBytes = 0;
+
+                        if (videoUrl.contains(".m3u8")) {
+                            // 1. Fetch Master Playlist or direct Chunklist
+                            String playlistContent = fetchHttp(videoUrl);
+                            String chunklistUrl = videoUrl;
+
+                            if (playlistContent.contains("#EXT-X-STREAM-INF")) {
+                                String[] lines = playlistContent.split("\n");
+                                for (int i = 0; i < lines.length; i++) {
+                                    String line = lines[i].trim();
+                                    if (line.startsWith("#EXT-X-STREAM-INF") && (i + 1) < lines.length) {
+                                        String nextLine = lines[i + 1].trim();
+                                        if (!nextLine.startsWith("#") && !nextLine.isEmpty()) {
+                                            chunklistUrl = new URL(new URL(videoUrl), nextLine).toString();
+                                            break;
+                                        }
+                                    }
+                                }
+                                playlistContent = fetchHttp(chunklistUrl);
+                            }
+
+                            // 2. Parse all video TS segments
+                            String[] chunkLines = playlistContent.split("\n");
+                            List<String> segmentUrls = new ArrayList<>();
+                            StringBuilder localM3u8 = new StringBuilder();
+
+                            int segIndex = 0;
+                            for (String line : chunkLines) {
+                                String trimmed = line.trim();
+                                if (!trimmed.startsWith("#") && !trimmed.isEmpty()) {
+                                    String fullSegUrl = new URL(new URL(chunklistUrl), trimmed).toString();
+                                    segmentUrls.add(fullSegUrl);
+                                    localM3u8.append("seg_").append(segIndex).append(".ts\n");
+                                    segIndex++;
+                                } else {
+                                    localM3u8.append(trimmed).append("\n");
+                                }
+                            }
+
+                            if (segmentUrls.isEmpty()) {
+                                throw new Exception("No playable video segments found in stream playlist.");
+                            }
+
+                            // Write local.m3u8 playlist with relative segment paths
+                            File localM3u8File = new File(epDir, "local.m3u8");
+                            try (FileWriter writer = new FileWriter(localM3u8File)) {
+                                writer.write(localM3u8.toString());
+                            }
+
+                            // 3. Download segments sequentially
+                            int totalSegments = segmentUrls.size();
+                            for (int i = 0; i < totalSegments; i++) {
+                                if (!activeDownloads.containsKey(safeId)) {
+                                    // User cancelled download
+                                    deleteRecursive(epDir);
+                                    return;
+                                }
+
+                                String segUrl = segmentUrls.get(i);
+                                File segFile = new File(epDir, "seg_" + i + ".ts");
+                                long segBytes = downloadFile(segUrl, segFile);
+                                totalDownloadedBytes += segBytes;
+
+                                final int percent = (int) Math.round(((double) (i + 1) / totalSegments) * 100);
+                                if (i % 3 == 0 || i == totalSegments - 1) {
+                                    runOnUiThread(() -> webView.evaluateJavascript(
+                                        "if (window.onDownloadProgress) { window.onDownloadProgress('" + safeId + "', " + percent + "); }",
+                                        null
+                                    ));
+                                }
+                            }
+                        } else {
+                            // Direct MP4 file download
+                            File mp4File = new File(epDir, "video.mp4");
+                            totalDownloadedBytes = downloadFileWithProgress(videoUrl, mp4File, safeId);
+                        }
+
+                        // 4. Save metadata JSON
+                        JSONObject meta = new JSONObject();
+                        meta.put("id", safeId);
+                        meta.put("showTitle", showTitle);
+                        meta.put("episodeTitle", episodeTitle);
+                        meta.put("posterUrl", posterUrl);
+                        meta.put("localUrl", "https://appassets.androidplatform.net/downloads/" + safeId + "/local.m3u8");
+                        meta.put("sizeBytes", totalDownloadedBytes);
+                        meta.put("sizeMb", Math.round((totalDownloadedBytes / (1024.0 * 1024.0)) * 10.0) / 10.0);
+                        meta.put("downloadedAt", System.currentTimeMillis());
+
+                        File metaFile = new File(epDir, "meta.json");
+                        try (FileWriter writer = new FileWriter(metaFile)) {
+                            writer.write(meta.toString());
+                        }
+
+                        activeDownloads.remove(safeId);
+
+                        runOnUiThread(() -> webView.evaluateJavascript(
+                            "if (window.onDownloadComplete) { window.onDownloadComplete('" + safeId + "'); }",
+                            null
+                        ));
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Download failed for episode: " + safeId, e);
+                        activeDownloads.remove(safeId);
+                        deleteRecursive(epDir);
+
+                        runOnUiThread(() -> webView.evaluateJavascript(
+                            "if (window.onDownloadError) { window.onDownloadError('" + safeId + "', '" + escapeJs(e.getMessage()) + "'); }",
+                            null
+                        ));
+                    }
+                });
+
+                return "{\"status\":\"started\"}";
+            } catch (Exception e) {
+                Log.e(TAG, "Error initiating download", e);
+                return "{\"error\":\"" + e.getMessage() + "\"}";
+            }
+        }
+
+        @JavascriptInterface
+        public boolean cancelDownload(String episodeId) {
+            String safeId = episodeId.replaceAll("[^a-zA-Z0-9_-]", "_");
+            if (activeDownloads.containsKey(safeId)) {
+                activeDownloads.remove(safeId);
+                File epDir = new File(getStorageDir(), safeId);
+                deleteRecursive(epDir);
+                return true;
+            }
+            return false;
+        }
+
+        @JavascriptInterface
+        public String getDownloadedEpisodes() {
+            try {
+                File storageDir = getStorageDir();
+                File[] episodeDirs = storageDir.listFiles();
+                JSONArray result = new JSONArray();
+
+                if (episodeDirs != null) {
+                    for (File dir : episodeDirs) {
+                        if (dir.isDirectory()) {
+                            File metaFile = new File(dir, "meta.json");
+                            File localM3u8 = new File(dir, "local.m3u8");
+                            File localMp4 = new File(dir, "video.mp4");
+
+                            if (metaFile.exists() && (localM3u8.exists() || localMp4.exists())) {
+                                try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(metaFile), StandardCharsets.UTF_8))) {
+                                    StringBuilder sb = new StringBuilder();
+                                    String line;
+                                    while ((line = br.readLine()) != null) {
+                                        sb.append(line);
+                                    }
+                                    result.put(new JSONObject(sb.toString()));
+                                } catch (Exception ignored) {}
+                            }
+                        }
+                    }
+                }
+                return result.toString();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed reading downloaded episodes", e);
+                return "[]";
+            }
+        }
+
+        @JavascriptInterface
+        public boolean deleteDownloadedEpisode(String episodeId) {
+            try {
+                String safeId = episodeId.replaceAll("[^a-zA-Z0-9_-]", "_");
+                File epDir = new File(getStorageDir(), safeId);
+                if (epDir.exists()) {
+                    deleteRecursive(epDir);
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to delete episode: " + episodeId, e);
+                return false;
+            }
+        }
+
+        @JavascriptInterface
+        public String getStorageInfo() {
+            try {
+                File storageDir = getStorageDir();
+                StatFs stat = new StatFs(storageDir.getPath());
+                long freeBytes = stat.getAvailableBytes();
+                long totalBytes = stat.getTotalBytes();
+                long appBytes = getFolderSize(storageDir);
+
+                JSONObject obj = new JSONObject();
+                obj.put("freeBytes", freeBytes);
+                obj.put("totalBytes", totalBytes);
+                obj.put("appBytes", appBytes);
+                obj.put("freeMb", Math.round((freeBytes / (1024.0 * 1024.0))));
+                obj.put("totalMb", Math.round((totalBytes / (1024.0 * 1024.0))));
+                obj.put("appMb", Math.round((appBytes / (1024.0 * 1024.0))));
+                return obj.toString();
+            } catch (Exception e) {
+                return "{\"freeBytes\":0,\"totalBytes\":0,\"appBytes\":0}";
+            }
+        }
+
         @JavascriptInterface
         public void downloadAndInstallUpdate(String apkUrl, String versionName) {
             runOnUiThread(() -> {
@@ -293,7 +646,7 @@ public class MainActivity extends Activity {
                     public void onError(String message) {
                         runOnUiThread(() -> {
                             webView.evaluateJavascript(
-                                "if (window.onUpdateError) { window.onUpdateError('" + message.replace("'", "\\'") + "'); }",
+                                "if (window.onUpdateError) { window.onUpdateError('" + escapeJs(message) + "'); }",
                                 null
                             );
                         });
@@ -301,6 +654,100 @@ public class MainActivity extends Activity {
                 });
             });
         }
+    }
+
+    private String fetchHttp(String targetUrl) throws Exception {
+        URL url = new URL(targetUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10; TV) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36");
+        conn.setRequestProperty("Accept", "*/*");
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(15000);
+        conn.connect();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            return sb.toString();
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    private long downloadFile(String fileUrl, File destination) throws Exception {
+        URL url = new URL(fileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10; TV) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36");
+        conn.setRequestProperty("Accept", "*/*");
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(20000);
+        conn.connect();
+
+        try (InputStream in = conn.getInputStream(); OutputStream out = new FileOutputStream(destination)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            long total = 0;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+                total += read;
+            }
+            out.flush();
+            return total;
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    private long downloadFileWithProgress(String fileUrl, File destination, String safeId) throws Exception {
+        URL url = new URL(fileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10; TV) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36");
+        conn.setRequestProperty("Accept", "*/*");
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(20000);
+        conn.connect();
+
+        long contentLength = conn.getContentLengthLong();
+
+        try (InputStream in = conn.getInputStream(); OutputStream out = new FileOutputStream(destination)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            long total = 0;
+            long lastReport = 0;
+
+            while ((read = in.read(buffer)) != -1) {
+                if (!activeDownloads.containsKey(safeId)) {
+                    throw new Exception("Download cancelled by user");
+                }
+                out.write(buffer, 0, read);
+                total += read;
+
+                if (contentLength > 0 && (total - lastReport > 256 * 1024 || total == contentLength)) {
+                    lastReport = total;
+                    final int percent = (int) Math.round(((double) total / contentLength) * 100);
+                    runOnUiThread(() -> webView.evaluateJavascript(
+                        "if (window.onDownloadProgress) { window.onDownloadProgress('" + safeId + "', " + percent + "); }",
+                        null
+                    ));
+                }
+            }
+            out.flush();
+            return total;
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    private static String escapeJs(String text) {
+        if (text == null) return "";
+        return text.replace("\\", "\\\\")
+                   .replace("'", "\\'")
+                   .replace("\"", "\\\"")
+                   .replace("\n", " ")
+                   .replace("\r", "");
     }
 
     @Override
