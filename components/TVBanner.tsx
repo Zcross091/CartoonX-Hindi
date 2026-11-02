@@ -6,31 +6,12 @@ import {
   Download, 
   Sparkles, 
   Apple, 
-  ShieldCheck, 
-  ExternalLink,
-  ChevronRight,
   Info
 } from 'lucide-react';
 import { TVDownloadModal } from './TVDownloadModal';
 
 export const TVBanner: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
-  const [downloadingPlatform, setDownloadingPlatform] = useState<string | null>(null);
-
-  const triggerDownload = (platform: 'android' | 'apple', url: string, filename: string) => {
-    setDownloadingPlatform(platform);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setTimeout(() => {
-      setDownloadingPlatform(null);
-    }, 3500);
-  };
 
   return (
     <>
@@ -65,7 +46,7 @@ export const TVBanner: React.FC = () => {
             <a
               href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk"
               download="CartoonX-AndroidTV-Signed.apk"
-              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 shadow-lg shadow-emerald-500/25 transition-all duration-200 cursor-pointer text-decoration-none"
+              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 shadow-lg shadow-emerald-500/25 transition-all duration-200 cursor-pointer"
             >
               <Tv className="w-4 h-4 text-slate-950" />
               <span>Direct Download Android TV (APK)</span>
@@ -76,7 +57,7 @@ export const TVBanner: React.FC = () => {
             <a
               href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AppleTV-tvOS.zip"
               download="CartoonX-AppleTV-tvOS.zip"
-              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 cursor-pointer text-decoration-none"
+              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 cursor-pointer"
             >
               <Apple className="w-4 h-4 text-white" />
               <span>Direct Download Apple TV (ZIP)</span>
@@ -84,14 +65,6 @@ export const TVBanner: React.FC = () => {
             </a>
 
             {/* Guide Button */}
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-2xl font-bold text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all cursor-pointer"
-            >
-              <Info className="w-3.5 h-3.5" />
-              <span>Install Guide</span>
-            </button>
-          </div>
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-2xl font-bold text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all cursor-pointer"
@@ -108,4 +81,3 @@ export const TVBanner: React.FC = () => {
     </>
   );
 };
-
