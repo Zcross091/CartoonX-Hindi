@@ -31,7 +31,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'gradle'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+          build-root-directory: android
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -60,12 +65,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'cartoonx' }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'cartoonx123' }}
         run: |
-          if [ -f gradlew ]; then
-            chmod +x gradlew
-          else
-            gradle wrapper --gradle-version 8.5
-            chmod +x gradlew
-          fi
+          chmod +x gradlew
           ./gradlew assembleRelease assembleDebug --stacktrace
 
       - name: Locate and Package Signed APK
@@ -149,7 +149,6 @@ jobs:
             find AppleTV -type f -perm +111 -name "CartoonXTV" 2>/dev/null | head -n 1 | xargs -I {} cp {} build_output/apple_tv/CartoonXTV_binary 2>/dev/null || true
           fi
 
-          # Also package Info.plist into app bundle
           cp AppleTV/CartoonXTV/Info.plist build_output/apple_tv/Info.plist 2>/dev/null || true
 
           cd build_output
