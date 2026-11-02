@@ -138,16 +138,14 @@ export const TVDownloadModal: React.FC<TVDownloadModalProps> = ({ isOpen, onClos
                 </div>
 
                 {/* Direct Download Button */}
-                <button
-                  onClick={() => handleDirectDownload('android', '/api/download/android', 'CartoonX-AndroidTV-v1.0.0.apk')}
-                  disabled={downloadingPlatform === 'android'}
-                  className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-black text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 shadow-xl shadow-emerald-500/25 transition-all duration-200 whitespace-nowrap cursor-pointer"
+                <a
+                  href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk"
+                  download="CartoonX-AndroidTV-Signed.apk"
+                  className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-black text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 shadow-xl shadow-emerald-500/25 transition-all duration-200 whitespace-nowrap cursor-pointer text-decoration-none"
                 >
-                  <Download className={`w-5 h-5 ${downloadingPlatform === 'android' ? 'animate-bounce' : ''}`} />
-                  <span>
-                    {downloadingPlatform === 'android' ? 'Starting Direct Download...' : 'Direct Download (APK)'}
-                  </span>
-                </button>
+                  <Download className="w-5 h-5" />
+                  <span>Direct Download APK (~5.4 MB)</span>
+                </a>
               </div>
             </div>
 
@@ -195,16 +193,14 @@ export const TVDownloadModal: React.FC<TVDownloadModalProps> = ({ isOpen, onClos
                 </div>
 
                 {/* Direct Download Button */}
-                <button
-                  onClick={() => handleDirectDownload('apple', '/api/download/apple', 'CartoonX-AppleTV-tvOS-v1.0.0.zip')}
-                  disabled={downloadingPlatform === 'apple'}
-                  className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-black text-sm bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white shadow-xl shadow-blue-500/25 transition-all duration-200 whitespace-nowrap cursor-pointer"
+                <a
+                  href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AppleTV-tvOS.zip"
+                  download="CartoonX-AppleTV-tvOS.zip"
+                  className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-black text-sm bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white shadow-xl shadow-blue-500/25 transition-all duration-200 whitespace-nowrap cursor-pointer text-decoration-none"
                 >
-                  <Download className={`w-5 h-5 ${downloadingPlatform === 'apple' ? 'animate-bounce' : ''}`} />
-                  <span>
-                    {downloadingPlatform === 'apple' ? 'Starting Direct Download...' : 'Direct Download (ZIP)'}
-                  </span>
-                </button>
+                  <Download className="w-5 h-5" />
+                  <span>Direct Download ZIP (~3.8 MB)</span>
+                </a>
               </div>
             </div>
 

@@ -32,3 +32,4 @@ test('Direct download platform mapping returns valid APK & ZIP metadata', () => 
   const invalid = getDownloadConfig('windows');
   assert.strictEqual(invalid, null);
 });
+

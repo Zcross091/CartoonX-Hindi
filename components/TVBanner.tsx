@@ -62,32 +62,36 @@ export const TVBanner: React.FC = () => {
           {/* Right Direct Download Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
             {/* Direct Android TV Button */}
-            <button
-              onClick={() => triggerDownload('android', '/api/download/android', 'CartoonX-AndroidTV-v1.0.0.apk')}
-              disabled={downloadingPlatform === 'android'}
-              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 shadow-lg shadow-emerald-500/25 transition-all duration-200 cursor-pointer"
+            <a
+              href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk"
+              download="CartoonX-AndroidTV-Signed.apk"
+              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 shadow-lg shadow-emerald-500/25 transition-all duration-200 cursor-pointer text-decoration-none"
             >
               <Tv className="w-4 h-4 text-slate-950" />
-              <span>
-                {downloadingPlatform === 'android' ? 'Downloading APK...' : 'Android TV (APK)'}
-              </span>
-              <Download className={`w-3.5 h-3.5 ml-0.5 ${downloadingPlatform === 'android' ? 'animate-bounce' : ''}`} />
-            </button>
+              <span>Direct Download Android TV (APK)</span>
+              <Download className="w-3.5 h-3.5 ml-0.5" />
+            </a>
 
             {/* Direct Apple TV Button */}
-            <button
-              onClick={() => triggerDownload('apple', '/api/download/apple', 'CartoonX-AppleTV-tvOS-v1.0.0.zip')}
-              disabled={downloadingPlatform === 'apple'}
-              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 cursor-pointer"
+            <a
+              href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AppleTV-tvOS.zip"
+              download="CartoonX-AppleTV-tvOS.zip"
+              className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 cursor-pointer text-decoration-none"
             >
               <Apple className="w-4 h-4 text-white" />
-              <span>
-                {downloadingPlatform === 'apple' ? 'Downloading ZIP...' : 'Apple TV (tvOS)'}
-              </span>
-              <Download className={`w-3.5 h-3.5 ml-0.5 ${downloadingPlatform === 'apple' ? 'animate-bounce' : ''}`} />
-            </button>
+              <span>Direct Download Apple TV (ZIP)</span>
+              <Download className="w-3.5 h-3.5 ml-0.5" />
+            </a>
 
             {/* Guide Button */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-2xl font-bold text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all cursor-pointer"
+            >
+              <Info className="w-3.5 h-3.5" />
+              <span>Install Guide</span>
+            </button>
+          </div>
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-2xl font-bold text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all cursor-pointer"

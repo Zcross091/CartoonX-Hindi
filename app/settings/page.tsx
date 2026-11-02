@@ -277,8 +277,8 @@ export default function SettingsPage() {
               </p>
             </div>
             <a
-              href="/api/download/android"
-              download="CartoonX-AndroidTV-v1.0.0.apk"
+              href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk"
+              download="CartoonX-AndroidTV-Signed.apk"
               className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
@@ -302,8 +302,8 @@ export default function SettingsPage() {
               </p>
             </div>
             <a
-              href="/api/download/apple"
-              download="CartoonX-AppleTV-tvOS-v1.0.0.zip"
+              href="https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AppleTV-tvOS.zip"
+              download="CartoonX-AppleTV-tvOS.zip"
               className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 active:scale-95 text-white font-black text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
