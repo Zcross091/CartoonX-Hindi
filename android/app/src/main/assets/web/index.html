@@ -435,8 +435,10 @@
       renderShows(allShows);
       loadContinueWatching();
 
-      // Launch background live scraper
-      runBackgroundScraper();
+      // Launch background live scraper AFTER splash screen finishes to ensure 60fps smooth animation
+      setTimeout(() => {
+        runBackgroundScraper();
+      }, 4200);
 
       // Exactly 4 seconds splash screen transition
       setTimeout(() => {
