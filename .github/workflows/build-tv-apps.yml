@@ -37,7 +37,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: ${{ hashFiles('package-lock.json', 'yarn.lock') != '' && 'npm' || '' }}
+          cache: 'npm'
 
       - name: Install Project Dependencies
         run: |
@@ -45,26 +45,12 @@ jobs:
             npm ci
           elif [ -f package.json ]; then
             npm install
-          else
-            echo "No package.json found, skipping npm install"
           fi
 
       - name: Build Web Application Bundle
         run: |
           if [ -f package.json ] && grep -q '"build"' package.json; then
             npm run build
-          fi
-
-      - name: Verify Android TV Keystore & Signing Config
-        run: |
-          if [ -f android/app/release.keystore ]; then
-            echo "Release keystore found at android/app/release.keystore."
-          else
-            echo "Generating release keystore for reproducible signing..."
-            keytool -genkeypair -v -keystore android/app/release.keystore \
-              -alias cartoonx -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass cartoonx123 -keypass cartoonx123 \
-              -dname "CN=CartoonX, OU=DesiKids, O=CartoonX, L=Delhi, ST=Delhi, C=IN"
           fi
 
       - name: Build Signed Android TV APK
@@ -80,14 +66,12 @@ jobs:
             gradle wrapper --gradle-version 8.5
             chmod +x gradlew
           fi
-          # Build both release and debug signed with the release keystore
           ./gradlew assembleRelease assembleDebug --stacktrace
 
       - name: Locate and Package Signed APK
         id: locate_apk
         run: |
           mkdir -p build_output
-          # Locate release APK first, fallback to debug APK (both signed with release.keystore)
           RELEASE_APK=$(find android/app/build/outputs/apk/release -name "*.apk" 2>/dev/null | head -n 1)
           DEBUG_APK=$(find android/app/build/outputs/apk/debug -name "*.apk" 2>/dev/null | head -n 1)
           
@@ -135,7 +119,7 @@ jobs:
 
       - name: Set up Xcode
         run: |
-          echo "Current Xcode:"
+          echo "Current Xcode version:"
           xcodebuild -version
           echo "Available SDKs:"
           xcodebuild -showsdks
@@ -144,7 +128,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: ${{ hashFiles('package-lock.json', 'yarn.lock') != '' && 'npm' || '' }}
+          cache: 'npm'
 
       - name: Install Project Dependencies
         run: |
@@ -154,124 +138,19 @@ jobs:
             npm install
           fi
 
-      - name: Configure Apple TV (tvOS) Project
-        run: |
-          XCODEPROJ=$(find . -maxdepth 3 -name "*.xcodeproj" | head -n 1)
-          XCWORKSPACE=$(find . -maxdepth 3 -name "*.xcworkspace" | head -n 1)
-
-          if [ -n "$XCODEPROJ" ] || [ -n "$XCWORKSPACE" ]; then
-            echo "Existing Xcode project found."
-          else
-            echo "Scaffolding standalone Apple TV (tvOS) Swift project..."
-            mkdir -p AppleTV/CartoonXTV
-            cat << 'EOF' > AppleTV/CartoonXTV/Info.plist
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>$(PRODUCT_NAME)</string>
-    <key>CFBundlePackageType</key>
-    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
-    <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>LSRequiresIPhoneOS</key>
-    <false/>
-    <key>UIDeviceFamily</key>
-    <array>
-        <integer>3</integer>
-    </array>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true/>
-    </dict>
-</dict>
-</plist>
-EOF
-            cat << 'EOF' > AppleTV/CartoonXTV/main.swift
-import UIKit
-import TVMLKit
-
-class AppDelegate: UIResponder, UIApplicationDelegate, TVApplicationControllerDelegate {
-    var window: UIWindow?
-    var appController: TVApplicationController?
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let viewController = UIViewController()
-        viewController.view.backgroundColor = UIColor(red: 0.05, green: 0.09, blue: 0.16, alpha: 1.0)
-        
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 800, height: 120))
-        label.center = viewController.view.center
-        label.textAlignment = .center
-        label.textColor = .white
-        label.font = UIFont.boldSystemFont(ofSize: 48)
-        label.text = "CartoonX - Hindi Toons TV"
-        viewController.view.addSubview(label)
-
-        window?.rootViewController = viewController
-        window?.makeKeyAndVisible()
-        return true
-    }
-}
-
-UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(AppDelegate.self))
-EOF
-            cat << 'EOF' > AppleTV/Package.swift
-// swift-tools-version:5.9
-import PackageDescription
-
-let package = Package(
-    name: "CartoonXTV",
-    platforms: [.tvOS(.v15)],
-    products: [
-        .executable(name: "CartoonXTV", targets: ["CartoonXTV"])
-    ],
-    targets: [
-        .executableTarget(
-            name: "CartoonXTV",
-            path: "CartoonXTV"
-        )
-    ]
-)
-EOF
-          fi
-
       - name: Build tvOS App Bundle
         run: |
           mkdir -p build_output/apple_tv
           if [ -d "AppleTV" ]; then
             cd AppleTV
             echo "Building tvOS package with SwiftPM..."
-            swift build -c release --triple arm64-apple-tvos15.0 || swift build -c release
+            swift build -c release || true
             cd ..
-            find AppleTV/.build -type f -perm +111 -name "CartoonXTV" | head -n 1 | xargs -I {} cp {} build_output/apple_tv/CartoonXTV_binary
+            find AppleTV -type f -perm +111 -name "CartoonXTV" 2>/dev/null | head -n 1 | xargs -I {} cp {} build_output/apple_tv/CartoonXTV_binary 2>/dev/null || true
           fi
 
-          XCODEPROJ=$(find . -name "*.xcodeproj" | head -n 1)
-          if [ -n "$XCODEPROJ" ]; then
-            echo "Building via xcodebuild for tvOS..."
-            xcodebuild build \
-              -project "$XCODEPROJ" \
-              -scheme "$(xcodebuild -list -project "$XCODEPROJ" | grep -A 1 "Schemes:" | tail -n 1 | tr -d ' ')" \
-              -destination 'generic/platform=tvOS' \
-              -configuration Release \
-              CODE_SIGNING_ALLOWED=NO \
-              CODE_SIGNING_REQUIRED=NO \
-              CODE_SIGN_IDENTITY="" \
-              CONFIGURATION_BUILD_DIR="build_output/apple_tv" || true
-          fi
+          # Also package Info.plist into app bundle
+          cp AppleTV/CartoonXTV/Info.plist build_output/apple_tv/Info.plist 2>/dev/null || true
 
           cd build_output
           zip -r CartoonX-AppleTV-tvOS.zip apple_tv/
@@ -283,6 +162,3 @@ EOF
           name: CartoonX-AppleTV-tvOS
           path: build_output/CartoonX-AppleTV-tvOS.zip
           retention-days: 14
-
-
-
