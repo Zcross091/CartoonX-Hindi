@@ -36,4 +36,11 @@ test('Consolidated Single-Banner Shows Verification', (t) => {
   assert.ok(html.includes('id="detail-sort-btn"'), 'MovieBox sort toggle button exists in HTML');
   assert.ok(html.includes('toggleDetailSort()'), 'toggleDetailSort function exists in JavaScript');
   assert.ok(html.includes('selectDetailSeason'), 'selectDetailSeason function exists in JavaScript');
+
+  // Verify Permanent Hovering Author Watermark
+  assert.ok(html.includes('id="author-watermark"'), 'Author watermark container exists');
+  assert.ok(html.includes('Made by'), 'Watermark contains "Made by" text');
+  assert.ok(html.includes('Zcross'), 'Watermark contains "Zcross" author name');
+  assert.ok(html.includes('pointer-events-none'), 'Watermark is click-through and non-blocking');
+  assert.ok(html.includes('z-[70]'), 'Watermark hovers over player with high z-index');
 });
