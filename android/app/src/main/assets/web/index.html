@@ -14422,7 +14422,19 @@
           document.getElementById('player-current-time').textContent = "LIVE";
           document.getElementById('player-duration').textContent = "HD STREAM";
           document.getElementById('player-progress').style.width = '100%';
-          if (playBtn) playBtn.textContent = '▶ Interactive Player';
+          if (playBtn) playBtn.textContent = '▶ Play / ⏸ Pause';
+
+          // Automatic Center Play: automatically clicks the center play button so you don't have to tap it!
+          clearTimeout(window._autoPlayCenterTimer);
+          window._autoPlayCenterTimer = setTimeout(() => {
+            triggerCenterPlay();
+          }, 1400);
+
+          iframe.onload = () => {
+            setTimeout(() => {
+              triggerCenterPlay();
+            }, 800);
+          };
         } else {
           // Direct native HLS / MP4 playback
           iframe.classList.add('hidden');
@@ -14495,13 +14507,32 @@
       };
     }
 
+    function triggerCenterPlay() {
+      // 1. Native hardware touch event right on the center play button (crosses iframes)
+      if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
+        window.AndroidApp.simulateCenterClick();
+      }
+      // 2. Cross-origin HTML5 postMessage broadcast to video player iframes
+      const iframe = document.getElementById('tv-iframe');
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+          iframe.contentWindow.postMessage({ type: 'play' }, '*');
+          iframe.contentWindow.postMessage({ action: 'play' }, '*');
+          iframe.contentWindow.postMessage({ method: 'play' }, '*');
+        } catch (e) {}
+      }
+    }
+
     function togglePlayPause() {
       const video = document.getElementById('tv-video');
       const iframe = document.getElementById('tv-iframe');
       const btn = document.getElementById('play-pause-btn');
 
       if (!iframe.classList.contains('hidden')) {
-        showFeedback("Player Active");
+        triggerCenterPlay();
+        showFeedback("▶ Play / ⏸ Pause");
+        showHud();
         return;
       }
 
@@ -14982,7 +15013,7 @@
       if (playerOpen) {
         showHud();
 
-        if (e.key === ' ' || e.keyCode === 32 || e.keyCode === 179) {
+        if (e.key === ' ' || e.keyCode === 32 || e.keyCode === 179 || ((e.key === 'Enter' || e.keyCode === 13) && e.target.tagName !== 'BUTTON')) {
           e.preventDefault();
           togglePlayPause();
           return;

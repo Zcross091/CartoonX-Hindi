@@ -6,9 +6,11 @@ import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -273,6 +275,37 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public boolean isNativeApp() {
             return true;
+        }
+
+        /**
+         * Simulates a hardware-level touch/click directly at the center of the screen.
+         * Penetrates cross-origin iframes, shadow roots, and embedded player overlays,
+         * automatically starting playback without the user needing an airmouse or touchscreen!
+         */
+        @JavascriptInterface
+        public void simulateCenterClick() {
+            runOnUiThread(() -> {
+                if (webView != null) {
+                    int width = webView.getWidth();
+                    int height = webView.getHeight();
+                    if (width <= 0) width = 1920;
+                    if (height <= 0) height = 1080;
+                    float x = width / 2.0f;
+                    float y = height / 2.0f;
+                    long downTime = SystemClock.uptimeMillis();
+                    long eventTime = SystemClock.uptimeMillis() + 100;
+
+                    MotionEvent down = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
+                    MotionEvent up = MotionEvent.obtain(downTime, eventTime + 50, MotionEvent.ACTION_UP, x, y, 0);
+
+                    webView.dispatchTouchEvent(down);
+                    webView.dispatchTouchEvent(up);
+
+                    down.recycle();
+                    up.recycle();
+                    Log.d(TAG, "Simulated native hardware touch at screen center (" + x + ", " + y + ")");
+                }
+            });
         }
 
         @JavascriptInterface
