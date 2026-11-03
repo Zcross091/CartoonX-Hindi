@@ -13450,13 +13450,7 @@
           try {
             const vData = JSON.parse(rawVersion);
             const remoteCode = parseInt(vData.versionCode, 10);
-            const remoteVersionName = vData.versionName || `v${remoteCode}`;
-
-            // Check if user previously dismissed this release with 'Later'
-            const dismissed = localStorage.getItem('cartoonx_dismissed_update');
-            if (dismissed && dismissed === String(remoteCode)) {
-              return;
-            }
+            const remoteVersionName = vData.version || vData.versionName || vData.tagName || `v${remoteCode}`;
 
             if (remoteCode > currentVersionCode || isNewerRelease({ tag_name: remoteVersionName }, currentVersionName)) {
               pendingStartupUpdate = {
@@ -13466,7 +13460,7 @@
               };
               if (splashStatus) splashStatus.textContent = 'New update available!';
 
-              // If splash screen has already completed, prompt immediately (avoids race condition)
+              // Prompt immediately if splash screen has already completed
               const splash = document.getElementById('splash-screen');
               if (!splash || splash.style.display === 'none') {
                 showUpdateDialog(pendingStartupUpdate);
@@ -15163,28 +15157,29 @@
         }
 
         showFeedback('Checking for updates...');
-        let rawJson = '';
-        const apiUrl = 'https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest';
-
-        if (window.AndroidApp.fetch) {
-          rawJson = window.AndroidApp.fetch(apiUrl);
-        } else {
-          const res = await fetch(apiUrl);
-          rawJson = await res.text();
-        }
-
-        const data = JSON.parse(rawJson);
+        const currentVersionCode = (window.AndroidApp.getAppVersionCode) ? window.AndroidApp.getAppVersionCode() : 1;
         const currentVersion = (window.AndroidApp.getAppVersion ? window.AndroidApp.getAppVersion() : '1.0.0').trim();
 
-        if (isNewerRelease(data, currentVersion) && data.assets && data.assets.length > 0) {
-          const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets.find(a => a.name.endsWith('.apk'));
-          if (apkAsset) {
-            const releaseId = String(data.id || data.published_at || data.tag_name || 'latest');
-            const displayVersion = data.name && !data.name.toLowerCase().includes('latest') ? data.name : (data.tag_name !== 'latest' ? data.tag_name : 'New Build (' + (data.published_at ? data.published_at.substring(0, 10) : '') + ')');
+        // Query zero-rate-limit Fastly CDN version.json
+        const versionJsonUrl = 'https://raw.githubusercontent.com/Zcross091/CartoonX-Hindi/main/version.json?t=' + Date.now();
+        let rawVersion = '';
+        if (window.AndroidApp.fetch) {
+          rawVersion = window.AndroidApp.fetch(versionJsonUrl);
+        } else {
+          const res = await fetch(versionJsonUrl);
+          if (res.ok) rawVersion = await res.text();
+        }
+
+        if (rawVersion && rawVersion.includes('versionCode')) {
+          const vData = JSON.parse(rawVersion);
+          const remoteCode = parseInt(vData.versionCode, 10);
+          const remoteVersion = vData.version || vData.versionName || vData.tagName || `v${remoteCode}`;
+
+          if (remoteCode > currentVersionCode || isNewerRelease({ tag_name: remoteVersion }, currentVersion)) {
             showUpdateDialog({
-              id: releaseId,
-              version: displayVersion,
-              apkUrl: apkAsset.browser_download_url
+              id: String(remoteCode),
+              version: remoteVersion,
+              apkUrl: vData.apkUrl || 'https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk'
             });
             return;
           }
