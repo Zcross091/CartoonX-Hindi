@@ -9,6 +9,7 @@ import android.os.StatFs;
 import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -58,6 +59,7 @@ public class MainActivity extends Activity {
     private WebViewAssetLoader assetLoader;
     private final ExecutorService downloadExecutor = Executors.newFixedThreadPool(2);
     private final ConcurrentHashMap<String, Boolean> activeDownloads = new ConcurrentHashMap<>();
+    private volatile boolean isPlayerActive = false;
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -277,6 +279,12 @@ public class MainActivity extends Activity {
             return true;
         }
 
+        @JavascriptInterface
+        public void setPlayerActive(boolean active) {
+            isPlayerActive = active;
+            Log.d(TAG, "TV Player active state updated: " + active);
+        }
+
         /**
          * Simulates a hardware-level touch/click directly at the center of the screen.
          * Penetrates cross-origin iframes, shadow roots, and embedded player overlays,
@@ -295,6 +303,7 @@ public class MainActivity extends Activity {
                     final long downTime = SystemClock.uptimeMillis();
 
                     MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0);
+                    down.setSource(InputDevice.SOURCE_TOUCHSCREEN);
                     webView.dispatchTouchEvent(down);
                     down.recycle();
 
@@ -302,11 +311,12 @@ public class MainActivity extends Activity {
                         if (webView != null) {
                             long upTime = SystemClock.uptimeMillis();
                             MotionEvent up = MotionEvent.obtain(downTime, upTime, MotionEvent.ACTION_UP, x, y, 0);
+                            up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
                             webView.dispatchTouchEvent(up);
                             up.recycle();
                             Log.d(TAG, "Simulated native hardware touch tap at screen center (" + x + ", " + y + ")");
                         }
-                    }, 60);
+                    }, 80);
                 }
             });
         }
@@ -851,6 +861,13 @@ public class MainActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
             webView.evaluateJavascript("if (window.togglePlayPause) { window.togglePlayPause(); }", null);
             return true;
+        }
+        // TV Remote D-Pad Center OK or Enter Key
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+            if (isPlayerActive) {
+                webView.evaluateJavascript("if (window.handlePlayerCenterClick) { window.handlePlayerCenterClick(); } else if (window.togglePlayPause) { window.togglePlayPause(); }", null);
+                return true;
+            }
         }
         // TV Remote Media Fast Forward (+10s)
         if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {

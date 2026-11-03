@@ -573,7 +573,7 @@
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.6</span>
+          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.7</span>
         </div>
 
         <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
@@ -14362,6 +14362,9 @@
       const loadText = document.getElementById('player-loading-text');
 
       container.classList.remove('hidden');
+      if (window.AndroidApp && window.AndroidApp.setPlayerActive) {
+        window.AndroidApp.setPlayerActive(true);
+      }
       loader.classList.remove('hidden');
       loadText.textContent = `Resolving stream for ${episode.title}...`;
 
@@ -14389,16 +14392,26 @@
           isIframePlaying = true;
           if (playBtn) playBtn.textContent = '⏸ Pause';
 
-          // Automatic Center Play: automatically clicks the center play button so you don't have to tap it!
-          clearTimeout(window._autoPlayCenterTimer);
-          window._autoPlayCenterTimer = setTimeout(() => {
-            triggerCenterPlay();
-          }, 1400);
+          // Multi-pulse Zero-Touch Autoplay:
+          // Embedded players (VidLink HD / Vidstack) take 2-4s to resolve streams and render on TV.
+          // Pulsing center tap at 1.5s, 2.5s, 3.5s, 5.0s, and 7.0s guarantees playback starts
+          // automatically as soon as the embed player is ready, without the user touching anything!
+          clearAutoplayTimers();
+          const delays = [1500, 2500, 3500, 5000, 7000];
+          delays.forEach(ms => {
+            const t = setTimeout(() => {
+              const cont = document.getElementById('player-container');
+              if (cont && !cont.classList.contains('hidden')) {
+                triggerCenterPlay();
+              }
+            }, ms);
+            window._autoPlayCenterTimers.push(t);
+          });
 
           iframe.onload = () => {
             setTimeout(() => {
               triggerCenterPlay();
-            }, 800);
+            }, 600);
           };
         } else {
           // Direct native HLS / MP4 playback
@@ -14473,6 +14486,14 @@
     }
 
     let isIframePlaying = true;
+    window._autoPlayCenterTimers = [];
+
+    function clearAutoplayTimers() {
+      if (window._autoPlayCenterTimers && window._autoPlayCenterTimers.length) {
+        window._autoPlayCenterTimers.forEach(t => clearTimeout(t));
+      }
+      window._autoPlayCenterTimers = [];
+    }
 
     function sendIframeCommand(cmd) {
       const iframe = document.getElementById('tv-iframe');
@@ -14569,7 +14590,10 @@
     }
 
     function closePlayer() {
-      clearTimeout(window._autoPlayCenterTimer);
+      clearAutoplayTimers();
+      if (window.AndroidApp && window.AndroidApp.setPlayerActive) {
+        window.AndroidApp.setPlayerActive(false);
+      }
       isIframePlaying = false;
       const video = document.getElementById('tv-video');
       const iframe = document.getElementById('tv-iframe');
@@ -14971,7 +14995,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.0.6';
+        document.getElementById('settings-version-label').textContent = 'v1.0.7';
       }
     }
 
@@ -14983,6 +15007,24 @@
       showFeedback("App data & cache cleared");
     }
 
+    window.isPlayerActive = function() {
+      const player = document.getElementById('player-container');
+      return player && !player.classList.contains('hidden');
+    };
+
+    window.handlePlayerCenterClick = function() {
+      const hud = document.getElementById('player-hud');
+      const isHudVisible = hud && hud.style.opacity === '1';
+      const activeEl = document.activeElement;
+      const isOtherBtnFocused = activeEl && activeEl.tagName === 'BUTTON' && activeEl.id !== 'play-pause-btn';
+
+      if (isHudVisible && isOtherBtnFocused) {
+        activeEl.click();
+      } else {
+        togglePlayPause();
+      }
+    };
+
     // ================= KEYBOARD & TV REMOTE KEY EVENTS =================
     window.addEventListener('keydown', (e) => {
       const playerOpen = !document.getElementById('player-container').classList.contains('hidden');
@@ -14990,7 +15032,7 @@
       if (playerOpen) {
         showHud();
 
-        if (e.key === ' ' || e.keyCode === 32 || e.keyCode === 179 || ((e.key === 'Enter' || e.keyCode === 13) && e.target.tagName !== 'BUTTON')) {
+        if (e.key === ' ' || e.keyCode === 32 || e.keyCode === 179 || e.keyCode === 23 || e.key === 'Select' || e.key === 'Ok' || ((e.key === 'Enter' || e.keyCode === 13 || e.keyCode === 66) && e.target.tagName !== 'BUTTON')) {
           e.preventDefault();
           togglePlayPause();
           return;
