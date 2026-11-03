@@ -26,3 +26,10 @@ test('In-app version comparison logic', () => {
   assert.equal(isNewer('v0.9.0', '1.0.0'), false);
 });
 
+test('Zero-rate-limit version.json configuration', () => {
+  assert.ok(fs.existsSync('version.json'), 'version.json must exist in root');
+  const v = JSON.parse(fs.readFileSync('version.json', 'utf8'));
+  assert.ok(v.versionCode >= 2, 'versionCode must be at least 2');
+  assert.ok(v.apkUrl.includes('CartoonX-AndroidTV-Signed.apk'), 'apkUrl must point to Signed APK');
+});
+
