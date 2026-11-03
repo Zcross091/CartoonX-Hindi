@@ -385,8 +385,9 @@ public class MainActivity extends Activity {
 
         /**
          * Simulates a hardware-level touch/click directly at the center of the screen.
-         * Penetrates cross-origin iframes, shadow roots, and embedded player overlays,
-         * automatically starting playback without the user needing an airmouse or touchscreen!
+         * Dispatches true ACTION_DOWN -> ACTION_UP MotionEvents with legitimate pointer properties
+         * and also dispatches DPAD_CENTER / ENTER key events so embedded iframe players
+         * (JWPlayer, VidLink, HTML5 video) detect authentic user interaction and start playback.
          */
         @JavascriptInterface
         public void simulateCenterClick() {
@@ -400,19 +401,38 @@ public class MainActivity extends Activity {
                     final float y = height / 2.0f;
                     final long downTime = SystemClock.uptimeMillis();
 
-                    MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0);
+                    // 1. Dispatch touch down
+                    MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
+                    properties[0] = new MotionEvent.PointerProperties();
+                    properties[0].id = 0;
+                    properties[0].toolType = MotionEvent.TOOL_TYPE_FINGER;
+
+                    MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[1];
+                    coords[0] = new MotionEvent.PointerCoords();
+                    coords[0].x = x;
+                    coords[0].y = y;
+                    coords[0].pressure = 1.0f;
+                    coords[0].size = 1.0f;
+
+                    MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, 1, properties, coords, 0, 0, 1.0f, 1.0f, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
                     webView.dispatchTouchEvent(down);
                     down.recycle();
 
                     webView.postDelayed(() -> {
                         if (webView != null) {
                             long upTime = SystemClock.uptimeMillis();
-                            MotionEvent up = MotionEvent.obtain(downTime, upTime, MotionEvent.ACTION_UP, x, y, 0);
+                            MotionEvent up = MotionEvent.obtain(downTime, upTime, MotionEvent.ACTION_UP, 1, properties, coords, 0, 0, 1.0f, 1.0f, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
                             webView.dispatchTouchEvent(up);
                             up.recycle();
-                            Log.d(TAG, "Simulated native hardware touch tap at screen center (" + x + ", " + y + ")");
+
+                            // Also deliver DPAD_CENTER / ENTER to activate any focused HTML5 video / play button
+                            webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER));
+                            webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER));
+                            webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
+                            webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
+                            Log.d(TAG, "Simulated multi-channel hardware touch tap & play at screen center (" + x + ", " + y + ")");
                         }
-                    }, 60);
+                    }, 50);
                 }
             });
         }

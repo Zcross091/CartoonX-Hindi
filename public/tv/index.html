@@ -586,7 +586,7 @@
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.4</span>
+          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.5</span>
         </div>
 
         <div class="flex items-center justify-between p-4 rounded-2xl bg-[#140608] border border-[#3b1216]">
@@ -14505,43 +14505,31 @@
           if (playBtn) playBtn.textContent = '▶ Play';
 
           // Zero-Touch Direct Autoplay:
-          // Embedded players take 1.2-2.5s to initialize on TV.
-          // Stage 1 (1.2s): PostMessage play commands to embedded player
-          // Stage 2 (2.4s): If video hasn't started yet, simulate hardware tap on player center
-          // Stage 3 (4.2s): Failover tap if still not started
+          // Embedded players initialize in 1.0-3.5s on Android TV.
+          // Multi-pulse autoplay aggressively simulates center hardware clicks and broadcasts play commands.
           clearAutoplayTimers();
 
-          const t1 = setTimeout(() => {
+          const triggerAutoplayPulse = () => {
             const cont = document.getElementById('player-container');
             if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
-              sendIframeCommand('play');
-              if (window.AndroidApp && window.AndroidApp.sendMediaPlay) window.AndroidApp.sendMediaPlay();
-            }
-          }, 1200);
-          window._autoPlayCenterTimers.push(t1);
-
-          const t2 = setTimeout(() => {
-            const cont = document.getElementById('player-container');
-            if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
-              if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
-                window.AndroidApp.simulateCenterClick();
-              }
-              sendIframeCommand('play');
-              if (window.AndroidApp && window.AndroidApp.sendMediaPlay) window.AndroidApp.sendMediaPlay();
-            }
-          }, 2400);
-          window._autoPlayCenterTimers.push(t2);
-
-          const t3 = setTimeout(() => {
-            const cont = document.getElementById('player-container');
-            if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
-              if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
-                window.AndroidApp.simulateCenterClick();
+              if (window.AndroidApp) {
+                if (window.AndroidApp.simulateCenterClick) window.AndroidApp.simulateCenterClick();
+                if (window.AndroidApp.sendMediaPlay) window.AndroidApp.sendMediaPlay();
               }
               sendIframeCommand('play');
             }
-          }, 4200);
-          window._autoPlayCenterTimers.push(t3);
+          };
+
+          // Pulse 1 (800ms)
+          window._autoPlayCenterTimers.push(setTimeout(triggerAutoplayPulse, 800));
+          // Pulse 2 (1600ms)
+          window._autoPlayCenterTimers.push(setTimeout(triggerAutoplayPulse, 1600));
+          // Pulse 3 (2600ms)
+          window._autoPlayCenterTimers.push(setTimeout(triggerAutoplayPulse, 2600));
+          // Pulse 4 (4000ms)
+          window._autoPlayCenterTimers.push(setTimeout(triggerAutoplayPulse, 4000));
+          // Pulse 5 (5800ms)
+          window._autoPlayCenterTimers.push(setTimeout(triggerAutoplayPulse, 5800));
         } else {
           // Direct native HLS / MP4 playback
           iframe.classList.add('hidden');
@@ -15233,7 +15221,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.1.4';
+        document.getElementById('settings-version-label').textContent = 'v1.1.5';
       }
     }
 

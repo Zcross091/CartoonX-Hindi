@@ -1,8 +1,8 @@
 {
-  "version": "1.1.4",
-  "versionName": "1.1.4",
-  "versionCode": 15,
-  "tagName": "v1.1.4",
+  "version": "1.1.5",
+  "versionName": "1.1.5",
+  "versionCode": 16,
+  "tagName": "v1.1.5",
   "apkUrl": "https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk",
-  "releaseNotes": "Prioritized rock-solid 1080p stream server (VidLink HD) as primary Server 1 to prevent JWPlayer Error 232403, and enabled instant server switching via remote."
+  "releaseNotes": "Enhanced zero-touch autoplay with multi-pulse authentic touch event dispatch and DPAD/MEDIA_PLAY key combination to automatically start embedded players without manual tap."
 }
