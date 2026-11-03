@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0",
-  "versionName": "1.1.0",
-  "versionCode": 11,
-  "tagName": "v1.1.0",
+  "version": "1.1.1",
+  "versionName": "1.1.1",
+  "versionCode": 12,
+  "tagName": "v1.1.1",
   "apkUrl": "https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk",
-  "releaseNotes": "Cinematic Blood Red and Pure White theme everywhere across the TV interface, D-Pad Center OK button directly toggles video Play/Pause, player volume locked at 100% max, and seamless automatic playback of next episodes and subsequent seasons."
+  "releaseNotes": "Zero-touch direct video playback without center pause icon, real-time iframe play/pause synchronization, and Blood Red & Pure White theme."
 }

@@ -307,7 +307,6 @@ public class MainActivity extends Activity {
                     final long downTime = SystemClock.uptimeMillis();
 
                     MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0);
-                    down.setSource(InputDevice.SOURCE_TOUCHSCREEN);
                     webView.dispatchTouchEvent(down);
                     down.recycle();
 
@@ -315,12 +314,11 @@ public class MainActivity extends Activity {
                         if (webView != null) {
                             long upTime = SystemClock.uptimeMillis();
                             MotionEvent up = MotionEvent.obtain(downTime, upTime, MotionEvent.ACTION_UP, x, y, 0);
-                            up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
                             webView.dispatchTouchEvent(up);
                             up.recycle();
                             Log.d(TAG, "Simulated native hardware touch tap at screen center (" + x + ", " + y + ")");
                         }
-                    }, 80);
+                    }, 60);
                 }
             });
         }

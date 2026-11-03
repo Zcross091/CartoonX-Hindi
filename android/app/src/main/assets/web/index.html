@@ -627,7 +627,7 @@
     <video id="tv-video" class="w-full h-full object-contain cursor-pointer" playsinline preload="auto"
       onclick="togglePlayPause()"></video>
     <iframe id="tv-iframe" class="w-full h-full border-0 hidden relative z-0 pointer-events-auto"
-      allow="autoplay *; fullscreen *; encrypted-media *; picture-in-picture *; accelerometer *; gyroscope *"
+      allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
       allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 
     <!-- Center On-Screen Feedback (+10s / -10s Toast) -->
@@ -14251,7 +14251,7 @@
 
     let currentStreamServerIndex = 0;
     const STREAM_SERVERS = [
-      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&volume=1` },
+      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff` },
       { name: 'Server 2 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
       { name: 'Server 3 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
       { name: 'Server 4 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` }
@@ -14330,7 +14330,7 @@
       }
 
       // 6. Safe default
-      return { type: 'iframe', url: 'https://vidlink.pro/tv/897/1/1?autoplay=true' };
+      return { type: 'iframe', url: 'https://vidlink.pro/tv/897/1/1?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff' };
     }
 
     // ================= RENDER HOME CATALOG =================
@@ -14417,29 +14417,44 @@
           isIframePlaying = false;
           if (playBtn) playBtn.textContent = '▶ Play';
 
-          // Zero-Touch Autoplay:
-          // Embedded players take 1-3s to resolve and render on TV.
-          // Triggering play at 1.5s, 3.0s, and 5.0s (only if not already playing)
-          // ensures playback starts automatically as soon as ready without toggling back to pause.
+          // Zero-Touch Direct Autoplay:
+          // Embedded players take 1.2-2.5s to initialize on TV.
+          // Stage 1 (1.2s): PostMessage play commands to embedded player
+          // Stage 2 (2.4s): If video hasn't started yet, simulate hardware tap on player center
+          // Stage 3 (4.2s): Failover tap if still not started
           clearAutoplayTimers();
-          const delays = [1500, 3000, 5000];
-          delays.forEach(ms => {
-            const t = setTimeout(() => {
-              const cont = document.getElementById('player-container');
-              if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
-                triggerCenterPlay();
-              }
-            }, ms);
-            window._autoPlayCenterTimers.push(t);
-          });
 
-          iframe.onload = () => {
-            setTimeout(() => {
-              if (!isIframePlaying) {
-                triggerCenterPlay();
+          const t1 = setTimeout(() => {
+            const cont = document.getElementById('player-container');
+            if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
+              sendIframeCommand('play');
+              if (window.AndroidApp && window.AndroidApp.sendMediaPlay) window.AndroidApp.sendMediaPlay();
+            }
+          }, 1200);
+          window._autoPlayCenterTimers.push(t1);
+
+          const t2 = setTimeout(() => {
+            const cont = document.getElementById('player-container');
+            if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
+              if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
+                window.AndroidApp.simulateCenterClick();
               }
-            }, 800);
-          };
+              sendIframeCommand('play');
+              if (window.AndroidApp && window.AndroidApp.sendMediaPlay) window.AndroidApp.sendMediaPlay();
+            }
+          }, 2400);
+          window._autoPlayCenterTimers.push(t2);
+
+          const t3 = setTimeout(() => {
+            const cont = document.getElementById('player-container');
+            if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
+              if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
+                window.AndroidApp.simulateCenterClick();
+              }
+              sendIframeCommand('play');
+            }
+          }, 4200);
+          window._autoPlayCenterTimers.push(t3);
         } else {
           // Direct native HLS / MP4 playback
           iframe.classList.add('hidden');
@@ -14530,7 +14545,7 @@
       window._autoPlayCenterTimers = [];
     }
 
-    // Auto-play Next Episode when cross-origin iframe video ends
+    // Auto-play Next Episode and sync play/pause states from cross-origin iframe
     window.addEventListener('message', (event) => {
       try {
         let msg = event.data;
@@ -14541,7 +14556,39 @@
         }
         if (!msg) return;
 
-        // Standard embedded player ended signals (Vidstack, VideoJS, JWPlayer, YouTube API)
+        // 1. Playback started or actively progressing (confirmed playing)
+        const isPlayEvent = 
+          msg === 'play' ||
+          msg === 'playing' ||
+          msg.type === 'play' ||
+          msg.type === 'playing' ||
+          msg.event === 'play' ||
+          msg.event === 'playing' ||
+          (msg.event === 'onStateChange' && (msg.data === 1 || msg.info === 1)) ||
+          (msg.type === 'MEDIA_DATA' && msg.data && msg.data.watched > 0) ||
+          (msg.type === 'timeupdate' && msg.currentTime > 0);
+
+        if (isPlayEvent) {
+          isIframePlaying = true;
+          clearAutoplayTimers(); // Video is running! Cancel all pending simulated taps.
+          const btn = document.getElementById('play-pause-btn');
+          if (btn) btn.textContent = '⏸ Pause';
+        }
+
+        // 2. Playback paused
+        const isPauseEvent =
+          msg === 'pause' ||
+          msg.type === 'pause' ||
+          msg.event === 'pause' ||
+          (msg.event === 'onStateChange' && (msg.data === 2 || msg.info === 2));
+
+        if (isPauseEvent) {
+          isIframePlaying = false;
+          const btn = document.getElementById('play-pause-btn');
+          if (btn) btn.textContent = '▶ Play';
+        }
+
+        // 3. Playback ended (Auto-play Next Episode)
         const isEnded = 
           msg === 'ended' ||
           msg === 'video:ended' ||
@@ -14559,6 +14606,7 @@
           const isPlayerOpen = container && !container.classList.contains('hidden');
           if (isPlayerOpen) {
             console.log("Iframe stream finished, auto-playing next episode!");
+            isIframePlaying = false;
             playNextEpisode();
           }
         }
@@ -14594,7 +14642,10 @@
           const isPlay = (cmd === 'play');
           iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: isPlay ? 'playVideo' : 'pauseVideo', args: '' }), '*');
           iframe.contentWindow.postMessage(JSON.stringify({ method: isPlay ? 'play' : 'pause' }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ type: isPlay ? 'play' : 'pause' }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ type: isPlay ? 'vds-play-request' : 'vds-pause-request' }), '*');
           iframe.contentWindow.postMessage({ type: isPlay ? 'play' : 'pause' }, '*');
+          iframe.contentWindow.postMessage({ type: isPlay ? 'vds-play-request' : 'vds-pause-request' }, '*');
           iframe.contentWindow.postMessage({ action: isPlay ? 'play' : 'pause' }, '*');
           iframe.contentWindow.postMessage({ method: isPlay ? 'play' : 'pause' }, '*');
           iframe.contentWindow.postMessage(isPlay ? 'play' : 'pause', '*');
@@ -14635,7 +14686,7 @@
       const btn = document.getElementById('play-pause-btn');
 
       if (!iframe.classList.contains('hidden')) {
-        const isPlay = btn ? btn.textContent.includes('Play') : !isIframePlaying;
+        const isPlay = (btn && btn.textContent.includes('Play')) || !isIframePlaying;
         if (isPlay) {
           triggerCenterPlay();
           showFeedback("▶ Play");
@@ -15095,7 +15146,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.1.0';
+        document.getElementById('settings-version-label').textContent = 'v1.1.1';
       }
     }
 

@@ -23,10 +23,15 @@ test('Blood Red and Pure White Theme Verification', (t) => {
   const amberMatches = [...html.matchAll(/(?:text|bg|border)-amber-\d+/g)].map(m => m[0]);
   assert.equal(amberMatches.length, 0, `All amber UI classes must be removed; found: ${amberMatches.join(', ')}`);
 
-  // 5. Version Synchronization
-  assert.match(buildGradle, /versionCode 11/, 'build.gradle versionCode must be 11');
-  assert.match(buildGradle, /versionName "1.1.0"/, 'build.gradle versionName must be 1.1.0');
-  assert.equal(versionJson.version, '1.1.0', 'version.json version must be 1.1.0');
-  assert.equal(versionJson.versionCode, 11, 'version.json versionCode must be 11');
-  assert.equal(versionJson.tagName, 'v1.1.0', 'version.json tagName must be v1.1.0');
+  // 5. Direct Autoplay & Play/Pause Synchronization
+  assert.ok(html.includes("msg === 'play'") || html.includes("msg.type === 'play'"), 'Message listener must detect play events');
+  assert.ok(html.includes("msg === 'pause'") || html.includes("msg.type === 'pause'"), 'Message listener must detect pause events');
+
+  // 6. Version Synchronization
+  assert.match(buildGradle, /versionCode 12/, 'build.gradle versionCode must be 12');
+  assert.match(buildGradle, /versionName "1.1.1"/, 'build.gradle versionName must be 1.1.1');
+  assert.equal(versionJson.version, '1.1.1', 'version.json version must be 1.1.1');
+  assert.equal(versionJson.versionCode, 12, 'version.json versionCode must be 12');
+  assert.equal(versionJson.tagName, 'v1.1.1', 'version.json tagName must be v1.1.1');
 });
+
