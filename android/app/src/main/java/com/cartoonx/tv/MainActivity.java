@@ -141,18 +141,47 @@ public class MainActivity extends Activity {
                 }
 
                 // Seamlessly frame Razorshell & AnimeToon streaming embeds on Android TV
-                // by removing restrictive frame-ancestors & X-Frame-Options headers
+                // by removing restrictive frame-ancestors & X-Frame-Options headers on embed pages.
+                // Media streams (m3u8, mp4, ts) and CDN assets (groovy.monster, static JS/CSS)
+                // are NOT intercepted so Android WebView's native engine handles CORS, cookies,
+                // Range byte requests (HTTP 206), and streaming without interference.
                 String host = request.getUrl().getHost();
-                if (host != null && (host.contains("razorshell.space") || host.contains("groovy.monster"))) {
+                String path = request.getUrl().getPath();
+                if (host != null && host.contains("razorshell.space") && path != null && path.contains("/embed/")) {
                     try {
                         URL url = new URL(request.getUrl().toString());
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod(request.getMethod());
+                        conn.setConnectTimeout(10000);
+                        conn.setReadTimeout(15000);
+                        conn.setInstanceFollowRedirects(true);
+
+                        // Forward CookieManager cookies to HttpURLConnection
+                        CookieManager cookieManager = CookieManager.getInstance();
+                        String existingCookies = cookieManager.getCookie("https://" + host);
+                        if (existingCookies != null && !existingCookies.isEmpty()) {
+                            conn.setRequestProperty("Cookie", existingCookies);
+                        }
+
+                        // Forward request headers (excluding managed ones)
+                        Map<String, String> reqHeaders = request.getRequestHeaders();
+                        if (reqHeaders != null) {
+                            for (Map.Entry<String, String> entry : reqHeaders.entrySet()) {
+                                String k = entry.getKey();
+                                if (!k.equalsIgnoreCase("Host") &&
+                                    !k.equalsIgnoreCase("Referer") &&
+                                    !k.equalsIgnoreCase("Cookie") &&
+                                    !k.equalsIgnoreCase("User-Agent") &&
+                                    !k.equalsIgnoreCase("Accept-Encoding")) {
+                                    conn.setRequestProperty(k, entry.getValue());
+                                }
+                            }
+                        }
+
+                        // Set authentic desktop User-Agent and codedew referer needed by Razorshell
                         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
                         conn.setRequestProperty("Referer", "https://codedew.com/cdn/liptron.php/");
-                        conn.setConnectTimeout(8000);
-                        conn.setReadTimeout(12000);
-                        conn.setInstanceFollowRedirects(true);
+                        conn.setRequestProperty("Accept-Encoding", "identity");
 
                         Map<String, List<String>> headerFields = conn.getHeaderFields();
                         Map<String, String> responseHeaders = new HashMap<>();
@@ -160,8 +189,17 @@ public class MainActivity extends Activity {
                             for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
                                 if (entry.getKey() != null) {
                                     String key = entry.getKey().toLowerCase();
+                                    // Strip frame-ancestors & X-Frame-Options to allow framing in Android TV WebView
                                     if (key.equals("content-security-policy") || key.equals("x-frame-options")) {
                                         continue;
+                                    }
+                                    // Sync Set-Cookie headers directly into WebView CookieManager
+                                    if (key.equals("set-cookie")) {
+                                        for (String cookieVal : entry.getValue()) {
+                                            cookieManager.setCookie("https://" + host, cookieVal);
+                                            cookieManager.setCookie("https://argon.razorshell.space", cookieVal);
+                                        }
+                                        cookieManager.flush();
                                     }
                                     if (!entry.getValue().isEmpty()) {
                                         responseHeaders.put(entry.getKey(), entry.getValue().get(0));
@@ -169,6 +207,12 @@ public class MainActivity extends Activity {
                                 }
                             }
                         }
+                        // Remove content-encoding / content-length since identity is requested
+                        responseHeaders.remove("content-encoding");
+                        responseHeaders.remove("Content-Encoding");
+                        responseHeaders.remove("content-length");
+                        responseHeaders.remove("Content-Length");
+
                         String contentType = conn.getContentType();
                         String mimeType = "text/html";
                         String encoding = "UTF-8";
@@ -182,7 +226,7 @@ public class MainActivity extends Activity {
                         }
                         return new WebResourceResponse(mimeType, encoding, conn.getResponseCode(), conn.getResponseMessage(), responseHeaders, conn.getInputStream());
                     } catch (Exception e) {
-                        Log.w(TAG, "Razorshell stream interceptor fallback: " + e.getMessage());
+                        Log.w(TAG, "Razorshell embed interceptor fallback: " + e.getMessage());
                     }
                 }
                 return null;

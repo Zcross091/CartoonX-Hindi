@@ -1,8 +1,8 @@
 {
-  "version": "1.1.2",
-  "versionName": "1.1.2",
-  "versionCode": 13,
-  "tagName": "v1.1.2",
+  "version": "1.1.3",
+  "versionName": "1.1.3",
+  "versionCode": 14,
+  "tagName": "v1.1.3",
   "apkUrl": "https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk",
-  "releaseNotes": "Integrated AnimeToon Direct stream plugin (Razorshell JWPlayer with zero Turnstile captcha blocks), added Server 1 AnimeToon Direct with multi-server failover, and automated plugin sync."
+  "releaseNotes": "Fixed JWPlayer Error 232403 by refining Razorshell embed interception, enabling native WebView HLS/MP4 chunk streaming and syncing session cookies."
 }

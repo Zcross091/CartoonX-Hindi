@@ -28,10 +28,10 @@ test('Blood Red and Pure White Theme Verification', (t) => {
   assert.ok(html.includes("msg === 'pause'") || html.includes("msg.type === 'pause'"), 'Message listener must detect pause events');
 
   // 6. Version Synchronization
-  assert.match(buildGradle, /versionCode 13/, 'build.gradle versionCode must be 13');
-  assert.match(buildGradle, /versionName "1.1.2"/, 'build.gradle versionName must be 1.1.2');
-  assert.equal(versionJson.version, '1.1.2', 'version.json version must be 1.1.2');
-  assert.equal(versionJson.versionCode, 13, 'version.json versionCode must be 13');
-  assert.equal(versionJson.tagName, 'v1.1.2', 'version.json tagName must be v1.1.2');
+  assert.match(buildGradle, /versionCode 14/, 'build.gradle versionCode must be 14');
+  assert.match(buildGradle, /versionName "1.1.3"/, 'build.gradle versionName must be 1.1.3');
+  assert.equal(versionJson.version, '1.1.3', 'version.json version must be 1.1.3');
+  assert.equal(versionJson.versionCode, 14, 'version.json versionCode must be 14');
+  assert.equal(versionJson.tagName, 'v1.1.3', 'version.json tagName must be v1.1.3');
 });
 
