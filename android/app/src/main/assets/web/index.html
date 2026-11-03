@@ -586,7 +586,7 @@
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.3</span>
+          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.4</span>
         </div>
 
         <div class="flex items-center justify-between p-4 rounded-2xl bg-[#140608] border border-[#3b1216]">
@@ -14323,9 +14323,9 @@
 
     let currentStreamServerIndex = 0;
     const STREAM_SERVERS = [
-      { name: 'Server 1 (AnimeToon Direct)', type: 'animetoon' },
-      { name: 'Server 2 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff` },
-      { name: 'Server 3 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff` },
+      { name: 'Server 2 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+      { name: 'Server 3 (AnimeToon Direct)', type: 'animetoon' },
       { name: 'Server 4 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
       { name: 'Server 5 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` }
     ];
@@ -14344,6 +14344,7 @@
         launchVideoPlayer(selectedShow, currentEpisodeList, currentEpisodeIndex);
       }
     }
+    window.switchStreamServer = switchStreamServer;
 
     async function resolveLiveVideoSource(episode) {
       if (episode.localUrl) {
@@ -14358,7 +14359,7 @@
       const showId = (selectedShow && selectedShow.id) || '';
       const activeServer = STREAM_SERVERS[currentStreamServerIndex] || STREAM_SERVERS[0];
 
-      // 2. Server 1: AnimeToon Direct (Razorshell JWPlayer with zero Turnstile captcha blocks)
+      // 2. AnimeToon Direct (Razorshell JWPlayer with zero Turnstile captcha blocks)
       if (activeServer.type === 'animetoon') {
         const animetoonEp = findAnimetoonEpisode(showId, episode, currentEpisodeIndex);
         if (animetoonEp && animetoonEp.watchUrl) {
@@ -14402,7 +14403,7 @@
       if (tmdbId) {
         const { sNum, eNum } = extractSeasonEpisodeNumbers(episode);
         const targetSeason = episode.targetSeason || sNum;
-        const targetServer = (activeServer.buildUrl) ? activeServer : STREAM_SERVERS[1];
+        const targetServer = (activeServer.buildUrl) ? activeServer : STREAM_SERVERS[0];
         const streamUrl = targetServer.buildUrl(tmdbId, targetSeason, eNum);
         return {
           type: 'iframe',
@@ -15232,7 +15233,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.1.3';
+        document.getElementById('settings-version-label').textContent = 'v1.1.4';
       }
     }
 

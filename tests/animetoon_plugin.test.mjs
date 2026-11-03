@@ -26,7 +26,7 @@ test('AnimeToon Plugin Integration Verification', (t) => {
   // 3. Verify TV App Implementation
   assert.ok(html.includes('loadAnimetoonStreams'), 'index.html must define loadAnimetoonStreams()');
   assert.ok(html.includes('findAnimetoonEpisode'), 'index.html must define findAnimetoonEpisode()');
-  assert.ok(html.includes('Server 1 (AnimeToon Direct)'), 'STREAM_SERVERS must define Server 1 as AnimeToon Direct');
+  assert.ok(html.includes('AnimeToon Direct'), 'STREAM_SERVERS must define AnimeToon Direct');
 
   // 4. Verify MainActivity Frame Security Interceptor
   assert.ok(java.includes('razorshell.space') || java.includes('groovy.monster'), 'MainActivity must intercept Razorshell streams');

@@ -1009,6 +1009,13 @@ public class MainActivity extends Activity {
             webView.evaluateJavascript("if (window.seekRewind) { window.seekRewind(10); }", null);
             return true;
         }
+        // TV Remote Channel / Color buttons switch stream server instantly
+        if (keyCode == KeyEvent.KEYCODE_PROG_YELLOW || keyCode == KeyEvent.KEYCODE_PROG_BLUE || keyCode == KeyEvent.KEYCODE_CHANNEL_UP || keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN) {
+            if (isPlayerActive) {
+                webView.evaluateJavascript("if (window.switchStreamServer) { window.switchStreamServer(); }", null);
+                return true;
+            }
+        }
         return super.onKeyDown(keyCode, event);
     }
 }
