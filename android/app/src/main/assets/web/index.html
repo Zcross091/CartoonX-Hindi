@@ -13859,30 +13859,35 @@
       let title = raw
         .replace(/&#8211;|&#038;|&amp;/g, '-')
         .replace(/<[^>]+>/g, '')
-        .replace(/rare\s*toons?\s*india/gi, '')
-        .replace(/toon\s*stream/gi, '')
+        .replace(/rares*toons?s*india/gi, '')
+        .replace(/toons*stream/gi, '')
         .replace(/download/gi, '')
-        .replace(/all\s*episodes?/gi, '')
+        .replace(/alls*episodes?/gi, '')
         .replace(/episodes?/gi, '')
-        .replace(/in\s*hindi(?:\s*dubbed)?/gi, '')
-        .replace(/hindi\s*dubbed/gi, '')
-        .replace(/\[.*?\]|\(.*?\)/g, '')
+        .replace(/ins*hindi(?:s*dubbed)?/gi, '')
+        .replace(/hindis*dubbed/gi, '')
+        .replace(/hindis*–s*tamils*–s*telugu/gi, '')
+        .replace(/hindis*-s*tamils*-s*telugu/gi, '')
+        .replace(/[.*?]|(.*?)/g, '')
         .replace(/720p|1080p|hd|fhd|hevc/gi, '')
         .replace(/[-–|]+/g, ' ')
         .trim();
 
-      let seasonMatch = raw.match(/season\s*(\d+)/i) || raw.match(/s(\d+)/i);
-      let seasonStr = seasonMatch ? ` (Season ${seasonMatch[1]})` : '';
+      const seasonMatch = raw.match(/seasons*(d+)/i) || raw.match(/s(d+)/i);
+      const seasonNumber = seasonMatch ? parseInt(seasonMatch[1], 10) : 1;
+
+      // Remove "Season X" from series title so we never have "Doraemon (Season 6)" as the series name!
+      title = title.replace(/seasons*d+/gi, '').replace(/s+/g, ' ').trim();
 
       let searchKey = title;
-      if (/ben\s*10/i.test(title)) {
-        if (/alien\s*force/i.test(title)) searchKey = "Ben 10: Alien Force";
-        else if (/ultimate\s*alien/i.test(title)) searchKey = "Ben 10: Ultimate Alien";
+      if (/bens*10/i.test(title)) {
+        if (/aliens*force/i.test(title)) searchKey = "Ben 10: Alien Force";
+        else if (/ultimates*alien/i.test(title)) searchKey = "Ben 10: Ultimate Alien";
         else if (/omniverse/i.test(title)) searchKey = "Ben 10: Omniverse";
         else searchKey = "Ben 10";
       } else if (/doraemon/i.test(title)) {
         searchKey = "Doraemon";
-      } else if (/shin\s*chan|crayon/i.test(title)) {
+      } else if (/shins*chan|crayon/i.test(title)) {
         searchKey = "Crayon Shin-chan";
       } else if (/pokemon/i.test(title)) {
         searchKey = "Pokemon";
@@ -13896,9 +13901,17 @@
         searchKey = "Oggy and the Cockroaches";
       } else if (/phineas/i.test(title)) {
         searchKey = "Phineas and Ferb";
+      } else if (/kicks*buttowski/i.test(title)) {
+        searchKey = "Kick Buttowski";
+      } else if (/gravitys*falls/i.test(title)) {
+        searchKey = "Gravity Falls";
       }
 
-      return { searchKey, cleanDisplayTitle: searchKey + seasonStr };
+      return { 
+        searchKey, 
+        cleanDisplayTitle: searchKey,
+        seasonNumber: seasonNumber
+      };
     }
 
     const publicMetaCache = new Map();
@@ -13909,83 +13922,24 @@
       if (publicMetaCache.has(cleanKey)) return publicMetaCache.get(cleanKey);
 
       try {
-        const stored = localStorage.getItem('cartoonx_pubmeta_' + cleanKey);
-        if (stored) {
-          const parsed = JSON.parse(stored);
+        const cached = localStorage.getItem('cartoonx_pubmeta_' + cleanKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
           publicMetaCache.set(cleanKey, parsed);
           return parsed;
         }
-      } catch (e) {}
 
-      try {
-        let meta = null;
-        let tvMazeUrl = 'https://api.tvmaze.com/singlesearch/shows?q=' + encodeURIComponent(query) + '&embed=images';
-        let rawJson = '';
-        if (window.AndroidApp && window.AndroidApp.fetch) {
-          rawJson = window.AndroidApp.fetch(tvMazeUrl);
-        } else {
-          const res = await fetch(tvMazeUrl);
-          if (res.ok) rawJson = await res.text();
-        }
-
-        if (rawJson) {
-          const data = JSON.parse(rawJson);
-          if (data && data.name) {
-            let bg = null;
-            if (data._embedded && data._embedded.images) {
-              const bgImg = data._embedded.images.find(i => i.type === 'background');
-              if (bgImg && bgImg.resolutions && bgImg.resolutions.original) {
-                bg = bgImg.resolutions.original.url;
-              }
-            }
-            meta = {
-              name: data.name,
-              poster: data.image ? (data.image.original || data.image.medium) : null,
-              backdrop: bg || (data.image ? data.image.original : null),
-              description: data.summary ? data.summary.replace(/<[^>]+>/g, '').trim() : '',
-              year: data.premiered ? data.premiered.substring(0, 4) : '',
-              rating: data.rating ? data.rating.average : null
-            };
-          }
-        }
-
-        // Kitsu fallback for anime or missing banners
-        if (!meta || !meta.backdrop) {
-          try {
-            const kUrl = 'https://kitsu.io/api/edge/anime?filter[text]=' + encodeURIComponent(query);
-            let kJson = '';
-            if (window.AndroidApp && window.AndroidApp.fetch) {
-              kJson = window.AndroidApp.fetch(kUrl);
-            } else {
-              const kRes = await fetch(kUrl);
-              if (kRes.ok) kJson = await kRes.text();
-            }
-            if (kJson) {
-              const kData = JSON.parse(kJson);
-              if (kData.data && kData.data.length > 0) {
-                const attr = kData.data[0].attributes;
-                if (!meta) {
-                  meta = {
-                    name: attr.canonicalTitle || query,
-                    poster: attr.posterImage ? (attr.posterImage.large || attr.posterImage.original) : null,
-                    backdrop: attr.coverImage ? (attr.coverImage.large || attr.coverImage.original) : null,
-                    description: attr.synopsis ? attr.synopsis.trim() : '',
-                    year: attr.startDate ? attr.startDate.substring(0, 4) : ''
-                  };
-                } else {
-                  if (!meta.backdrop && attr.coverImage) {
-                    meta.backdrop = attr.coverImage.large || attr.coverImage.original;
-                  }
-                  if (!meta.poster && attr.posterImage) {
-                    meta.poster = attr.posterImage.large;
-                  }
-                }
-              }
-            }
-          } catch (e2) {}
-        }
-
-        if (meta) {
+        const res = await fetch(`https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(query)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && data.image) {
+          const meta = {
+            poster: data.image.original || data.image.medium,
+            backdrop: data.image.original || data.image.medium,
+            description: (data.summary || '').replace(/<[^>]+>/g, '').trim(),
+            genres: data.genres || ['Animation', 'Comedy'],
+            rating: data.rating?.average || 8.5
+          };
           publicMetaCache.set(cleanKey, meta);
           try {
             localStorage.setItem('cartoonx_pubmeta_' + cleanKey, JSON.stringify(meta));
@@ -13998,7 +13952,7 @@
       return null;
     }
 
-    // ================= DUAL-SCRAPER ENGINE (TOONSTREAM & RARETOON) =================
+    // ================= DUAL-SCRAPER ENGINE (SINGLE BANNER CONSOLIDATION) =================
     async function runBackgroundScraper() {
       try {
         let rawJson = '';
@@ -14011,60 +13965,98 @@
 
         const posts = JSON.parse(rawJson);
         if (Array.isArray(posts) && posts.length > 0) {
-          const scraped = [];
+          const scrapedNewShows = [];
+          let updatedExistingCatalog = false;
+
+          const SHOW_MAP = [
+            { key: /doraemon/i, id: 'doraemon-classic' },
+            { key: /bens*10/i, id: 'ben-10-classic' },
+            { key: /shinchan|crayon/i, id: 'shinchan-all' },
+            { key: /pokemon/i, id: 'pokemon-seasons' },
+            { key: /naruto/i, id: 'naruto-shippuden' },
+            { key: /courage/i, id: 'courage-the-cowardly-dog' },
+            { key: /billy|mandy|huddy/i, id: 'huddy-mera-buddy' },
+            { key: /slugterra/i, id: 'slugterra-classic' },
+            { key: /phineas/i, id: 'phineas-and-ferb' },
+            { key: /oggy/i, id: 'oggy-and-cockroaches' },
+            { key: /kicks*buttowski/i, id: 'kick-buttowski' },
+            { key: /gravitys*falls/i, id: 'gravity-falls' }
+          ];
 
           for (const p of posts) {
             const rawTitle = p.title?.rendered?.replace(/&#8211;|&#038;|&amp;/g, '–').replace(/<[^>]+>/g, '') || "Cartoon";
             const content = p.content?.rendered || '';
+            const cleaned = cleanShowTitle(rawTitle);
 
-            const episodes = extractEpisodesFromHtml(content, rawTitle);
+            const episodes = extractEpisodesFromHtml(content, rawTitle, cleaned.seasonNumber);
             if (episodes.length === 0) continue;
 
-            let char = "Others";
-            if (/doraemon/i.test(rawTitle)) char = "Doraemon";
-            else if (/shinchan|crayon/i.test(rawTitle)) char = "Shinchan";
-            else if (/pokemon/i.test(rawTitle)) char = "Pokemon";
-            else if (/naruto/i.test(rawTitle)) char = "Naruto";
-            else if (/courage/i.test(rawTitle)) char = "Courage";
-            else if (/ben\s*10/i.test(rawTitle)) char = "Ben 10";
-            else if (/movie/i.test(rawTitle)) char = "Movies";
+            // Check if this post belongs to an existing consolidated show
+            const match = SHOW_MAP.find(m => m.key.test(rawTitle));
+            const existingShow = match ? allShows.find(s => s.id === match.id) : null;
 
-            const cleaned = cleanShowTitle(rawTitle);
-            const def = CHARACTER_DEFAULTS[char] || CHARACTER_DEFAULTS["Ben 10"];
+            if (existingShow) {
+              // MERGE INTO EXISTING SHOW — NEVER CREATE A DUPLICATE BANNER!
+              const targetSeasonNum = cleaned.seasonNumber;
+              existingShow.seasons = existingShow.seasons || [];
 
-            const newShow = {
-              id: "rti-" + p.id,
-              title: cleaned.cleanDisplayTitle,
-              character: char,
-              poster: def.poster,
-              backdrop: def.backdrop,
-              description: def.desc,
-              seasons: [
-                {
-                  seasonNumber: 1,
-                  name: "All Episodes",
+              let existingSeason = existingShow.seasons.find(s => s.seasonNumber === targetSeasonNum);
+              if (existingSeason) {
+                // Merge new episodes without duplicate videoCode or episodeId
+                const existingCodes = new Set((existingSeason.episodes || []).map(e => e.videoCode || e.episodeId));
+                episodes.forEach(ep => {
+                  if (!existingCodes.has(ep.videoCode || ep.episodeId)) {
+                    existingSeason.episodes.push(ep);
+                  }
+                });
+              } else {
+                // Add new season to this show (e.g. Season 6 into Doraemon)
+                existingShow.seasons.push({
+                  seasonNumber: targetSeasonNum,
+                  name: `Season ${targetSeasonNum}`,
                   episodes: episodes
-                }
-              ]
-            };
-
-            scraped.push(newShow);
-
-            // Dynamically enrich in background using public API
-            fetchPublicShowMetadata(cleaned.searchKey).then(meta => {
-              if (meta) {
-                if (meta.poster) newShow.poster = meta.poster;
-                if (meta.backdrop) newShow.backdrop = meta.backdrop;
-                if (meta.description) newShow.description = meta.description;
-                if (currentActiveTab === 'home') {
-                  renderShows(allShows);
-                }
+                });
+                existingShow.seasons.sort((a, b) => a.seasonNumber - b.seasonNumber);
               }
-            });
+              updatedExistingCatalog = true;
+            } else {
+              // Truly new cartoon series not already in DEFAULT_SHOWS
+              let char = "Others";
+              if (/movie/i.test(rawTitle)) char = "Movies";
+
+              const def = CHARACTER_DEFAULTS[char] || CHARACTER_DEFAULTS["Ben 10"];
+              const newShow = {
+                id: "rti-" + p.id,
+                title: cleaned.cleanDisplayTitle,
+                character: char,
+                poster: def.poster,
+                backdrop: def.backdrop,
+                description: def.desc,
+                seasons: [
+                  {
+                    seasonNumber: cleaned.seasonNumber,
+                    name: `Season ${cleaned.seasonNumber}`,
+                    episodes: episodes
+                  }
+                ]
+              };
+
+              scrapedNewShows.push(newShow);
+
+              fetchPublicShowMetadata(cleaned.searchKey).then(meta => {
+                if (meta) {
+                  if (meta.poster) newShow.poster = meta.poster;
+                  if (meta.backdrop) newShow.backdrop = meta.backdrop;
+                  if (meta.description) newShow.description = meta.description;
+                  if (currentActiveTab === 'home') renderShows(allShows);
+                }
+              });
+            }
           }
 
-          if (scraped.length > 0) {
-            allShows = [...DEFAULT_SHOWS, ...scraped];
+          if (updatedExistingCatalog || scrapedNewShows.length > 0) {
+            // Re-render home catalog with clean consolidated banners
+            allShows = [...allShows, ...scrapedNewShows.filter(ns => !allShows.some(s => s.id === ns.id))];
             renderShows(allShows);
           }
         }
@@ -14073,12 +14065,13 @@
       }
     }
 
-    function extractEpisodesFromHtml(html, showTitle) {
+    function extractEpisodesFromHtml(html, showTitle, targetSeasonNum) {
       const episodes = [];
       const linkRegex = /<a\s+[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
       let m;
       let epCount = 1;
       const seenCodes = new Set();
+      const sNum = targetSeasonNum || 1;
 
       while ((m = linkRegex.exec(html)) !== null) {
         let href = m[1];
@@ -14118,10 +14111,14 @@
           if (!seenCodes.has(code)) {
             seenCodes.add(code);
             const isMovie = showTitle.toLowerCase().includes('movie');
+            const epNumStr = epCount < 10 ? '0' + epCount : epCount;
+            const seasonNumStr = sNum < 10 ? '0' + sNum : sNum;
             episodes.push({
-              title: isMovie ? `${showTitle} (Movie)` : (linkText.length > 3 && !/download|quickwatch/i.test(linkText) ? linkText : `Episode ${epCount}`),
+              title: isMovie ? `${showTitle} (Movie)` : (linkText.length > 3 && !/download|quickwatch/i.test(linkText) ? linkText : `S${seasonNumStr} E${epNumStr}`),
               videoCode: code,
-              episodeId: "rti_" + code
+              episodeId: "rti_" + code,
+              seasonNumber: sNum,
+              episodeNumber: epCount
             });
             epCount++;
           }
