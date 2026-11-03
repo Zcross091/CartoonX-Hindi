@@ -599,7 +599,7 @@
   <!-- ================= FULLSCREEN TV VIDEO PLAYER (INTERACTIVE) ================= -->
   <div id="player-container" class="fixed inset-0 z-50 bg-black hidden flex flex-col justify-between">
     <video id="tv-video" class="w-full h-full object-contain cursor-pointer" playsinline preload="auto" onclick="togglePlayPause()"></video>
-    <iframe id="tv-iframe" class="w-full h-full border-0 hidden" allow="autoplay; fullscreen; encrypted-media"></iframe>
+    <iframe id="tv-iframe" class="w-full h-full border-0 hidden relative z-0 pointer-events-auto" allow="autoplay; fullscreen; encrypted-media"></iframe>
 
     <!-- Center On-Screen Feedback (+10s / -10s Toast) -->
     <div id="seek-feedback" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 opacity-0 z-20">
@@ -617,9 +617,9 @@
     </div>
 
     <!-- TV Player HUD Controls Overlay -->
-    <div id="player-hud" class="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/80 p-8 flex flex-col justify-between transition-opacity duration-300 z-10">
+    <div id="player-hud" class="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/80 p-8 flex flex-col justify-between transition-opacity duration-300 z-10 pointer-events-none">
       <!-- Top HUD Bar -->
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between pointer-events-auto">
         <div class="flex items-center gap-4">
           <button id="player-back-btn" tabindex="0" onclick="closePlayer()" class="tv-focusable player-ctrl px-5 py-3 rounded-2xl bg-slate-900/90 border border-slate-700 text-white font-black text-sm">
             ⬅ Exit Player
@@ -644,7 +644,7 @@
       </div>
 
       <!-- Bottom HUD Controls -->
-      <div class="space-y-4 max-w-4xl mx-auto w-full">
+      <div class="space-y-4 max-w-4xl mx-auto w-full pointer-events-auto">
         <!-- Progress Bar -->
         <div class="flex items-center gap-3 text-xs font-bold text-slate-300">
           <span id="player-current-time">0:00</span>
@@ -14497,14 +14497,16 @@
 
     function showHud() {
       const hud = document.getElementById('player-hud');
+      if (!hud) return;
       hud.style.opacity = '1';
-      hud.style.pointerEvents = 'auto';
+      hud.style.pointerEvents = 'none'; // NEVER block underlying iframe/video clicks!
       clearTimeout(hudTimer);
       hudTimer = setTimeout(() => {
+        const iframe = document.getElementById('tv-iframe');
+        const isIframeVisible = iframe && !iframe.classList.contains('hidden');
         const video = document.getElementById('tv-video');
-        if (video && !video.paused) {
+        if (isIframeVisible || (video && !video.paused)) {
           hud.style.opacity = '0';
-          hud.style.pointerEvents = 'none';
         }
       }, 3500);
     }
