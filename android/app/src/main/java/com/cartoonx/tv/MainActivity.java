@@ -3,6 +3,7 @@ package com.cartoonx.tv;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageInfo;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
@@ -65,6 +66,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Ensure TV remote Volume+ and Volume- keys directly control Android media stream volume
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         // Hide system UI for 100% immersive Android TV Leanback experience
         View decorView = getWindow().getDecorView();
@@ -317,6 +321,30 @@ public class MainActivity extends Activity {
                             Log.d(TAG, "Simulated native hardware touch tap at screen center (" + x + ", " + y + ")");
                         }
                     }, 80);
+
+                    // Also dispatch media play key to ensure TV WebView players without touchscreens start
+                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
+                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void sendMediaPlay() {
+            runOnUiThread(() -> {
+                if (webView != null) {
+                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
+                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void sendMediaPause() {
+            runOnUiThread(() -> {
+                if (webView != null) {
+                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
+                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
                 }
             });
         }
@@ -866,6 +894,20 @@ public class MainActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
             if (isPlayerActive) {
                 webView.evaluateJavascript("if (window.handlePlayerCenterClick) { window.handlePlayerCenterClick(); } else if (window.togglePlayPause) { window.togglePlayPause(); }", null);
+                return true;
+            }
+        }
+        // TV Remote D-Pad Up / Down keys in video player:
+        // Strictly prevent D-Pad Up/Down from interfering with player software volume.
+        // The player volume stays pinned at MAX (100%), and users control sound with TV volume keys.
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            if (isPlayerActive) {
+                webView.evaluateJavascript(
+                    keyCode == KeyEvent.KEYCODE_DPAD_UP 
+                        ? "if (window.handlePlayerDpadUp) { window.handlePlayerDpadUp(); }" 
+                        : "if (window.handlePlayerDpadDown) { window.handlePlayerDpadDown(); }", 
+                    null
+                );
                 return true;
             }
         }

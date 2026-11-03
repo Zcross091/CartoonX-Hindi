@@ -40,6 +40,13 @@ test('TV Player primary button strictly toggles Play and Pause', () => {
   assert.ok(!html.includes('Interactive Player'), 'Must not contain confusing "Interactive Player" button text');
   assert.ok(!html.includes('▶ Play / ⏸ Pause'), 'Must not contain placeholder "Play / Pause" text');
   assert.ok(html.includes('isIframePlaying'), 'Must track isIframePlaying state for cross-origin players');
+  assert.ok(html.includes('▶ Play'), 'play-pause-btn must default to ▶ Play');
+});
+
+test('MainActivity exposes sendMediaPlay and sendMediaPause bridge methods', () => {
+  const java = fs.readFileSync('android/app/src/main/java/com/cartoonx/tv/MainActivity.java', 'utf8');
+  assert.ok(java.includes('public void sendMediaPlay()'), 'Must expose sendMediaPlay');
+  assert.ok(java.includes('public void sendMediaPause()'), 'Must expose sendMediaPause');
 });
 
 test('Updater handles onUpdateComplete, onUpdateError, and dismissed persistence', () => {
@@ -47,5 +54,17 @@ test('Updater handles onUpdateComplete, onUpdateError, and dismissed persistence
   assert.ok(html.includes('window.onUpdateComplete'), 'window.onUpdateComplete must be defined');
   assert.ok(html.includes('window.onUpdateError'), 'window.onUpdateError must be defined');
   assert.ok(html.includes('cartoonx_dismissed_update'), 'cartoonx_dismissed_update must be checked in startup check');
+});
+
+test('TV Player audio pinned at MAX and D-Pad Up/Down protected from software volume changes', () => {
+  const html = fs.readFileSync('android/app/src/main/assets/web/index.html', 'utf8');
+  assert.ok(html.includes('enforceMaxVolume'), 'Must define enforceMaxVolume to keep player audio at 100%');
+  assert.ok(html.includes('handlePlayerDpadUp'), 'Must intercept D-pad Up');
+  assert.ok(html.includes('handlePlayerDpadDown'), 'Must intercept D-pad Down');
+
+  const java = fs.readFileSync('android/app/src/main/java/com/cartoonx/tv/MainActivity.java', 'utf8');
+  assert.ok(java.includes('setVolumeControlStream(AudioManager.STREAM_MUSIC)'), 'Must bind TV remote volume keys to STREAM_MUSIC');
+  assert.ok(java.includes('KEYCODE_DPAD_UP'), 'MainActivity must intercept DPAD_UP when player is active');
+  assert.ok(java.includes('KEYCODE_DPAD_DOWN'), 'MainActivity must intercept DPAD_DOWN when player is active');
 });
 

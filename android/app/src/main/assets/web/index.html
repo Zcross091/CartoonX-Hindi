@@ -573,7 +573,7 @@
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.7</span>
+          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.8</span>
         </div>
 
         <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
@@ -678,7 +678,7 @@
           </button>
 
           <button id="play-pause-btn" tabindex="0" onclick="togglePlayPause()" class="tv-focusable player-ctrl px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-base shadow-xl">
-            ⏸ Pause
+            ▶ Play
           </button>
 
           <button id="forward-btn" tabindex="0" onclick="seekForward(10)" class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
@@ -14226,7 +14226,7 @@
 
     let currentStreamServerIndex = 0;
     const STREAM_SERVERS = [
-      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true` },
+      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&volume=1` },
       { name: 'Server 2 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
       { name: 'Server 3 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
       { name: 'Server 4 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` }
@@ -14389,19 +14389,19 @@
           document.getElementById('player-current-time').textContent = "LIVE";
           document.getElementById('player-duration').textContent = "HD STREAM";
           document.getElementById('player-progress').style.width = '100%';
-          isIframePlaying = true;
-          if (playBtn) playBtn.textContent = '⏸ Pause';
+          isIframePlaying = false;
+          if (playBtn) playBtn.textContent = '▶ Play';
 
-          // Multi-pulse Zero-Touch Autoplay:
-          // Embedded players (VidLink HD / Vidstack) take 2-4s to resolve streams and render on TV.
-          // Pulsing center tap at 1.5s, 2.5s, 3.5s, 5.0s, and 7.0s guarantees playback starts
-          // automatically as soon as the embed player is ready, without the user touching anything!
+          // Zero-Touch Autoplay:
+          // Embedded players take 1-3s to resolve and render on TV.
+          // Triggering play at 1.5s, 3.0s, and 5.0s (only if not already playing)
+          // ensures playback starts automatically as soon as ready without toggling back to pause.
           clearAutoplayTimers();
-          const delays = [1500, 2500, 3500, 5000, 7000];
+          const delays = [1500, 3000, 5000];
           delays.forEach(ms => {
             const t = setTimeout(() => {
               const cont = document.getElementById('player-container');
-              if (cont && !cont.classList.contains('hidden')) {
+              if (cont && !cont.classList.contains('hidden') && !isIframePlaying) {
                 triggerCenterPlay();
               }
             }, ms);
@@ -14410,8 +14410,10 @@
 
           iframe.onload = () => {
             setTimeout(() => {
-              triggerCenterPlay();
-            }, 600);
+              if (!isIframePlaying) {
+                triggerCenterPlay();
+              }
+            }, 800);
           };
         } else {
           // Direct native HLS / MP4 playback
@@ -14457,6 +14459,14 @@
     }
 
     function setupPlayerEvents(video) {
+      // Audio level is permanently pinned at MAX (100%) in player - users adjust sound via TV remote Volume keys
+      video.volume = 1.0;
+      video.muted = false;
+      video.onvolumechange = () => {
+        if (video.volume !== 1.0) video.volume = 1.0;
+        if (video.muted) video.muted = false;
+      };
+
       video.ontimeupdate = () => {
         if (video.duration && !isNaN(video.duration)) {
           const percent = (video.currentTime / video.duration) * 100;
@@ -14495,6 +14505,26 @@
       window._autoPlayCenterTimers = [];
     }
 
+    function enforceMaxVolume() {
+      const video = document.getElementById('tv-video');
+      if (video) {
+        video.volume = 1.0;
+        video.muted = false;
+      }
+      const iframe = document.getElementById('tv-iframe');
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [100] }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'unMute', args: '' }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ method: 'setVolume', value: 1.0 }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ method: 'unmute' }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ type: 'volume', value: 1.0 }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ type: 'unmute' }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ action: 'unmute' }), '*');
+        } catch (e) {}
+      }
+    }
+
     function sendIframeCommand(cmd) {
       const iframe = document.getElementById('tv-iframe');
       if (iframe && iframe.contentWindow) {
@@ -14511,17 +14541,28 @@
     }
 
     function triggerCenterPlay() {
-      // 1. Native hardware touch event right on the center play button (crosses iframes)
-      if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
-        window.AndroidApp.simulateCenterClick();
+      enforceMaxVolume();
+      isIframePlaying = true;
+      const btn = document.getElementById('play-pause-btn');
+      if (btn) btn.textContent = '⏸ Pause';
+
+      // 1. Native hardware touch event and media play event (crosses iframes)
+      if (window.AndroidApp) {
+        if (window.AndroidApp.simulateCenterClick) window.AndroidApp.simulateCenterClick();
+        if (window.AndroidApp.sendMediaPlay) window.AndroidApp.sendMediaPlay();
       }
       // 2. Cross-origin HTML5 postMessage broadcast to video player iframes
       sendIframeCommand('play');
     }
 
     function triggerCenterPause() {
-      if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
-        window.AndroidApp.simulateCenterClick();
+      isIframePlaying = false;
+      const btn = document.getElementById('play-pause-btn');
+      if (btn) btn.textContent = '▶ Play';
+
+      if (window.AndroidApp) {
+        if (window.AndroidApp.simulateCenterClick) window.AndroidApp.simulateCenterClick();
+        if (window.AndroidApp.sendMediaPause) window.AndroidApp.sendMediaPause();
       }
       sendIframeCommand('pause');
     }
@@ -14532,16 +14573,13 @@
       const btn = document.getElementById('play-pause-btn');
 
       if (!iframe.classList.contains('hidden')) {
-        if (isIframePlaying) {
-          triggerCenterPause();
-          isIframePlaying = false;
-          if (btn) btn.textContent = '▶ Play';
-          showFeedback("⏸ Pause");
-        } else {
+        const isPlay = btn ? btn.textContent.includes('Play') : !isIframePlaying;
+        if (isPlay) {
           triggerCenterPlay();
-          isIframePlaying = true;
-          if (btn) btn.textContent = '⏸ Pause';
           showFeedback("▶ Play");
+        } else {
+          triggerCenterPause();
+          showFeedback("⏸ Pause");
         }
         showHud();
         return;
@@ -14995,7 +15033,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.0.7';
+        document.getElementById('settings-version-label').textContent = 'v1.0.8';
       }
     }
 
@@ -15025,12 +15063,58 @@
       }
     };
 
+    window.handlePlayerDpadUp = function() {
+      enforceMaxVolume();
+      const hud = document.getElementById('player-hud');
+      const isHudVisible = hud && hud.style.opacity === '1';
+      showHud();
+
+      if (!isHudVisible) {
+        const playBtn = document.getElementById('play-pause-btn');
+        if (playBtn) playBtn.focus();
+        return;
+      }
+
+      const backBtn = document.getElementById('player-back-btn');
+      if (backBtn) backBtn.focus();
+    };
+
+    window.handlePlayerDpadDown = function() {
+      enforceMaxVolume();
+      const hud = document.getElementById('player-hud');
+      const isHudVisible = hud && hud.style.opacity === '1';
+      showHud();
+
+      if (!isHudVisible) {
+        const playBtn = document.getElementById('play-pause-btn');
+        if (playBtn) playBtn.focus();
+        return;
+      }
+
+      const playBtn = document.getElementById('play-pause-btn');
+      if (playBtn) playBtn.focus();
+    };
+
     // ================= KEYBOARD & TV REMOTE KEY EVENTS =================
     window.addEventListener('keydown', (e) => {
       const playerOpen = !document.getElementById('player-container').classList.contains('hidden');
 
       if (playerOpen) {
         showHud();
+
+        // D-Pad Up / Down: Navigate HUD controls or wake HUD - strictly PREVENT software volume adjustments!
+        if (e.key === 'ArrowUp' || e.keyCode === 38 || e.keyCode === 19) {
+          e.preventDefault();
+          e.stopPropagation();
+          handlePlayerDpadUp();
+          return;
+        }
+        if (e.key === 'ArrowDown' || e.keyCode === 40 || e.keyCode === 20) {
+          e.preventDefault();
+          e.stopPropagation();
+          handlePlayerDpadDown();
+          return;
+        }
 
         if (e.key === ' ' || e.keyCode === 32 || e.keyCode === 179 || e.keyCode === 23 || e.key === 'Select' || e.key === 'Ok' || ((e.key === 'Enter' || e.keyCode === 13 || e.keyCode === 66) && e.target.tagName !== 'BUTTON')) {
           e.preventDefault();
