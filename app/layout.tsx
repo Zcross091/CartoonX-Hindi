@@ -36,10 +36,10 @@ export default function RootLayout({
         {/* Permanent Hovering Signature Watermark */}
         <div 
           id="author-watermark" 
-          className="fixed bottom-3 right-4 sm:bottom-4 sm:right-6 z-[70] pointer-events-none select-none flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/10 shadow-lg text-[11px] sm:text-xs font-semibold text-slate-300"
+          className="fixed bottom-3 right-4 sm:bottom-4 sm:right-6 z-[70] pointer-events-none select-none flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/90 border border-red-900/40 shadow-lg text-[11px] sm:text-xs font-semibold text-slate-300"
         >
           <span>Made by</span>
-          <span className="font-black text-amber-400 tracking-wide">Zcross</span>
+          <span className="font-black text-red-500 tracking-wide">Zcross</span>
         </div>
         {/* In-App Automatic Updater */}
         <UpdateNotifier />

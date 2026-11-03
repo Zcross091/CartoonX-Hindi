@@ -18,14 +18,14 @@
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #060911;
-      color: #f8fafc;
+      background-color: #080203;
+      color: #ffffff;
       overflow-x: hidden;
       margin: 0;
       padding: 0;
     }
 
-    /* TV Remote D-Pad Focus Ring - High Performance 60fps GPU Composited */
+    /* TV Remote D-Pad Focus Ring - Blood Red & White Theme */
     .tv-focusable {
       transition: transform 0.12s ease-out, outline-color 0.12s ease-out, border-color 0.12s ease-out;
       outline: none !important;
@@ -37,41 +37,41 @@
     .tv-focusable:focus,
     .tv-focusable:focus-visible {
       transform: scale(1.04) translateZ(0) !important;
-      outline: 3px solid #fbbf24 !important;
+      outline: 3px solid #ffffff !important;
       outline-offset: 2px !important;
-      border-color: #fbbf24 !important;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.6) !important;
+      border-color: #dc2626 !important;
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.85), 0 0 6px #ffffff !important;
       z-index: 40 !important;
     }
 
     .player-ctrl:focus {
       transform: scale(1.12) translateZ(0) !important;
-      outline: 3px solid #fbbf24 !important;
+      outline: 3px solid #ffffff !important;
       outline-offset: 2px !important;
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
-      background: #f59e0b !important;
-      color: #090d16 !important;
+      box-shadow: 0 0 24px rgba(220, 38, 38, 0.95), 0 0 6px #ffffff !important;
+      background: #b91c1c !important;
+      color: #ffffff !important;
     }
 
     .tv-tab:focus,
     .season-pill:focus {
-      background: #f59e0b !important;
-      color: #090d16 !important;
+      background: #b91c1c !important;
+      color: #ffffff !important;
       transform: scale(1.04) translateZ(0) !important;
-      outline: 3px solid #fbbf24 !important;
+      outline: 3px solid #ffffff !important;
       outline-offset: 2px !important;
-      border-color: #fbbf24 !important;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.5) !important;
+      border-color: #dc2626 !important;
+      box-shadow: 0 0 18px rgba(220, 38, 38, 0.8), 0 0 4px #ffffff !important;
     }
 
     .nav-btn:focus {
       transform: scale(1.05) translateZ(0) !important;
-      outline: 3px solid #fbbf24 !important;
+      outline: 3px solid #ffffff !important;
       outline-offset: 2px !important;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.7) !important;
-      background: #f59e0b !important;
-      color: #090d16 !important;
-      border-color: #fbbf24 !important;
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.85), 0 0 4px #ffffff !important;
+      background: #b91c1c !important;
+      color: #ffffff !important;
+      border-color: #dc2626 !important;
     }
 
     /* Hide scrollbars for clean TV display */
@@ -79,10 +79,10 @@
       display: none;
     }
 
-    /* Fast opaque GPU-friendly TV surface - NO expensive backdrop-filter: blur */
+    /* Fast opaque GPU-friendly TV surface - Blood Red Glass */
     .glass-tv {
-      background: #0d1527;
-      border: 1px solid rgba(51, 65, 85, 0.6);
+      background: #110406;
+      border: 1px solid rgba(185, 28, 28, 0.35);
     }
 
     /* Virtualized rendering: skip layout & paint for offscreen cards */
@@ -120,15 +120,15 @@
 
   <!-- ================= 4-SECOND ANIMATED TV SPLASH SCREEN ================= -->
   <div id="splash-screen"
-    class="fixed inset-0 z-[100] bg-[#060911] flex flex-col items-center justify-center p-6 text-center transition-opacity duration-700">
+    class="fixed inset-0 z-[100] bg-[#080203] flex flex-col items-center justify-center p-6 text-center transition-opacity duration-700">
     <div class="absolute w-[500px] h-[500px] rounded-full pointer-events-none"
-      style="background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(236, 72, 153, 0.1) 40%, transparent 70%);">
+      style="background: radial-gradient(circle, rgba(185, 28, 28, 0.3) 0%, rgba(127, 29, 29, 0.15) 50%, transparent 75%);">
     </div>
 
     <div class="relative z-10 flex flex-col items-center space-y-6">
       <div
-        class="relative w-32 h-32 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-pink-500 to-indigo-500 shadow-2xl shadow-orange-500/30 animate-pulse">
-        <div class="w-full h-full bg-[#0a0f1d] rounded-[22px] flex items-center justify-center overflow-hidden p-4">
+        class="relative w-32 h-32 rounded-3xl p-1 bg-gradient-to-tr from-red-600 via-rose-600 to-red-900 shadow-2xl shadow-red-900/50 animate-pulse">
+        <div class="w-full h-full bg-[#120507] rounded-[22px] flex items-center justify-center overflow-hidden p-4">
           <img src="logo.png" alt="CartoonX" class="w-full h-full object-contain"
             onerror="this.outerHTML='<span class=\'text-6xl\'>📺</span>'" />
         </div>
@@ -136,74 +136,74 @@
 
       <div>
         <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
-          Cartoon<span class="text-pink-500">X</span> <span class="text-amber-400">TV</span>
+          Cartoon<span class="text-red-600">X</span> <span class="text-white">TV</span>
         </h1>
-        <p class="text-xs sm:text-sm text-slate-400 font-bold mt-1 tracking-wider uppercase">
+        <p class="text-xs sm:text-sm text-slate-300 font-bold mt-1 tracking-wider uppercase">
           Peak Gen-Z & Anime Hindi Cartoons
         </p>
       </div>
 
       <div
-        class="w-72 sm:w-96 bg-slate-800/80 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700/60 shadow-inner">
-        <div class="splash-animate-bar h-full rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-indigo-500">
+        class="w-72 sm:w-96 bg-[#1a070a] h-2.5 rounded-full overflow-hidden p-0.5 border border-red-950/80 shadow-inner">
+        <div class="splash-animate-bar h-full rounded-full bg-gradient-to-r from-red-700 via-red-500 to-white">
         </div>
       </div>
 
-      <p id="splash-status" class="text-xs text-amber-300 font-bold animate-pulse">
+      <p id="splash-status" class="text-xs text-red-400 font-bold animate-pulse">
         Initializing TV Leanback Engine...
       </p>
     </div>
   </div>
 
   <!-- ================= TOP TV HEADER & NAVIGATION ================= -->
-  <header class="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8 pb-5 border-b border-slate-800/80">
+  <header class="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8 pb-5 border-b border-red-950/60">
     <!-- Left: Logo & Title -->
     <div class="flex items-center gap-4">
       <div
-        class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-indigo-500 p-0.5 shadow-lg shadow-pink-500/20">
-        <div class="w-full h-full bg-[#0a0f1d] rounded-[14px] flex items-center justify-center overflow-hidden p-1.5">
+        class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-600 to-red-900 p-0.5 shadow-lg shadow-red-900/30">
+        <div class="w-full h-full bg-[#120507] rounded-[14px] flex items-center justify-center overflow-hidden p-1.5">
           <img src="logo.png" alt="CartoonX" class="w-full h-full object-contain"
             onerror="this.outerHTML='<span class=\'text-2xl\'>📺</span>'" />
         </div>
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-3xl font-black tracking-tight text-white">Cartoon<span class="text-pink-500">X</span></h1>
+          <h1 class="text-3xl font-black tracking-tight text-white">Cartoon<span class="text-red-600">X</span></h1>
           <span
-            class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full shadow-md">
+            class="bg-gradient-to-r from-red-700 to-red-900 text-white font-black text-xs px-2.5 py-0.5 rounded-full shadow-md border border-red-500/40">
             TV Edition
           </span>
         </div>
-        <p class="text-xs text-slate-400 font-bold">Watch Hindi Dubbed Cartoons</p>
+        <p class="text-xs text-slate-300 font-bold">Watch Hindi Dubbed Cartoons</p>
       </div>
     </div>
 
     <!-- Center: Main TV Navigation Tabs [ Home | Library | Downloads | Settings ] -->
     <nav class="flex items-center gap-2.5" id="main-nav">
       <button id="nav-btn-home" tabindex="0" onclick="switchView('home')"
-        class="tv-focusable nav-btn active-nav px-5 py-2.5 rounded-2xl bg-amber-500 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg">
+        class="tv-focusable nav-btn active-nav px-5 py-2.5 rounded-2xl bg-red-700 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-red-900/50 border border-red-500">
         <span>🏠</span>
         <span>Home</span>
       </button>
 
       <button id="nav-btn-library" tabindex="0" onclick="switchView('library')"
-        class="tv-focusable nav-btn px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm flex items-center gap-2">
+        class="tv-focusable nav-btn px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm flex items-center gap-2">
         <span>📚</span>
         <span>Library</span>
         <span id="nav-library-badge"
-          class="hidden px-2 py-0.5 bg-pink-500 text-white text-[10px] rounded-full font-black">0</span>
+          class="hidden px-2 py-0.5 bg-red-600 text-white text-[10px] rounded-full font-black">0</span>
       </button>
 
       <button id="nav-btn-downloads" tabindex="0" onclick="switchView('downloads')"
-        class="tv-focusable nav-btn px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm flex items-center gap-2">
+        class="tv-focusable nav-btn px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm flex items-center gap-2">
         <span>⬇️</span>
         <span>Downloads</span>
         <span id="nav-downloads-badge"
-          class="hidden px-2 py-0.5 bg-emerald-400 text-slate-950 text-[10px] rounded-full font-black">0</span>
+          class="hidden px-2 py-0.5 bg-white text-red-950 text-[10px] rounded-full font-black">0</span>
       </button>
 
       <button id="nav-btn-settings" tabindex="0" onclick="switchView('settings')"
-        class="tv-focusable nav-btn px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm flex items-center gap-2">
+        class="tv-focusable nav-btn px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm flex items-center gap-2">
         <span>⚙️</span>
         <span>Settings</span>
       </button>
@@ -213,7 +213,7 @@
     <div class="flex items-center gap-3">
       <div class="relative">
         <input id="tv-search" type="text" placeholder="Search cartoons or anime..." tabindex="0"
-          class="tv-focusable bg-slate-900/90 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-2xl border border-slate-700 w-52 sm:w-64 lg:w-72 placeholder-slate-500"
+          class="tv-focusable bg-[#140608] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-2xl border border-[#3b1216] w-52 sm:w-64 lg:w-72 placeholder-slate-400"
           oninput="handleSearch(this.value)" />
       </div>
     </div>
@@ -224,35 +224,35 @@
     <!-- Character Filter Shelves -->
     <nav class="flex items-center gap-3 overflow-x-auto pb-2" id="character-shelves">
       <button tabindex="0" onclick="filterByCharacter('all')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-amber-500 text-slate-950 font-black text-xs sm:text-sm shadow-md whitespace-nowrap active-tab">All
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-red-700 text-white font-black text-xs sm:text-sm shadow-md shadow-red-900/40 border border-red-500 whitespace-nowrap active-tab">All
         Cartoons</button>
       <button tabindex="0" onclick="filterByCharacter('Ben 10')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Ben
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Ben
         10</button>
       <button tabindex="0" onclick="filterByCharacter('Courage')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Courage
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Courage
         the Cowardly Dog</button>
       <button tabindex="0" onclick="filterByCharacter('Doraemon')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Doraemon</button>
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Doraemon</button>
       <button tabindex="0" onclick="filterByCharacter('Shinchan')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Shinchan</button>
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Shinchan</button>
       <button tabindex="0" onclick="filterByCharacter('Pokemon')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Pokemon</button>
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Pokemon</button>
       <button tabindex="0" onclick="filterByCharacter('Naruto')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Naruto</button>
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Naruto</button>
       <button tabindex="0" onclick="filterByCharacter('Disney & CN')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Disney
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Disney
         & CN Classics</button>
       <button tabindex="0" onclick="filterByCharacter('Huddy')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">💀
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">💀
         Huddy Mera Buddy</button>
       <button tabindex="0" onclick="filterByCharacter('Movies')"
-        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Movies</button>
+        class="tv-focusable tv-tab px-5 py-2.5 rounded-2xl bg-[#140608] border border-[#2b0c10] text-slate-300 font-black text-xs sm:text-sm whitespace-nowrap">Movies</button>
     </nav>
 
     <!-- Hero Spotlight Banner -->
     <section id="hero-spotlight"
-      class="relative rounded-3xl overflow-hidden glass-tv border border-slate-700/80 p-8 sm:p-12 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent">
+      class="relative rounded-3xl overflow-hidden glass-tv border border-red-950/80 p-8 sm:p-12 shadow-2xl bg-gradient-to-r from-[#0a0204] via-[#0e0406]/90 to-transparent">
       <div id="spotlight-backdrop"
         class="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none transition-opacity duration-300"
         style="background-image: url('https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg');">
@@ -260,10 +260,10 @@
       <div class="relative z-10 max-w-2xl space-y-4">
         <div class="flex items-center gap-2">
           <span
-            class="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-md">
+            class="bg-gradient-to-r from-red-700 to-red-900 text-white font-black text-xs px-3 py-1 rounded-full shadow-md border border-red-500/40">
             🔥 Peak Gen-Z Favorite
           </span>
-          <span class="bg-blue-600/60 text-white font-bold text-xs px-3 py-1 rounded-full border border-blue-400/30">
+          <span class="bg-[#1a070a] text-white font-bold text-xs px-3 py-1 rounded-full border border-red-500/30">
             Full HD 1080p • Hindi Audio
           </span>
         </div>
@@ -279,18 +279,18 @@
 
         <div class="flex items-center gap-4 pt-2">
           <button id="spotlight-play-btn" tabindex="0" onclick="playSpotlightShow()"
-            class="tv-focusable flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-slate-950 font-black text-base shadow-xl shadow-orange-500/30 cursor-pointer">
+            class="tv-focusable flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white font-black text-base shadow-xl shadow-red-900/50 border border-red-400/50 cursor-pointer">
             <span class="text-xl">▶</span>
             <span>Watch S1 E1</span>
           </button>
 
           <button id="spotlight-episodes-btn" tabindex="0" onclick="openSpotlightShowPage()"
-            class="tv-focusable flex items-center gap-2 px-6 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 cursor-pointer">
+            class="tv-focusable flex items-center gap-2 px-6 py-4 rounded-2xl bg-[#140608] hover:bg-[#20080c] text-white font-bold text-sm border border-[#3b1216] cursor-pointer">
             <span>Show Details & Seasons</span>
           </button>
 
           <button id="spotlight-fav-btn" tabindex="0" onclick="toggleSpotlightWatchlist()"
-            class="tv-focusable flex items-center gap-2 px-5 py-4 rounded-2xl bg-slate-900 text-amber-300 font-bold text-sm border border-slate-800 cursor-pointer">
+            class="tv-focusable flex items-center gap-2 px-5 py-4 rounded-2xl bg-[#140608] text-white font-bold text-sm border border-[#3b1216] cursor-pointer">
             <span>⭐ Save to Library</span>
           </button>
         </div>
@@ -327,7 +327,7 @@
     <!-- Top Back Navigation Bar -->
     <div class="flex items-center justify-between">
       <button id="detail-back-btn" tabindex="0" onclick="closeShowDetailsPage()"
-        class="tv-focusable flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-xs sm:text-sm hover:border-amber-400 cursor-pointer">
+        class="tv-focusable flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-black text-xs sm:text-sm hover:border-red-500 cursor-pointer">
         <span class="text-base">⬅</span>
         <span>Back to Cartoons</span>
       </button>
@@ -335,13 +335,13 @@
       <div class="flex items-center gap-3 text-xs font-black text-slate-400">
         <span id="detail-breadcrumb-char" class="text-white">Cartoon Network</span>
         <span>•</span>
-        <span id="detail-breadcrumb-seasons" class="text-amber-400">4 Seasons Available</span>
+        <span id="detail-breadcrumb-seasons" class="text-red-400">4 Seasons Available</span>
       </div>
     </div>
 
     <!-- Cinematic Hero Section with Backdrop Artwork -->
     <section
-      class="relative rounded-3xl overflow-hidden glass-tv border border-slate-700/80 p-6 sm:p-10 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-950/95 to-slate-900/80">
+      class="relative rounded-3xl overflow-hidden glass-tv border border-red-950/80 p-6 sm:p-10 shadow-2xl bg-gradient-to-r from-[#0a0204] via-[#0e0406]/95 to-[#160609]/80">
       <div id="detail-backdrop-img"
         class="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none transition-opacity duration-300">
       </div>
@@ -349,7 +349,7 @@
       <div class="relative z-10 flex flex-col md:flex-row items-start gap-8">
         <!-- Big Vertical Poster -->
         <div
-          class="w-44 sm:w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-slate-900 flex-shrink-0 border-2 border-slate-700/80">
+          class="w-44 sm:w-56 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-[#140608] flex-shrink-0 border-2 border-red-950/80">
           <img id="detail-poster-img" src="" alt="Show Poster" class="w-full h-full object-cover"
             onerror="this.src='https://static.tvmaze.com/uploads/images/original_untouched/6/16288.jpg'" />
         </div>
@@ -358,18 +358,18 @@
         <div class="space-y-4 flex-1">
           <div class="flex flex-wrap items-center gap-2.5">
             <span id="detail-badge-char"
-              class="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-md">
+              class="bg-gradient-to-r from-red-700 to-red-900 text-white font-black text-xs px-3 py-1 rounded-full shadow-md border border-red-500/40">
               Ben 10
             </span>
-            <span class="bg-blue-600/70 text-white font-bold text-xs px-3 py-1 rounded-full border border-blue-400/30">
+            <span class="bg-[#1a070a] text-white font-bold text-xs px-3 py-1 rounded-full border border-red-500/30">
               1080p Full HD • Hindi Audio
             </span>
             <span id="detail-badge-seasons"
-              class="bg-slate-800 text-slate-300 font-bold text-xs px-3 py-1 rounded-full border border-slate-700">
+              class="bg-[#140608] text-white font-bold text-xs px-3 py-1 rounded-full border border-[#3b1216]">
               4 Seasons
             </span>
             <span id="detail-badge-episodes"
-              class="bg-emerald-500/20 text-emerald-300 font-bold text-xs px-3 py-1 rounded-full border border-emerald-500/30">
+              class="bg-red-950/60 text-white font-bold text-xs px-3 py-1 rounded-full border border-red-500/30">
               49 Episodes
             </span>
           </div>
@@ -385,13 +385,13 @@
           <!-- Quick Action Buttons -->
           <div class="flex flex-wrap items-center gap-4 pt-3">
             <button id="detail-play-first-btn" tabindex="0" onclick="playFirstEpisodeOfShow()"
-              class="tv-focusable flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-slate-950 font-black text-sm shadow-xl shadow-orange-500/30 cursor-pointer">
+              class="tv-focusable flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white font-black text-sm shadow-xl shadow-red-900/50 border border-red-400/50 cursor-pointer">
               <span class="text-lg">▶</span>
               <span id="detail-play-btn-text">Watch S1 E1</span>
             </button>
 
             <button id="detail-watchlist-btn" tabindex="0" onclick="toggleDetailWatchlist()"
-              class="tv-focusable flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-amber-300 font-bold text-xs sm:text-sm hover:border-amber-400 cursor-pointer">
+              class="tv-focusable flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-bold text-xs sm:text-sm hover:border-red-500 cursor-pointer">
               <span id="detail-watchlist-text">⭐ Save to Library</span>
             </button>
           </div>
@@ -401,7 +401,7 @@
 
     <!-- MovieBox-Style Seasons & Episodes Selector Header -->
     <section class="space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-red-950/70 pb-4">
         <div class="flex items-center gap-3">
           <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
             <span>Seasons & Episodes</span>
@@ -409,8 +409,8 @@
 
           <!-- MovieBox Season Dropdown Selector -->
           <div
-            class="relative flex items-center bg-slate-900 border border-amber-500/40 rounded-2xl px-4 py-2 shadow-lg">
-            <span class="text-xs font-black text-amber-400 mr-2 uppercase tracking-wider">Season:</span>
+            class="relative flex items-center bg-[#140608] border border-red-600/40 rounded-2xl px-4 py-2 shadow-lg">
+            <span class="text-xs font-black text-red-400 mr-2 uppercase tracking-wider">Season:</span>
             <select id="detail-season-select" tabindex="0" onchange="selectDetailSeason(parseInt(this.value, 10))"
               class="tv-focusable bg-transparent text-white font-extrabold text-xs sm:text-sm cursor-pointer outline-none border-0">
               <!-- Populated dynamically via JavaScript -->
@@ -421,13 +421,13 @@
         <div class="flex items-center gap-3">
           <!-- MovieBox Sort Toggle -->
           <button id="detail-sort-btn" tabindex="0" onclick="toggleDetailSort()"
-            class="tv-focusable px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-black text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer shadow-md">
+            class="tv-focusable px-4 py-2 rounded-xl bg-[#140608] border border-[#3b1216] text-xs font-black text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer shadow-md">
             <span id="detail-sort-icon">⬇</span>
             <span id="detail-sort-text">Oldest First</span>
           </button>
 
           <span id="detail-active-season-count"
-            class="text-xs text-amber-400 font-black px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+            class="text-xs text-red-400 font-black px-3 py-1.5 bg-red-950/40 border border-red-500/30 rounded-xl">
             Episodes Ready
           </span>
         </div>
@@ -451,17 +451,17 @@
   <main id="view-library" class="tab-view hidden space-y-10">
     <!-- Watchlist Section -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div class="flex items-center justify-between border-b border-red-950/70 pb-3">
         <h2 class="text-2xl font-black text-white flex items-center gap-2">
           <span>⭐ Saved to Watchlist</span>
         </h2>
-        <span id="watchlist-count" class="text-xs text-amber-400 font-bold">0 Shows Saved</span>
+        <span id="watchlist-count" class="text-xs text-red-400 font-bold">0 Shows Saved</span>
       </div>
 
       <div id="watchlist-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
         <!-- Injected via JS -->
       </div>
-      <div id="watchlist-empty" class="text-center py-12 glass-tv rounded-3xl border border-slate-800 hidden">
+      <div id="watchlist-empty" class="text-center py-12 glass-tv rounded-3xl border border-red-950/80 hidden">
         <span class="text-4xl">⭐</span>
         <h4 class="text-lg font-black text-white mt-2">Your Watchlist is Empty</h4>
         <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">
@@ -472,12 +472,12 @@
 
     <!-- Watch History Section -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div class="flex items-center justify-between border-b border-red-950/70 pb-3">
         <h2 class="text-2xl font-black text-white flex items-center gap-2">
           <span>📜 Watch History & Progress</span>
         </h2>
         <button tabindex="0" onclick="clearWatchHistory()"
-          class="tv-focusable text-xs text-rose-400 font-bold px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
+          class="tv-focusable text-xs text-red-400 font-bold px-3 py-1.5 rounded-xl bg-[#140608] border border-[#3b1216]">
           Clear History
         </button>
       </div>
@@ -485,7 +485,7 @@
       <div id="history-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <!-- Injected via JS -->
       </div>
-      <div id="history-empty" class="text-center py-8 glass-tv rounded-3xl border border-slate-800 hidden">
+      <div id="history-empty" class="text-center py-8 glass-tv rounded-3xl border border-red-950/80 hidden">
         <p class="text-xs text-slate-400">No episodes watched recently.</p>
       </div>
     </section>
@@ -494,7 +494,7 @@
   <!-- ================= VIEW 4: DOWNLOADS VIEW ================= -->
   <main id="view-downloads" class="tab-view hidden space-y-8">
     <!-- TV Storage Bar -->
-    <section class="glass-tv rounded-3xl border border-slate-700/80 p-6 sm:p-8 space-y-4">
+    <section class="glass-tv rounded-3xl border border-red-950/80 p-6 sm:p-8 space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
@@ -505,24 +505,24 @@
           </p>
         </div>
         <button tabindex="0" onclick="refreshDownloadsList()"
-          class="tv-focusable px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-bold text-amber-300">
+          class="tv-focusable px-4 py-2 rounded-2xl bg-[#140608] border border-[#3b1216] text-xs font-bold text-white hover:border-red-500">
           🔄 Refresh
         </button>
       </div>
 
       <!-- Storage meter visual bar -->
-      <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden flex">
-        <div id="storage-bar-app" class="bg-amber-400 h-full transition-all" style="width: 5%"></div>
-        <div id="storage-bar-free" class="bg-emerald-500 h-full transition-all" style="width: 70%"></div>
+      <div class="w-full bg-[#1b070a] h-3 rounded-full overflow-hidden flex border border-red-950/60">
+        <div id="storage-bar-app" class="bg-red-600 h-full transition-all" style="width: 5%"></div>
+        <div id="storage-bar-free" class="bg-white/80 h-full transition-all" style="width: 70%"></div>
       </div>
 
       <div class="flex items-center gap-6 text-xs font-bold text-slate-300">
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+          <span class="w-3 h-3 rounded-full bg-red-600"></span>
           <span>CartoonX Offline Media: <span id="storage-app-text" class="text-white">0 MB</span></span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="w-3 h-3 rounded-full bg-white"></span>
           <span>Free TV Storage: <span id="storage-free-text" class="text-white">0 GB</span></span>
         </div>
       </div>
@@ -530,7 +530,7 @@
 
     <!-- Active Downloads Progress Section -->
     <section id="active-downloads-section" class="space-y-4 hidden">
-      <h3 class="text-xl font-black text-amber-300 flex items-center gap-2">
+      <h3 class="text-xl font-black text-red-400 flex items-center gap-2">
         <span class="animate-spin">⏳</span>
         <span>Downloading in Background...</span>
       </h3>
@@ -541,11 +541,11 @@
 
     <!-- Downloaded Episodes Grid -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div class="flex items-center justify-between border-b border-red-950/70 pb-3">
         <h3 class="text-2xl font-black text-white flex items-center gap-2">
           <span>📥 Offline Episodes Ready to Watch</span>
         </h3>
-        <span id="downloads-count-label" class="text-xs text-emerald-400 font-bold">0 Episodes Ready</span>
+        <span id="downloads-count-label" class="text-xs text-white font-bold bg-red-950/80 px-3 py-1 rounded-full border border-red-500/40">0 Episodes Ready</span>
       </div>
 
       <div id="downloads-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -553,7 +553,7 @@
       </div>
 
       <!-- Empty State -->
-      <div id="downloads-empty" class="text-center py-16 glass-tv rounded-3xl border border-slate-800 space-y-3">
+      <div id="downloads-empty" class="text-center py-16 glass-tv rounded-3xl border border-red-950/80 space-y-3">
         <span class="text-5xl">⬇️</span>
         <h4 class="text-xl font-black text-white">No Offline Episodes Downloaded</h4>
         <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
@@ -561,7 +561,7 @@
           and zero internet connection required!
         </p>
         <button tabindex="0" onclick="switchView('home')"
-          class="tv-focusable px-6 py-3 rounded-2xl bg-amber-500 text-slate-950 font-black text-xs inline-block mt-2 cursor-pointer">
+          class="tv-focusable px-6 py-3 rounded-2xl bg-red-700 text-white font-black text-xs inline-block mt-2 cursor-pointer shadow-md shadow-red-900/40 border border-red-500">
           Browse Cartoons to Download
         </button>
       </div>
@@ -570,9 +570,9 @@
 
   <!-- ================= VIEW 5: SETTINGS VIEW ================= -->
   <main id="view-settings" class="tab-view hidden space-y-8 max-w-3xl">
-    <div class="glass-tv rounded-3xl border border-slate-700/80 p-8 space-y-6">
-      <div class="flex items-center gap-4 border-b border-slate-800 pb-6">
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-3xl">📺</div>
+    <div class="glass-tv rounded-3xl border border-red-950/80 p-8 space-y-6">
+      <div class="flex items-center gap-4 border-b border-red-950/70 pb-6">
+        <div class="w-16 h-16 rounded-2xl bg-red-950/60 border border-red-800/40 flex items-center justify-center text-3xl">📺</div>
         <div>
           <h2 class="text-2xl font-black text-white">CartoonX TV Edition</h2>
           <p class="text-xs text-slate-400 font-bold mt-0.5">High Performance Android TV Streaming & Offline Media Hub
@@ -581,26 +581,25 @@
       </div>
 
       <div class="space-y-4 text-sm font-medium text-slate-300">
-        <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+        <div class="flex items-center justify-between p-4 rounded-2xl bg-[#140608] border border-[#3b1216]">
           <div>
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.7</span>
-          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.8</span>
+          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.0</span>
         </div>
 
-        <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+        <div class="flex items-center justify-between p-4 rounded-2xl bg-[#140608] border border-[#3b1216]">
           <div>
             <div class="font-black text-white">Audio Language</div>
             <div class="text-xs text-slate-400">Cartoons dubbed language</div>
           </div>
           <span
-            class="text-xs font-bold px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-xl border border-emerald-500/30">Hindi
+            class="text-xs font-bold px-3 py-1 bg-red-950/80 text-white rounded-xl border border-red-500/40">Hindi
             (Clean English UI)</span>
         </div>
 
-        <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+        <div class="flex items-center justify-between p-4 rounded-2xl bg-[#140608] border border-[#3b1216]">
           <div>
             <div class="font-black text-white">Native Streaming Engines</div>
             <div class="text-xs text-slate-400">Multi-provider scrapers</div>
@@ -609,14 +608,14 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-4 pt-4 border-t border-slate-800">
+      <div class="flex items-center gap-4 pt-4 border-t border-red-950/70">
         <button tabindex="0" onclick="checkForAppUpdates()"
-          class="tv-focusable px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs cursor-pointer shadow-lg">
+          class="tv-focusable px-6 py-3 rounded-2xl bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white font-black text-xs cursor-pointer shadow-lg shadow-red-900/50 border border-red-400/40">
           Check for App Updates
         </button>
 
         <button tabindex="0" onclick="clearAllAppData()"
-          class="tv-focusable px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-rose-400 font-black text-xs border border-slate-800 cursor-pointer">
+          class="tv-focusable px-6 py-3 rounded-2xl bg-[#140608] hover:bg-[#20080c] text-white font-black text-xs border border-[#3b1216] cursor-pointer">
           Clear App Cache & Data
         </button>
       </div>
@@ -635,7 +634,7 @@
     <div id="seek-feedback"
       class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 opacity-0 z-20">
       <div id="seek-feedback-text"
-        class="px-8 py-4 rounded-3xl bg-slate-950/90 border border-amber-500/50 text-amber-400 font-black text-3xl shadow-2xl">
+        class="px-8 py-4 rounded-3xl bg-red-950/95 border border-red-500 text-white font-black text-3xl shadow-2xl">
         +10s
       </div>
     </div>
@@ -643,8 +642,8 @@
     <!-- Resolving Source Loading Indicator -->
     <div id="player-loading"
       class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-30 space-y-4">
-      <div class="w-14 h-14 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-      <p id="player-loading-text" class="text-sm font-black text-amber-300 animate-pulse">
+      <div class="w-14 h-14 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+      <p id="player-loading-text" class="text-sm font-black text-red-400 animate-pulse">
         Resolving 1080p stream...
       </p>
     </div>
@@ -656,27 +655,27 @@
       <div class="flex items-center justify-between pointer-events-auto">
         <div class="flex items-center gap-4">
           <button id="player-back-btn" tabindex="0" onclick="closePlayer()"
-            class="tv-focusable player-ctrl px-5 py-3 rounded-2xl bg-slate-900/90 border border-slate-700 text-white font-black text-sm">
+            class="tv-focusable player-ctrl px-5 py-3 rounded-2xl bg-[#140608]/90 border border-[#3b1216] text-white font-black text-sm">
             ⬅ Exit Player
           </button>
           <div>
             <h3 id="player-title" class="text-xl font-black text-white">Episode Title</h3>
-            <span id="player-quality-label" class="text-xs text-amber-400 font-bold">1080p Full HD • Hindi</span>
+            <span id="player-quality-label" class="text-xs text-red-400 font-bold">1080p Full HD • Hindi</span>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
           <button id="player-fav-btn" tabindex="0" onclick="togglePlayerWatchlist()"
-            class="tv-focusable player-ctrl px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-amber-300 font-bold text-xs">
+            class="tv-focusable player-ctrl px-4 py-3 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-bold text-xs">
             ⭐ Save to Library
           </button>
           <button id="switch-server-btn" tabindex="0" onclick="switchStreamServer()"
-            class="tv-focusable player-ctrl px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-amber-400 font-bold text-xs"
+            class="tv-focusable player-ctrl px-4 py-3 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-bold text-xs"
             title="Switch between 4 stream mirror servers">
             🔄 Server 1
           </button>
           <button id="player-dl-btn" tabindex="0" onclick="downloadCurrentPlayerEpisode()"
-            class="tv-focusable player-ctrl px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs">
+            class="tv-focusable player-ctrl px-4 py-3 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-bold text-xs">
             ⬇️ Download Episode
           </button>
         </div>
@@ -688,7 +687,7 @@
         <div class="flex items-center gap-3 text-xs font-bold text-slate-300">
           <span id="player-current-time">0:00</span>
           <div class="flex-1 bg-slate-800 h-2.5 rounded-full overflow-hidden">
-            <div id="player-progress" class="bg-gradient-to-r from-amber-400 to-pink-500 h-full w-0"></div>
+            <div id="player-progress" class="bg-gradient-to-r from-red-600 to-white h-full w-0"></div>
           </div>
           <span id="player-duration">0:00</span>
         </div>
@@ -696,22 +695,22 @@
         <!-- Interactive Remote Buttons -->
         <div class="flex items-center justify-center gap-5">
           <button id="rewind-btn" tabindex="0" onclick="seekRewind(10)"
-            class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
+            class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-black text-sm">
             ⏪ -10s
           </button>
 
           <button id="play-pause-btn" tabindex="0" onclick="togglePlayPause()"
-            class="tv-focusable player-ctrl px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-base shadow-xl">
+            class="tv-focusable player-ctrl px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-red-800 text-white font-black text-base shadow-xl shadow-red-900/60 border border-red-400">
             ▶ Play
           </button>
 
           <button id="forward-btn" tabindex="0" onclick="seekForward(10)"
-            class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
+            class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-black text-sm">
             ⏩ +10s
           </button>
 
           <button id="next-ep-btn" tabindex="0" onclick="playNextEpisode()"
-            class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-black text-sm">
+            class="tv-focusable player-ctrl px-6 py-3.5 rounded-2xl bg-[#140608] border border-[#3b1216] text-white font-black text-sm">
             ⏭ Next Episode
           </button>
         </div>
@@ -720,8 +719,8 @@
   </div>
 
   <!-- ================= IN-APP UPDATER MODAL ================= -->
-  <div id="update-modal" class="fixed inset-0 z-50 bg-slate-950/95 hidden p-6 flex items-center justify-center">
-    <div class="glass-tv rounded-3xl border border-amber-500/40 p-8 max-w-lg w-full text-center space-y-5 shadow-2xl">
+  <div id="update-modal" class="fixed inset-0 z-50 bg-black/95 hidden p-6 flex items-center justify-center">
+    <div class="glass-tv rounded-3xl border border-red-600/50 p-8 max-w-lg w-full text-center space-y-5 shadow-2xl bg-[#110406]">
       <div class="text-4xl">🚀</div>
       <h2 class="text-2xl font-black text-white">Update Available</h2>
       <p id="update-version-text" class="text-xs text-slate-300 font-medium">
@@ -729,20 +728,20 @@
       </p>
 
       <div id="update-progress-container" class="hidden space-y-2">
-        <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
-          <div id="update-progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full w-0 transition-all">
+        <div class="w-full bg-[#1b070a] h-3 rounded-full overflow-hidden border border-red-950/60">
+          <div id="update-progress-bar" class="bg-gradient-to-r from-red-600 to-white h-full w-0 transition-all">
           </div>
         </div>
-        <p id="update-progress-label" class="text-xs text-emerald-400 font-bold">Downloading update (0%)...</p>
+        <p id="update-progress-label" class="text-xs text-red-400 font-bold">Downloading update (0%)...</p>
       </div>
 
       <div class="flex items-center justify-center gap-3 pt-2">
         <button id="start-update-btn" tabindex="0" onclick="startAppUpdate()"
-          class="tv-focusable px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-sm">
+          class="tv-focusable px-6 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-red-800 text-white font-black text-sm shadow-md shadow-red-900/40 border border-red-500/40">
           Install Update
         </button>
         <button tabindex="0" onclick="closeUpdateModal()"
-          class="tv-focusable px-5 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold text-xs">
+          class="tv-focusable px-5 py-3 rounded-2xl bg-[#140608] text-slate-300 font-bold text-xs border border-[#3b1216]">
           Later
         </button>
       </div>
@@ -751,9 +750,9 @@
 
   <!-- ================= PERMANENT HOVERING SIGNATURE WATERMARK ================= -->
   <div id="author-watermark"
-    class="fixed bottom-3 right-4 sm:bottom-4 sm:right-6 z-[70] pointer-events-none select-none flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/90 border border-white/10 shadow-lg text-[11px] sm:text-xs font-semibold text-slate-300">
+    class="fixed bottom-3 right-4 sm:bottom-4 sm:right-6 z-[70] pointer-events-none select-none flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/90 border border-red-900/40 shadow-lg text-[11px] sm:text-xs font-semibold text-slate-300">
     <span>Made by</span>
-    <span class="font-black text-amber-400 tracking-wide">Zcross</span>
+    <span class="font-black text-red-500 tracking-wide">Zcross</span>
   </div>
 
   <!-- ================= SCRAPER, DECRYPTOR, & TV CONTROLLER ================= -->
@@ -13576,14 +13575,14 @@
 
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active-nav', 'bg-amber-500', 'text-slate-950', 'shadow-lg');
-        btn.classList.add('bg-slate-900', 'text-slate-300', 'border', 'border-slate-800');
+        btn.classList.remove('active-nav', 'bg-red-700', 'text-white', 'shadow-lg', 'border-red-500');
+        btn.classList.add('bg-[#140608]', 'text-slate-300', 'border', 'border-[#2b0c10]');
       });
 
       const activeBtn = document.getElementById('nav-btn-' + tabName);
       if (activeBtn) {
-        activeBtn.classList.add('active-nav', 'bg-amber-500', 'text-slate-950', 'shadow-lg');
-        activeBtn.classList.remove('bg-slate-900', 'text-slate-300', 'border-slate-800');
+        activeBtn.classList.add('active-nav', 'bg-red-700', 'text-white', 'shadow-lg', 'border-red-500');
+        activeBtn.classList.remove('bg-[#140608]', 'border-[#2b0c10]');
       }
 
       const activeView = document.getElementById('view-' + tabName);
@@ -13658,8 +13657,8 @@
             pill.id = `season-pill-${season.seasonNumber}`;
             pill.onclick = () => selectDetailSeason(season.seasonNumber);
             pill.className = `tv-focusable season-pill px-4 py-2 rounded-xl font-black text-xs sm:text-sm whitespace-nowrap cursor-pointer transition-all ${idx === 0
-              ? 'bg-amber-500 text-slate-950 shadow-md font-black'
-              : 'bg-slate-900 border border-slate-800 text-slate-300'
+              ? 'bg-red-700 text-white shadow-md shadow-red-900/40 border border-red-500 font-black'
+              : 'bg-[#140608] border border-[#2b0c10] text-slate-300'
               }`;
             pill.textContent = season.name;
             seasonTabsContainer.appendChild(pill);
@@ -13699,14 +13698,14 @@
 
       // Sync Pills Highlight
       document.querySelectorAll('.season-pill').forEach(pill => {
-        pill.classList.remove('bg-amber-500', 'text-slate-950', 'shadow-md');
-        pill.classList.add('bg-slate-900', 'border', 'border-slate-800', 'text-slate-300');
+        pill.classList.remove('bg-red-700', 'text-white', 'shadow-md', 'shadow-red-900/40', 'border-red-500');
+        pill.classList.add('bg-[#140608]', 'border', 'border-[#2b0c10]', 'text-slate-300');
       });
 
       const selectedPill = document.getElementById(`season-pill-${seasonNum}`);
       if (selectedPill) {
-        selectedPill.classList.add('bg-amber-500', 'text-slate-950', 'shadow-md');
-        selectedPill.classList.remove('bg-slate-900', 'border-slate-800', 'text-slate-300');
+        selectedPill.classList.add('bg-red-700', 'text-white', 'shadow-md', 'shadow-red-900/40', 'border-red-500');
+        selectedPill.classList.remove('bg-[#140608]', 'border-[#2b0c10]', 'text-slate-300');
       }
 
       const playBtnText = document.getElementById('detail-play-btn-text');
@@ -13752,7 +13751,7 @@
 
       episodes.forEach((ep, idx) => {
         const card = document.createElement('div');
-        card.className = 'tv-focusable card-tv glass-tv rounded-2xl border border-slate-800 p-3 space-y-3 cursor-pointer group hover:border-amber-500/60';
+        card.className = 'tv-focusable card-tv glass-tv rounded-2xl border border-[#2b0c10] p-3 space-y-3 cursor-pointer group hover:border-red-500/80';
         card.onclick = (e) => {
           if (e.target.tagName !== 'BUTTON') playEpisodeFromList(idx);
         };
@@ -13762,21 +13761,21 @@
         const eNum = ep.episodeNumber || idx + 1;
 
         card.innerHTML = `
-          <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
+          <div class="relative aspect-video rounded-xl overflow-hidden bg-[#140608]">
             <img src="${thumb}" alt="${ep.title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='${activeDetailShow.poster}'" />
-            <span class="absolute top-2 left-2 bg-slate-950/90 text-amber-400 font-black text-[10px] px-2 py-0.5 rounded-md border border-amber-400/30">
+            <span class="absolute top-2 left-2 bg-[#080203]/90 text-white font-black text-[10px] px-2 py-0.5 rounded-md border border-red-600/40">
               S${sNum}E${eNum}
             </span>
-            <span class="absolute top-2 right-2 bg-black/90 text-emerald-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute top-2 right-2 bg-black/90 text-red-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
               1080p FHD
             </span>
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
-              <span class="text-3xl text-amber-400">▶</span>
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/50 transition-opacity">
+              <span class="text-3xl text-red-500">▶</span>
             </div>
           </div>
 
           <div>
-            <h4 class="font-black text-xs text-white line-clamp-1 group-hover:text-amber-300" title="${ep.title}">${ep.title}</h4>
+            <h4 class="font-black text-xs text-white line-clamp-1 group-hover:text-red-400" title="${ep.title}">${ep.title}</h4>
             <span class="text-[10px] text-slate-400 font-bold">Hindi Dubbed • 23 min</span>
             ${ep.overview ? `<p class="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug">${ep.overview}</p>` : ''}
           </div>
@@ -13785,14 +13784,14 @@
             <button 
               tabindex="0" 
               onclick="playEpisodeFromList(${idx})" 
-              class="tv-focusable flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs text-center cursor-pointer shadow-md"
+              class="tv-focusable flex-1 py-2 rounded-xl bg-red-700 hover:bg-red-600 text-white font-black text-xs text-center cursor-pointer shadow-md shadow-red-900/40 border border-red-500/40"
             >
               ▶ Play
             </button>
             <button 
               tabindex="0" 
               onclick="triggerEpisodeDownload(activeDetailShow, currentEpisodeList[${idx}])" 
-              class="tv-focusable px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-slate-700 font-black text-xs cursor-pointer"
+              class="tv-focusable px-3 py-2 rounded-xl bg-[#140608] hover:bg-[#20080c] text-white border border-[#3b1216] font-black text-xs cursor-pointer"
               title="Download Episode for Offline Playback"
             >
               ⬇️
@@ -14359,15 +14358,15 @@
         card.innerHTML = `
           <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-2">
             <img src="${show.poster}" alt="${show.title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
-            <span class="absolute top-2 left-2 bg-slate-950/90 text-amber-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-amber-400/30">
+            <span class="absolute top-2 left-2 bg-[#080203]/90 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-red-600/40">
               ${show.character}
             </span>
             ${isSaved ? '<span class="absolute top-2 right-2 text-xs">⭐</span>' : ''}
-            <span class="absolute bottom-2 right-2 bg-black/90 text-white font-black text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute bottom-2 right-2 bg-black/90 text-white font-black text-[10px] px-2 py-0.5 rounded-md border border-red-900/40">
               ${seasonsCount} Season${seasonsCount > 1 ? 's' : ''}
             </span>
           </div>
-          <h4 class="font-black text-xs text-white line-clamp-1 group-hover:text-amber-300">${show.title}</h4>
+          <h4 class="font-black text-xs text-white line-clamp-1 group-hover:text-red-400">${show.title}</h4>
           <span class="text-[10px] text-slate-400 font-bold">${allEps.length} Episodes • 1080p</span>
         `;
         grid.appendChild(card);
@@ -14842,10 +14841,10 @@
         card.innerHTML = `
           <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
             <img src="${item.posterUrl}" alt="${item.showTitle}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
-            <span class="absolute top-2 left-2 bg-emerald-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute top-2 left-2 bg-red-700 text-white font-black text-[10px] px-2 py-0.5 rounded-md border border-red-500/40">
               OFFLINE READY
             </span>
-            <span class="absolute bottom-2 right-2 bg-black/90 text-amber-300 font-bold text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute bottom-2 right-2 bg-black/90 text-white font-bold text-[10px] px-2 py-0.5 rounded-md border border-red-900/40">
               ${item.sizeMb || 120} MB
             </span>
           </div>
@@ -14859,7 +14858,7 @@
             <button 
               tabindex="0" 
               onclick="playOfflineEpisode('${item.id}', '${escapeAttr(item.showTitle)}', '${escapeAttr(item.episodeTitle)}', '${item.localUrl}', '${item.posterUrl}')" 
-              class="tv-focusable flex-1 py-2 rounded-xl bg-amber-500 text-slate-950 font-black text-xs text-center cursor-pointer"
+              class="tv-focusable flex-1 py-2 rounded-xl bg-red-700 text-white border border-red-500/40 font-black text-xs text-center cursor-pointer"
             >
               ▶ Play Offline
             </button>
@@ -14925,10 +14924,10 @@
         row.innerHTML = `
           <div class="flex items-center justify-between text-xs font-bold">
             <span class="text-white">${episodeId}</span>
-            <span id="dl-percent-${episodeId}" class="text-amber-400">0%</span>
+            <span id="dl-percent-${episodeId}" class="text-red-400">0%</span>
           </div>
-          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-            <div id="dl-bar-${episodeId}" class="bg-gradient-to-r from-amber-400 to-emerald-400 h-full w-0 transition-all"></div>
+          <div class="w-full bg-[#1b070a] h-2.5 rounded-full overflow-hidden border border-red-950/60">
+            <div id="dl-bar-${episodeId}" class="bg-gradient-to-r from-red-600 to-white h-full w-0 transition-all"></div>
           </div>
         `;
         list.appendChild(row);
@@ -15036,7 +15035,7 @@
           card.innerHTML = `
             <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-2">
               <img src="${show.poster}" alt="${show.title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
-              <span class="absolute top-2 left-2 bg-slate-950/80 text-amber-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
+              <span class="absolute top-2 left-2 bg-[#080203]/90 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-red-600/40">
                 ${show.character}
               </span>
             </div>
@@ -15065,7 +15064,7 @@
       list.forEach(item => {
         const card = document.createElement('div');
         card.tabIndex = 0;
-        card.className = 'tv-focusable card-tv glass-tv rounded-2xl overflow-hidden border border-slate-800 p-2 cursor-pointer';
+        card.className = 'tv-focusable card-tv glass-tv rounded-2xl overflow-hidden border border-[#3b1216] p-2 cursor-pointer';
         card.onclick = () => {
           const show = allShows.find(s => s.title === item.showTitle) || allShows[0];
           openShowDetailsPage(show);
@@ -15074,8 +15073,8 @@
         card.innerHTML = `
           <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900 mb-2">
             <img src="${item.poster}" alt="${item.showTitle}" loading="lazy" decoding="async" class="w-full h-full object-cover" />
-            <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-slate-800">
-              <div class="bg-amber-400 h-full" style="width: ${item.percent}%"></div>
+            <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-[#1b070a]">
+              <div class="bg-red-600 h-full" style="width: ${item.percent}%"></div>
             </div>
           </div>
           <h5 class="font-black text-xs text-white line-clamp-1">${item.showTitle}</h5>
@@ -15096,7 +15095,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.0.8';
+        document.getElementById('settings-version-label').textContent = 'v1.1.0';
       }
     }
 
@@ -15231,8 +15230,8 @@
     }
 
     function filterByCharacter(char) {
-      document.querySelectorAll('.tv-tab').forEach(b => b.classList.remove('bg-amber-500', 'text-slate-950', 'active-tab'));
-      event.target.classList.add('bg-amber-500', 'text-slate-950', 'active-tab');
+      document.querySelectorAll('.tv-tab').forEach(b => b.classList.remove('bg-red-700', 'text-white', 'border-red-500', 'active-tab'));
+      event.target.classList.add('bg-red-700', 'text-white', 'border-red-500', 'active-tab');
 
       if (char === 'all') {
         renderShows(allShows);
@@ -15308,8 +15307,8 @@
           card.innerHTML = `
             <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900 mb-2">
               <img src="${item.poster}" alt="${item.showTitle}" class="w-full h-full object-cover" />
-              <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-slate-800">
-                <div class="bg-amber-400 h-full" style="width: ${item.percent}%"></div>
+              <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-[#1b070a]">
+                <div class="bg-red-600 h-full" style="width: ${item.percent}%"></div>
               </div>
             </div>
             <h5 class="font-black text-xs text-white line-clamp-1">${item.showTitle}</h5>
