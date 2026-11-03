@@ -599,7 +599,7 @@
   <!-- ================= FULLSCREEN TV VIDEO PLAYER (INTERACTIVE) ================= -->
   <div id="player-container" class="fixed inset-0 z-50 bg-black hidden flex flex-col justify-between">
     <video id="tv-video" class="w-full h-full object-contain cursor-pointer" playsinline preload="auto" onclick="togglePlayPause()"></video>
-    <iframe id="tv-iframe" class="w-full h-full border-0 hidden relative z-0 pointer-events-auto" allow="autoplay; fullscreen; encrypted-media"></iframe>
+    <iframe id="tv-iframe" class="w-full h-full border-0 hidden relative z-0 pointer-events-auto" allow="autoplay *; fullscreen *; encrypted-media *; picture-in-picture *; accelerometer *; gyroscope *" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
 
     <!-- Center On-Screen Feedback (+10s / -10s Toast) -->
     <div id="seek-feedback" class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 opacity-0 z-20">
@@ -14176,10 +14176,10 @@
 
     let currentStreamServerIndex = 0;
     const STREAM_SERVERS = [
-      { name: 'Server 1 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}` },
-      { name: 'Server 2 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-      { name: 'Server 3 (MultiEmbed)', buildUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
-      { name: 'Server 4 (AutoEmbed)', buildUrl: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}-${s}-${e}` }
+      { name: 'Server 1 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` },
+      { name: 'Server 2 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
+      { name: 'Server 3 (MultiEmbed)', buildUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&autoplay=1` },
+      { name: 'Server 4 (AutoEmbed)', buildUrl: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}-${s}-${e}?autoplay=1` }
     ];
 
     function switchStreamServer() {
@@ -14220,14 +14220,14 @@
             }
           } catch (e) {}
         }
-        return { type: 'iframe', url: 'https://bysekoze.com/e/' + episode.videoCode };
+        return { type: 'iframe', url: 'https://bysekoze.com/e/' + episode.videoCode + '?autoplay=1&autostart=true' };
       }
 
       // 3. Ben 10 Classic (Vidmoly direct native player support)
       if (showId === 'ben-10-classic' && episode.vidmolyCode) {
         if (window.AndroidApp && window.AndroidApp.fetch) {
           try {
-            const embedUrl = 'https://vidmoly.biz/embed-' + episode.vidmolyCode + '.html';
+            const embedUrl = 'https://vidmoly.biz/embed-' + episode.vidmolyCode + '.html?autoplay=1';
             const resHtml = window.AndroidApp.fetch(embedUrl);
             const m = resHtml.match(/sources:\s*\[\s*\{\s*file:\s*['"]([^'"]+)['"]/);
             if (m && m[1]) return { type: 'video', url: m[1] };
