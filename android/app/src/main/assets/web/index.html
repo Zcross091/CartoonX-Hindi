@@ -14262,10 +14262,10 @@
 
     let currentStreamServerIndex = 0;
     const STREAM_SERVERS = [
-      { name: 'Server 1 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` },
-      { name: 'Server 2 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
-      { name: 'Server 3 (VidSrc PM)', buildUrl: (id, s, e) => `https://vidsrc.pm/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` },
-      { name: 'Server 4 (AutoEmbed)', buildUrl: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}-${s}-${e}?autoplay=1` }
+      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true` },
+      { name: 'Server 2 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+      { name: 'Server 3 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
+      { name: 'Server 4 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` }
     ];
 
     function switchStreamServer() {
@@ -14341,7 +14341,7 @@
       }
 
       // 6. Safe default
-      return { type: 'iframe', url: 'https://vidsrc.me/embed/tv?tmdb=897&season=1&episode=1' };
+      return { type: 'iframe', url: 'https://vidlink.pro/tv/897/1/1?autoplay=true' };
     }
 
     // ================= RENDER HOME CATALOG =================

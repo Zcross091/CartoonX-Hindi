@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -111,15 +112,18 @@ public class MainActivity extends Activity {
         cookieManager.setAcceptCookie(true);
         cookieManager.setAcceptThirdPartyCookies(webView, true);
 
-        // Use authentic Google Chrome user-agent (remove WebView indicators '; wv' and 'Version/4.0'
-        // so Cloudflare Turnstile doesn't identify this as a bot or prompt QR verification)
-        String defaultUa = settings.getUserAgentString();
-        String cleanChromeUa = defaultUa.replace("; wv", "").replace("Version/4.0 ", "");
-        settings.setUserAgentString(cleanChromeUa);
+        // Use authentic Desktop Chrome User-Agent so Cloudflare Turnstile never detects a TV
+        // and never triggers the Smart TV "Confirm you're not a robot" Cross-Device QR Code prompt
+        settings.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
 
         webView.addJavascriptInterface(new AndroidAppBridge(), "AndroidApp");
 
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                request.grant(request.getResources());
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
