@@ -76,6 +76,8 @@ public class MainActivity extends Activity {
         setContentView(rootLayout);
 
         webView = new WebView(this);
+        // Force GPU hardware layer rendering for 60fps Leanback TV animations & low-RAM efficiency
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         rootLayout.addView(webView);
 
         updateManager = new UpdateManager(this);
@@ -99,6 +101,10 @@ public class MainActivity extends Activity {
         settings.setLoadWithOverviewMode(true);
         settings.setSupportMultipleWindows(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setLoadsImagesAutomatically(true);
+        // Do not waste GPU VRAM or RAM pre-rasterizing offscreen elements on 2GB-3GB TV hardware
+        settings.setOffscreenPreRaster(false);
 
         // Enable third-party cookies for embedded video players & Cloudflare clearance tokens
         CookieManager cookieManager = CookieManager.getInstance();
@@ -146,6 +152,23 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         downloadExecutor.shutdownNow();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (webView != null && level >= TRIM_MEMORY_MODERATE) {
+            // Free inactive WebView graphics & bitmap memory without dropping current state
+            webView.clearCache(false);
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (webView != null) {
+            webView.clearCache(false);
+        }
     }
 
     /**

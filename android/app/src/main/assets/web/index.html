@@ -21,33 +21,45 @@
       margin: 0;
       padding: 0;
     }
-    /* TV Remote D-Pad Focus Ring */
+    /* TV Remote D-Pad Focus Ring - High Performance 60fps GPU Composited */
     .tv-focusable {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.12s ease-out, outline-color 0.12s ease-out, border-color 0.12s ease-out;
       outline: none !important;
+      will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     .tv-focusable:focus,
     .tv-focusable:focus-visible {
-      transform: scale(1.06) !important;
-      box-shadow: 0 0 35px 6px rgba(245, 158, 11, 0.8), 0 0 12px rgba(255, 255, 255, 0.9) !important;
+      transform: scale(1.04) translateZ(0) !important;
+      outline: 3px solid #fbbf24 !important;
+      outline-offset: 2px !important;
       border-color: #fbbf24 !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.6) !important;
       z-index: 40 !important;
     }
     .player-ctrl:focus {
-      transform: scale(1.18) !important;
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.9) !important;
+      transform: scale(1.12) translateZ(0) !important;
+      outline: 3px solid #fbbf24 !important;
+      outline-offset: 2px !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.8) !important;
       background: #f59e0b !important;
       color: #090d16 !important;
     }
     .tv-tab:focus, .season-pill:focus {
-      background: linear-gradient(135deg, #f59e0b, #ec4899) !important;
+      background: #f59e0b !important;
       color: #090d16 !important;
-      transform: scale(1.06) !important;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.6) !important;
+      transform: scale(1.04) translateZ(0) !important;
+      outline: 3px solid #fbbf24 !important;
+      outline-offset: 2px !important;
+      border-color: #fbbf24 !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.5) !important;
     }
     .nav-btn:focus {
-      transform: scale(1.08) !important;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.8) !important;
+      transform: scale(1.05) translateZ(0) !important;
+      outline: 3px solid #fbbf24 !important;
+      outline-offset: 2px !important;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.7) !important;
       background: #f59e0b !important;
       color: #090d16 !important;
       border-color: #fbbf24 !important;
@@ -56,10 +68,15 @@
     ::-webkit-scrollbar {
       display: none;
     }
+    /* Fast opaque GPU-friendly TV surface - NO expensive backdrop-filter: blur */
     .glass-tv {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(20px);
+      background: #0d1527;
       border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    /* Virtualized rendering: skip layout & paint for offscreen cards */
+    .card-tv {
+      content-visibility: auto;
+      contain-intrinsic-size: 200px 180px;
     }
     /* 4-Second Loading Screen Progress Bar */
     @keyframes splashProgress {
@@ -77,7 +94,7 @@
 
   <!-- ================= 4-SECOND ANIMATED TV SPLASH SCREEN ================= -->
   <div id="splash-screen" class="fixed inset-0 z-[100] bg-[#060911] flex flex-col items-center justify-center p-6 text-center transition-opacity duration-700">
-    <div class="absolute w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-blue-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute w-[500px] h-[500px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(236, 72, 153, 0.1) 40%, transparent 70%);"></div>
 
     <div class="relative z-10 flex flex-col items-center space-y-6">
       <div class="relative w-32 h-32 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-pink-500 to-indigo-500 shadow-2xl shadow-orange-500/30 animate-pulse">
@@ -203,7 +220,7 @@
 
     <!-- Hero Spotlight Banner -->
     <section id="hero-spotlight" class="relative rounded-3xl overflow-hidden glass-tv border border-slate-700/80 p-8 sm:p-12 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent">
-      <div id="spotlight-backdrop" class="absolute inset-0 bg-cover bg-center opacity-30 filter blur-xs pointer-events-none transition-all duration-700" style="background-image: url('https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg');"></div>
+      <div id="spotlight-backdrop" class="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none transition-opacity duration-300" style="background-image: url('https://static.tvmaze.com/uploads/images/original_untouched/225/563589.jpg');"></div>
       <div class="relative z-10 max-w-2xl space-y-4">
         <div class="flex items-center gap-2">
           <span class="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-md">
@@ -302,7 +319,7 @@
 
     <!-- Cinematic Hero Section with Backdrop Artwork -->
     <section class="relative rounded-3xl overflow-hidden glass-tv border border-slate-700/80 p-6 sm:p-10 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-950/95 to-slate-900/80">
-      <div id="detail-backdrop-img" class="absolute inset-0 bg-cover bg-center opacity-20 filter blur-sm pointer-events-none"></div>
+      <div id="detail-backdrop-img" class="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none transition-opacity duration-300"></div>
 
       <div class="relative z-10 flex flex-col md:flex-row items-start gap-8">
         <!-- Big Vertical Poster -->
@@ -677,7 +694,7 @@
   </div>
 
   <!-- ================= IN-APP UPDATER MODAL ================= -->
-  <div id="update-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden p-6 flex items-center justify-center">
+  <div id="update-modal" class="fixed inset-0 z-50 bg-slate-950/95 hidden p-6 flex items-center justify-center">
     <div class="glass-tv rounded-3xl border border-amber-500/40 p-8 max-w-lg w-full text-center space-y-5 shadow-2xl">
       <div class="text-4xl">🚀</div>
       <h2 class="text-2xl font-black text-white">Update Available</h2>
@@ -706,7 +723,7 @@
   <!-- ================= PERMANENT HOVERING SIGNATURE WATERMARK ================= -->
   <div 
     id="author-watermark" 
-    class="fixed bottom-3 right-4 sm:bottom-4 sm:right-6 z-[70] pointer-events-none select-none flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/10 shadow-lg text-[11px] sm:text-xs font-semibold text-slate-300"
+    class="fixed bottom-3 right-4 sm:bottom-4 sm:right-6 z-[70] pointer-events-none select-none flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/90 border border-white/10 shadow-lg text-[11px] sm:text-xs font-semibold text-slate-300"
   >
     <span>Made by</span>
     <span class="font-black text-amber-400 tracking-wide">Zcross</span>
@@ -13530,10 +13547,14 @@
       // Check for updates on startup during the 4-second loading screen
       checkStartupAppUpdate();
 
-      // Launch background live scraper AFTER splash screen finishes
+      // Defer background scraper to 12 seconds so initial TV remote navigation has 100% CPU & GPU priority
       setTimeout(() => {
-        runBackgroundScraper();
-      }, 4200);
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(() => runBackgroundScraper());
+        } else {
+          runBackgroundScraper();
+        }
+      }, 12000);
 
       // Exactly 4 seconds splash screen transition
       setTimeout(() => {
@@ -13741,7 +13762,7 @@
 
       episodes.forEach((ep, idx) => {
         const card = document.createElement('div');
-        card.className = 'tv-focusable glass-tv rounded-2xl border border-slate-800 p-3 space-y-3 cursor-pointer group hover:border-amber-500/60 transition-all';
+        card.className = 'tv-focusable card-tv glass-tv rounded-2xl border border-slate-800 p-3 space-y-3 cursor-pointer group hover:border-amber-500/60';
         card.onclick = (e) => {
           if (e.target.tagName !== 'BUTTON') playEpisodeFromList(idx);
         };
@@ -13752,11 +13773,11 @@
 
         card.innerHTML = `
           <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
-            <img src="${thumb}" alt="${ep.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='${activeDetailShow.poster}'" />
-            <span class="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-md text-amber-400 font-black text-[10px] px-2 py-0.5 rounded-md border border-amber-400/30">
+            <img src="${thumb}" alt="${ep.title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='${activeDetailShow.poster}'" />
+            <span class="absolute top-2 left-2 bg-slate-950/90 text-amber-400 font-black text-[10px] px-2 py-0.5 rounded-md border border-amber-400/30">
               S${sNum}E${eNum}
             </span>
-            <span class="absolute top-2 right-2 bg-black/80 backdrop-blur-md text-emerald-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute top-2 right-2 bg-black/90 text-emerald-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
               1080p FHD
             </span>
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
@@ -13847,18 +13868,25 @@
       }
     }
 
+    let spotlightDebounceTimer = null;
     function updateSpotlight(show) {
       if (!show) return;
       selectedShow = show;
       const titleElem = document.getElementById('spotlight-title');
       const descElem = document.getElementById('spotlight-desc');
-      const bgElem = document.getElementById('spotlight-backdrop');
 
+      // Update text immediately for instant remote feedback
       if (titleElem) titleElem.textContent = show.title;
       if (descElem) descElem.textContent = show.description || `Stream ${show.title} in full 1080p Hindi dubbed audio.`;
-      if (bgElem && show.backdrop) {
-        bgElem.style.backgroundImage = `url('${show.backdrop}')`;
-      }
+
+      // Debounce heavy 1080p backdrop image loading so rapid D-Pad navigation stays butter-smooth at 60fps
+      clearTimeout(spotlightDebounceTimer);
+      spotlightDebounceTimer = setTimeout(() => {
+        const bgElem = document.getElementById('spotlight-backdrop');
+        if (bgElem && show.backdrop) {
+          bgElem.style.backgroundImage = `url('${show.backdrop}')`;
+        }
+      }, 120);
     }
 
     // ================= VERIFIED HIGH-RES METADATA & PUBLIC API SERVICE =================
@@ -14107,7 +14135,15 @@
           if (updatedExistingCatalog || scrapedNewShows.length > 0) {
             // Re-render home catalog with clean consolidated banners
             allShows = [...allShows, ...scrapedNewShows.filter(ns => !allShows.some(s => s.id === ns.id))];
-            renderShows(allShows);
+            if (currentActiveTab === 'home') {
+              const activeEl = document.activeElement;
+              const activeIdx = activeEl ? Array.from(document.getElementById('shows-grid').children).indexOf(activeEl) : -1;
+              renderShows(allShows);
+              if (activeIdx >= 0) {
+                const children = document.getElementById('shows-grid').children;
+                if (children[activeIdx]) children[activeIdx].focus();
+              }
+            }
           }
         }
       } catch (e) {
@@ -14318,7 +14354,7 @@
       shows.forEach((show) => {
         const card = document.createElement('div');
         card.tabIndex = 0;
-        card.className = 'tv-focusable group relative rounded-2xl overflow-hidden glass-tv border border-slate-800 p-2 cursor-pointer';
+        card.className = 'tv-focusable card-tv group relative rounded-2xl overflow-hidden glass-tv border border-slate-800 p-2 cursor-pointer';
         card.onclick = () => openShowDetailsPage(show);
         card.onfocus = () => updateSpotlight(show);
         card.onmouseenter = () => updateSpotlight(show);
@@ -14332,12 +14368,12 @@
 
         card.innerHTML = `
           <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-2">
-            <img src="${show.poster}" alt="${show.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
-            <span class="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md text-amber-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-amber-400/30">
+            <img src="${show.poster}" alt="${show.title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
+            <span class="absolute top-2 left-2 bg-slate-950/90 text-amber-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md border border-amber-400/30">
               ${show.character}
             </span>
             ${isSaved ? '<span class="absolute top-2 right-2 text-xs">⭐</span>' : ''}
-            <span class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md text-white font-black text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute bottom-2 right-2 bg-black/90 text-white font-black text-[10px] px-2 py-0.5 rounded-md">
               ${seasonsCount} Season${seasonsCount > 1 ? 's' : ''}
             </span>
           </div>
@@ -14670,15 +14706,15 @@
       episodes.forEach(item => {
         const card = document.createElement('div');
         card.tabIndex = 0;
-        card.className = 'tv-focusable glass-tv rounded-2xl border border-slate-800 p-3 space-y-3';
+        card.className = 'tv-focusable card-tv glass-tv rounded-2xl border border-slate-800 p-3 space-y-3';
 
         card.innerHTML = `
           <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
-            <img src="${item.posterUrl}" alt="${item.showTitle}" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
+            <img src="${item.posterUrl}" alt="${item.showTitle}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
             <span class="absolute top-2 left-2 bg-emerald-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-md">
               OFFLINE READY
             </span>
-            <span class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md text-amber-300 font-bold text-[10px] px-2 py-0.5 rounded-md">
+            <span class="absolute bottom-2 right-2 bg-black/90 text-amber-300 font-bold text-[10px] px-2 py-0.5 rounded-md">
               ${item.sizeMb || 120} MB
             </span>
           </div>
@@ -14860,7 +14896,7 @@
         watchlist.forEach(show => {
           const card = document.createElement('div');
           card.tabIndex = 0;
-          card.className = 'tv-focusable glass-tv rounded-2xl overflow-hidden border border-slate-800 p-2 cursor-pointer';
+          card.className = 'tv-focusable card-tv glass-tv rounded-2xl overflow-hidden border border-slate-800 p-2 cursor-pointer';
           card.onclick = () => {
             const fullShow = allShows.find(s => s.id === show.id) || show;
             openShowDetailsPage(fullShow);
@@ -14868,7 +14904,7 @@
 
           card.innerHTML = `
             <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-slate-900 mb-2">
-              <img src="${show.poster}" alt="${show.title}" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
+              <img src="${show.poster}" alt="${show.title}" loading="lazy" decoding="async" class="w-full h-full object-cover" onerror="this.src='https://image.tmdb.org/t/p/w780/pT0NlYVIkwM2zAw9oUkePwrOlxW.jpg'" />
               <span class="absolute top-2 left-2 bg-slate-950/80 text-amber-400 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
                 ${show.character}
               </span>
@@ -14898,7 +14934,7 @@
       list.forEach(item => {
         const card = document.createElement('div');
         card.tabIndex = 0;
-        card.className = 'tv-focusable glass-tv rounded-2xl overflow-hidden border border-slate-800 p-2 cursor-pointer';
+        card.className = 'tv-focusable card-tv glass-tv rounded-2xl overflow-hidden border border-slate-800 p-2 cursor-pointer';
         card.onclick = () => {
           const show = allShows.find(s => s.title === item.showTitle) || allShows[0];
           openShowDetailsPage(show);
@@ -14906,7 +14942,7 @@
 
         card.innerHTML = `
           <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-900 mb-2">
-            <img src="${item.poster}" alt="${item.showTitle}" class="w-full h-full object-cover" />
+            <img src="${item.poster}" alt="${item.showTitle}" loading="lazy" decoding="async" class="w-full h-full object-cover" />
             <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-slate-800">
               <div class="bg-amber-400 h-full" style="width: ${item.percent}%"></div>
             </div>
