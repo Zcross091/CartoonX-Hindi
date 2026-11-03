@@ -573,7 +573,7 @@
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.0</span>
+          <span id="settings-version-label" class="font-mono text-amber-400 font-bold">v1.0.6</span>
         </div>
 
         <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
@@ -13450,7 +13450,13 @@
           try {
             const vData = JSON.parse(rawVersion);
             const remoteCode = parseInt(vData.versionCode, 10);
-            const remoteVersionName = vData.version || vData.versionName || vData.tagName || `v${remoteCode}`;
+            const remoteVersionName = (vData.version || vData.versionName || vData.tagName || `v${remoteCode}`).trim();
+
+            const dismissed = localStorage.getItem('cartoonx_dismissed_update');
+            if (dismissed && (dismissed === String(remoteCode) || dismissed === remoteVersionName)) {
+              console.log("Startup update suppressed: user dismissed version " + remoteVersionName);
+              return;
+            }
 
             if (remoteCode > currentVersionCode || isNewerRelease({ tag_name: remoteVersionName }, currentVersionName)) {
               pendingStartupUpdate = {
@@ -13466,49 +13472,13 @@
                 showUpdateDialog(pendingStartupUpdate);
               }
               return;
+            } else {
+              // App is already at or newer than this release! Do not check anything further on startup.
+              console.log("CartoonX TV is up to date: local v" + currentVersionName + " (code " + currentVersionCode + ") >= remote v" + remoteVersionName + " (code " + remoteCode + ")");
+              return;
             }
           } catch (e1) {
             console.warn("version.json parse error:", e1);
-          }
-        }
-
-        // 2. Fallback to GitHub Releases API (if not rate-limited)
-        const apiUrl = 'https://api.github.com/repos/Zcross091/CartoonX-Hindi/releases/latest';
-        let rawJson = '';
-        if (window.AndroidApp.fetch) {
-          rawJson = window.AndroidApp.fetch(apiUrl);
-        } else {
-          const res = await fetch(apiUrl);
-          if (res.ok) rawJson = await res.text();
-        }
-
-        if (rawJson && !rawJson.includes('API rate limit exceeded')) {
-          const data = JSON.parse(rawJson);
-          const releaseId = String(data.id || data.published_at || data.tag_name || 'latest');
-
-          const dismissed = localStorage.getItem('cartoonx_dismissed_update');
-          if (dismissed && dismissed === releaseId) {
-            return;
-          }
-
-          if (isNewerRelease(data, currentVersionName) && data.assets && data.assets.length > 0) {
-            const apkAsset = data.assets.find(a => a.name.includes('Signed.apk')) || data.assets.find(a => a.name.endsWith('.apk'));
-            if (apkAsset) {
-              const displayVersion = data.name && !data.name.toLowerCase().includes('latest') ? data.name : (data.tag_name !== 'latest' ? data.tag_name : 'New Build');
-              pendingStartupUpdate = {
-                id: releaseId,
-                version: displayVersion,
-                apkUrl: apkAsset.browser_download_url
-              };
-              if (splashStatus) {
-                splashStatus.textContent = 'New update available!';
-              }
-
-              const splash = document.getElementById('splash-screen');
-              if (!splash || splash.style.display === 'none') {
-                showUpdateDialog(pendingStartupUpdate);
-              }
-            }
           }
         }
       } catch (e) {
@@ -15000,6 +14970,8 @@
     function renderSettings() {
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
+      } else {
+        document.getElementById('settings-version-label').textContent = 'v1.0.6';
       }
     }
 
@@ -15206,7 +15178,13 @@
       const ver = window.latestVersionName || "latest";
 
       document.getElementById('update-progress-container').classList.remove('hidden');
-      document.getElementById('start-update-btn').disabled = true;
+      const btn = document.getElementById('start-update-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Downloading...';
+      }
+      const progressLabel = document.getElementById('update-progress-label');
+      if (progressLabel) progressLabel.textContent = 'Starting download...';
 
       if (window.AndroidApp && window.AndroidApp.downloadAndInstallUpdate) {
         window.AndroidApp.downloadAndInstallUpdate(url, ver);
@@ -15218,13 +15196,39 @@
     function closeUpdateModal() {
       document.getElementById('update-modal').classList.add('hidden');
       if (window.latestReleaseId) {
-        localStorage.setItem('cartoonx_dismissed_update', window.latestReleaseId);
+        localStorage.setItem('cartoonx_dismissed_update', String(window.latestReleaseId));
+      }
+      if (window.latestVersionName) {
+        localStorage.setItem('cartoonx_dismissed_version', String(window.latestVersionName));
       }
     }
 
     window.onUpdateProgress = function(percent, current, total) {
-      document.getElementById('update-progress-bar').style.width = percent + '%';
-      document.getElementById('update-progress-label').textContent = `Downloading update: ${percent}%`;
+      const progressBar = document.getElementById('update-progress-bar');
+      const progressLabel = document.getElementById('update-progress-label');
+      if (progressBar) progressBar.style.width = percent + '%';
+      if (progressLabel) progressLabel.textContent = `Downloading update: ${percent}%`;
+    };
+
+    window.onUpdateComplete = function() {
+      const progressLabel = document.getElementById('update-progress-label');
+      if (progressLabel) progressLabel.textContent = '✅ Download complete! Launching package installer...';
+      const btn = document.getElementById('start-update-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Re-launch Installer';
+      }
+    };
+
+    window.onUpdateError = function(errMsg) {
+      const progressLabel = document.getElementById('update-progress-label');
+      if (progressLabel) progressLabel.textContent = '⚠️ ' + (errMsg || 'Update failed');
+      const btn = document.getElementById('start-update-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Retry Update';
+      }
+      showFeedback(errMsg || 'Update failed');
     };
   </script>
 

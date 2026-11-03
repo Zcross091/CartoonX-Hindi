@@ -3,6 +3,8 @@ package com.cartoonx.tv;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class UpdateManager {
     private static final String TAG = "CartoonX-Update";
@@ -113,7 +116,7 @@ public class UpdateManager {
                     if (listener != null) {
                         listener.onComplete(updateFile);
                     }
-                    installApk(updateFile);
+                    installApk(updateFile, listener);
                 });
 
             } catch (Exception e) {
@@ -137,19 +140,41 @@ public class UpdateManager {
      * Prompts the Android OS PackageInstaller to install the update in-place without deleting the old app.
      */
     public void installApk(File apkFile) {
+        installApk(apkFile, null);
+    }
+
+    public void installApk(File apkFile, UpdateListener listener) {
         try {
             if (apkFile == null || !apkFile.exists()) {
                 Log.e(TAG, "APK file does not exist");
+                if (listener != null) {
+                    listener.onError("Downloaded update APK not found");
+                }
                 return;
             }
+
+            apkFile.setReadable(true, false);
 
             // Check Unknown Sources permission on Android 8.0+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!activity.getPackageManager().canRequestPackageInstalls()) {
-                    Intent manageIntent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-                    manageIntent.setData(Uri.parse("package:" + activity.getPackageName()));
-                    activity.startActivity(manageIntent);
-                    // Do not return here; the user will be returned back after granting
+                    Log.w(TAG, "Install permission not granted. Directing user to Settings.");
+                    try {
+                        Intent manageIntent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                        manageIntent.setData(Uri.parse("package:" + activity.getPackageName()));
+                        manageIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        activity.startActivity(manageIntent);
+                    } catch (Exception e1) {
+                        try {
+                            Intent fallback = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+                            fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            activity.startActivity(fallback);
+                        } catch (Exception ignored) {}
+                    }
+                    if (listener != null) {
+                        listener.onError("Please toggle 'Allow from this source' in Settings, then tap Install Update again.");
+                    }
+                    return;
                 }
             }
 
@@ -163,11 +188,26 @@ public class UpdateManager {
             installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            // Explicitly grant read URI permissions to PackageInstaller handlers
+            try {
+                List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(installIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    activity.grantUriPermission(packageName, apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+                activity.grantUriPermission("com.google.android.packageinstaller", apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                activity.grantUriPermission("com.android.packageinstaller", apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Exception ignored) {}
 
             Log.d(TAG, "Launching PackageInstaller for in-place update: " + apkUri);
             activity.startActivity(installIntent);
         } catch (Exception e) {
             Log.e(TAG, "Failed to launch package installer", e);
+            if (listener != null) {
+                listener.onError("Failed to launch installer: " + (e.getMessage() != null ? e.getMessage() : "permission denied"));
+            }
         }
     }
 }

@@ -42,3 +42,10 @@ test('TV Player primary button strictly toggles Play and Pause', () => {
   assert.ok(html.includes('isIframePlaying'), 'Must track isIframePlaying state for cross-origin players');
 });
 
+test('Updater handles onUpdateComplete, onUpdateError, and dismissed persistence', () => {
+  const html = fs.readFileSync('android/app/src/main/assets/web/index.html', 'utf8');
+  assert.ok(html.includes('window.onUpdateComplete'), 'window.onUpdateComplete must be defined');
+  assert.ok(html.includes('window.onUpdateError'), 'window.onUpdateError must be defined');
+  assert.ok(html.includes('cartoonx_dismissed_update'), 'cartoonx_dismissed_update must be checked in startup check');
+});
+
