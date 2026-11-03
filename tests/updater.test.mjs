@@ -68,3 +68,15 @@ test('TV Player audio pinned at MAX and D-Pad Up/Down protected from software vo
   assert.ok(java.includes('KEYCODE_DPAD_DOWN'), 'MainActivity must intercept DPAD_DOWN when player is active');
 });
 
+test('TV Player D-Pad Center OK button toggles Play/Pause and auto-plays next episodes', () => {
+  const html = fs.readFileSync('android/app/src/main/assets/web/index.html', 'utf8');
+  assert.ok(html.includes('handlePlayerCenterClick'), 'Must define handlePlayerCenterClick for D-Pad OK');
+  assert.ok(html.includes('playNextEpisode()'), 'Must define playNextEpisode()');
+  assert.ok(html.includes('video.onended'), 'Must bind video.onended to auto-play next episode');
+  assert.ok(html.includes("msg === 'ended'") || html.includes("msg.type === 'ended'"), 'Must listen for iframe ended postMessages');
+
+  const java = fs.readFileSync('android/app/src/main/java/com/cartoonx/tv/MainActivity.java', 'utf8');
+  assert.ok(java.includes('KEYCODE_DPAD_CENTER'), 'MainActivity must intercept KEYCODE_DPAD_CENTER for remote OK');
+  assert.ok(java.includes('handlePlayerCenterClick'), 'MainActivity must dispatch handlePlayerCenterClick');
+});
+

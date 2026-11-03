@@ -321,10 +321,6 @@ public class MainActivity extends Activity {
                             Log.d(TAG, "Simulated native hardware touch tap at screen center (" + x + ", " + y + ")");
                         }
                     }, 80);
-
-                    // Also dispatch media play key to ensure TV WebView players without touchscreens start
-                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
-                    webView.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
                 }
             });
         }
@@ -890,8 +886,8 @@ public class MainActivity extends Activity {
             webView.evaluateJavascript("if (window.togglePlayPause) { window.togglePlayPause(); }", null);
             return true;
         }
-        // TV Remote D-Pad Center OK or Enter Key
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+        // TV Remote D-Pad Center OK, Enter, or Select Key
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER || keyCode == KeyEvent.KEYCODE_BUTTON_A) {
             if (isPlayerActive) {
                 webView.evaluateJavascript("if (window.handlePlayerCenterClick) { window.handlePlayerCenterClick(); } else if (window.togglePlayPause) { window.togglePlayPause(); }", null);
                 return true;
