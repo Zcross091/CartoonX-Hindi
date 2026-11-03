@@ -10,6 +10,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -98,7 +99,17 @@ public class MainActivity extends Activity {
         settings.setLoadWithOverviewMode(true);
         settings.setSupportMultipleWindows(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
-        settings.setUserAgentString(settings.getUserAgentString() + " CartoonX-AndroidTV/1.0");
+
+        // Enable third-party cookies for embedded video players & Cloudflare clearance tokens
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
+
+        // Use authentic Google Chrome user-agent (remove WebView indicators '; wv' and 'Version/4.0'
+        // so Cloudflare Turnstile doesn't identify this as a bot or prompt QR verification)
+        String defaultUa = settings.getUserAgentString();
+        String cleanChromeUa = defaultUa.replace("; wv", "").replace("Version/4.0 ", "");
+        settings.setUserAgentString(cleanChromeUa);
 
         webView.addJavascriptInterface(new AndroidAppBridge(), "AndroidApp");
 
@@ -111,8 +122,14 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                // If it is NOT the top-level main window frame (i.e. it is an iframe, video stream, or sub-frame),
+                // allow it to load its resources, scripts, and video streams!
+                if (!request.isForMainFrame()) {
+                    return false;
+                }
+
                 String host = request.getUrl().getHost();
-                // Strictly keep the TV app inside our native interface - block all external web/ad takeovers
+                // Strictly keep the TV app main frame inside our native interface - block all external web/ad takeovers
                 if (host != null && host.equals("appassets.androidplatform.net")) {
                     return false;
                 }
