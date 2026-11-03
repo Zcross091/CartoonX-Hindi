@@ -1,8 +1,8 @@
 {
-  "version": "1.0.5",
-  "versionName": "1.0.5",
-  "versionCode": 6,
-  "tagName": "v1.0.5",
+  "version": "1.0.6",
+  "versionName": "1.0.6",
+  "versionCode": 7,
+  "tagName": "v1.0.6",
   "apkUrl": "https://github.com/Zcross091/CartoonX-Hindi/releases/latest/download/CartoonX-AndroidTV-Signed.apk",
-  "releaseNotes": "Zero-tap instant autoplay on Android TV, zero-captcha VidLink HD server, eliminated manual play button taps, and D-Pad OK play/pause control."
+  "releaseNotes": "Fixed player primary button to cleanly toggle between Play and Pause with live state feedback, improved native TV touch dispatch, and eliminated duplicate player closures."
 }

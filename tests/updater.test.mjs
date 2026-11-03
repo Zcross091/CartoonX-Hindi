@@ -33,3 +33,12 @@ test('Zero-rate-limit version.json configuration', () => {
   assert.ok(v.apkUrl.includes('CartoonX-AndroidTV-Signed.apk'), 'apkUrl must point to Signed APK');
 });
 
+test('TV Player primary button strictly toggles Play and Pause', () => {
+  const html = fs.readFileSync('android/app/src/main/assets/web/index.html', 'utf8');
+  assert.ok(html.includes('id="play-pause-btn"'), 'play-pause-btn must exist in player HUD');
+  assert.ok(html.includes('onclick="togglePlayPause()"'), 'play-pause-btn must invoke togglePlayPause()');
+  assert.ok(!html.includes('Interactive Player'), 'Must not contain confusing "Interactive Player" button text');
+  assert.ok(!html.includes('▶ Play / ⏸ Pause'), 'Must not contain placeholder "Play / Pause" text');
+  assert.ok(html.includes('isIframePlaying'), 'Must track isIframePlaying state for cross-origin players');
+});
+

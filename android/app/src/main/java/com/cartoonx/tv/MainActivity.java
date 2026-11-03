@@ -290,20 +290,23 @@ public class MainActivity extends Activity {
                     int height = webView.getHeight();
                     if (width <= 0) width = 1920;
                     if (height <= 0) height = 1080;
-                    float x = width / 2.0f;
-                    float y = height / 2.0f;
-                    long downTime = SystemClock.uptimeMillis();
-                    long eventTime = SystemClock.uptimeMillis() + 100;
+                    final float x = width / 2.0f;
+                    final float y = height / 2.0f;
+                    final long downTime = SystemClock.uptimeMillis();
 
-                    MotionEvent down = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
-                    MotionEvent up = MotionEvent.obtain(downTime, eventTime + 50, MotionEvent.ACTION_UP, x, y, 0);
-
+                    MotionEvent down = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0);
                     webView.dispatchTouchEvent(down);
-                    webView.dispatchTouchEvent(up);
-
                     down.recycle();
-                    up.recycle();
-                    Log.d(TAG, "Simulated native hardware touch at screen center (" + x + ", " + y + ")");
+
+                    webView.postDelayed(() -> {
+                        if (webView != null) {
+                            long upTime = SystemClock.uptimeMillis();
+                            MotionEvent up = MotionEvent.obtain(downTime, upTime, MotionEvent.ACTION_UP, x, y, 0);
+                            webView.dispatchTouchEvent(up);
+                            up.recycle();
+                            Log.d(TAG, "Simulated native hardware touch tap at screen center (" + x + ", " + y + ")");
+                        }
+                    }, 60);
                 }
             });
         }

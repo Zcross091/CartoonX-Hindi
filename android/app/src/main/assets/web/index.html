@@ -14416,7 +14416,8 @@
           document.getElementById('player-current-time').textContent = "LIVE";
           document.getElementById('player-duration').textContent = "HD STREAM";
           document.getElementById('player-progress').style.width = '100%';
-          if (playBtn) playBtn.textContent = '▶ Play / ⏸ Pause';
+          isIframePlaying = true;
+          if (playBtn) playBtn.textContent = '⏸ Pause';
 
           // Automatic Center Play: automatically clicks the center play button so you don't have to tap it!
           clearTimeout(window._autoPlayCenterTimer);
@@ -14501,21 +14502,37 @@
       };
     }
 
+    let isIframePlaying = true;
+
+    function sendIframeCommand(cmd) {
+      const iframe = document.getElementById('tv-iframe');
+      if (iframe && iframe.contentWindow) {
+        try {
+          const isPlay = (cmd === 'play');
+          iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: isPlay ? 'playVideo' : 'pauseVideo', args: '' }), '*');
+          iframe.contentWindow.postMessage(JSON.stringify({ method: isPlay ? 'play' : 'pause' }), '*');
+          iframe.contentWindow.postMessage({ type: isPlay ? 'play' : 'pause' }, '*');
+          iframe.contentWindow.postMessage({ action: isPlay ? 'play' : 'pause' }, '*');
+          iframe.contentWindow.postMessage({ method: isPlay ? 'play' : 'pause' }, '*');
+          iframe.contentWindow.postMessage(isPlay ? 'play' : 'pause', '*');
+        } catch (e) {}
+      }
+    }
+
     function triggerCenterPlay() {
       // 1. Native hardware touch event right on the center play button (crosses iframes)
       if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
         window.AndroidApp.simulateCenterClick();
       }
       // 2. Cross-origin HTML5 postMessage broadcast to video player iframes
-      const iframe = document.getElementById('tv-iframe');
-      if (iframe && iframe.contentWindow) {
-        try {
-          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-          iframe.contentWindow.postMessage({ type: 'play' }, '*');
-          iframe.contentWindow.postMessage({ action: 'play' }, '*');
-          iframe.contentWindow.postMessage({ method: 'play' }, '*');
-        } catch (e) {}
+      sendIframeCommand('play');
+    }
+
+    function triggerCenterPause() {
+      if (window.AndroidApp && window.AndroidApp.simulateCenterClick) {
+        window.AndroidApp.simulateCenterClick();
       }
+      sendIframeCommand('pause');
     }
 
     function togglePlayPause() {
@@ -14524,8 +14541,17 @@
       const btn = document.getElementById('play-pause-btn');
 
       if (!iframe.classList.contains('hidden')) {
-        triggerCenterPlay();
-        showFeedback("▶ Play / ⏸ Pause");
+        if (isIframePlaying) {
+          triggerCenterPause();
+          isIframePlaying = false;
+          if (btn) btn.textContent = '▶ Play';
+          showFeedback("⏸ Pause");
+        } else {
+          triggerCenterPlay();
+          isIframePlaying = true;
+          if (btn) btn.textContent = '⏸ Pause';
+          showFeedback("▶ Play");
+        }
         showHud();
         return;
       }
@@ -14573,6 +14599,8 @@
     }
 
     function closePlayer() {
+      clearTimeout(window._autoPlayCenterTimer);
+      isIframePlaying = false;
       const video = document.getElementById('tv-video');
       const iframe = document.getElementById('tv-iframe');
       if (video) {
@@ -14620,23 +14648,6 @@
           hud.style.opacity = '0';
         }
       }, 3500);
-    }
-
-    function closePlayer() {
-      const video = document.getElementById('tv-video');
-      if (video) {
-        if (currentEpisodeList && currentEpisodeList[currentEpisodeIndex]) {
-          saveProgress(selectedShow, currentEpisodeList[currentEpisodeIndex], video.currentTime, video.duration);
-        }
-        video.pause();
-        video.src = '';
-      }
-      if (hls) hls.destroy();
-      document.getElementById('player-container').classList.add('hidden');
-      loadContinueWatching();
-
-      const backBtn = document.getElementById('detail-back-btn') || document.querySelector('.tv-focusable');
-      if (backBtn) backBtn.focus();
     }
 
     // ================= OFFLINE DOWNLOADS MANAGER =================
