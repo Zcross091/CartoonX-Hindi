@@ -43,4 +43,13 @@ test('Consolidated Single-Banner Shows Verification', (t) => {
   assert.ok(html.includes('Zcross'), 'Watermark contains "Zcross" author name');
   assert.ok(html.includes('pointer-events-none'), 'Watermark is click-through and non-blocking');
   assert.ok(html.includes('z-[70]'), 'Watermark hovers over player with high z-index');
+
+  // Verify Genuine TMDB Stream Mappings (Billy & Mandy must NOT be 2473 The Avengers 1961!)
+  const huddy = shows.find(s => s.id === 'huddy-mera-buddy');
+  assert.equal(huddy.tmdbId, 897, 'Huddy Mera Buddy must map to Billy & Mandy TMDB 897, not The Avengers 2473');
+  assert.equal(ben10.tmdbId, 4686, 'Ben 10 Classic must map to TMDB 4686');
+
+  // Verify Player HUD Server Switcher
+  assert.ok(html.includes('id="switch-server-btn"'), 'Switch Server button exists in Player HUD');
+  assert.ok(html.includes('switchStreamServer'), 'switchStreamServer function exists in JavaScript');
 });
