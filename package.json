@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "plugin:scrape": "node Plugin/index.js scrape",
+    "plugin:watch": "node Plugin/index.js watch",
+    "plugin:sync": "node scripts/sync-plugin.mjs"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",

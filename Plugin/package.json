@@ -1,0 +1,24 @@
+{
+  "name": "cartoonx-animetoon-plugin",
+  "version": "1.0.0",
+  "description": "AnimeToonHindi Scraper & Stream Resolver Plugin for CartoonX",
+  "main": "index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "scrape": "node index.js scrape",
+    "watch": "node index.js watch",
+    "test": "node index.js test",
+    "search": "node index.js search",
+    "resolve": "node index.js resolve"
+  },
+  "keywords": [
+    "cartoonx",
+    "animetoonhindi",
+    "scraper",
+    "streaming",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

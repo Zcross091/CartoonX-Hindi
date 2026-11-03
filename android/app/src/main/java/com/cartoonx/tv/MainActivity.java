@@ -135,7 +135,57 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+                WebResourceResponse assetResponse = assetLoader.shouldInterceptRequest(request.getUrl());
+                if (assetResponse != null) {
+                    return assetResponse;
+                }
+
+                // Seamlessly frame Razorshell & AnimeToon streaming embeds on Android TV
+                // by removing restrictive frame-ancestors & X-Frame-Options headers
+                String host = request.getUrl().getHost();
+                if (host != null && (host.contains("razorshell.space") || host.contains("groovy.monster"))) {
+                    try {
+                        URL url = new URL(request.getUrl().toString());
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod(request.getMethod());
+                        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+                        conn.setRequestProperty("Referer", "https://codedew.com/cdn/liptron.php/");
+                        conn.setConnectTimeout(8000);
+                        conn.setReadTimeout(12000);
+                        conn.setInstanceFollowRedirects(true);
+
+                        Map<String, List<String>> headerFields = conn.getHeaderFields();
+                        Map<String, String> responseHeaders = new HashMap<>();
+                        if (headerFields != null) {
+                            for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
+                                if (entry.getKey() != null) {
+                                    String key = entry.getKey().toLowerCase();
+                                    if (key.equals("content-security-policy") || key.equals("x-frame-options")) {
+                                        continue;
+                                    }
+                                    if (!entry.getValue().isEmpty()) {
+                                        responseHeaders.put(entry.getKey(), entry.getValue().get(0));
+                                    }
+                                }
+                            }
+                        }
+                        String contentType = conn.getContentType();
+                        String mimeType = "text/html";
+                        String encoding = "UTF-8";
+                        if (contentType != null) {
+                            if (contentType.contains(";")) {
+                                String[] parts = contentType.split(";");
+                                mimeType = parts[0].trim();
+                            } else {
+                                mimeType = contentType.trim();
+                            }
+                        }
+                        return new WebResourceResponse(mimeType, encoding, conn.getResponseCode(), conn.getResponseMessage(), responseHeaders, conn.getInputStream());
+                    } catch (Exception e) {
+                        Log.w(TAG, "Razorshell stream interceptor fallback: " + e.getMessage());
+                    }
+                }
+                return null;
             }
 
             @Override

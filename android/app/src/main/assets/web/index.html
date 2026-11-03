@@ -586,7 +586,7 @@
             <div class="font-black text-white">App Version</div>
             <div class="text-xs text-slate-400">Current installed build</div>
           </div>
-          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.0</span>
+          <span id="settings-version-label" class="font-mono text-red-400 font-bold">v1.1.2</span>
         </div>
 
         <div class="flex items-center justify-between p-4 rounded-2xl bg-[#140608] border border-[#3b1216]">
@@ -13533,6 +13533,7 @@
       loadContinueWatching();
       updateLibraryBadge();
       updateDownloadsBadge();
+      loadAnimetoonStreams();
 
       // Check for updates on startup during the 4-second loading screen
       checkStartupAppUpdate();
@@ -14249,12 +14250,84 @@
       return { sNum: sNum || 1, eNum: eNum || 1 };
     }
 
+    // ================= ANIMETOON PLUGIN DATABASE LOADER =================
+    let animetoonDb = null;
+
+    async function loadAnimetoonStreams() {
+      // 1. Try local cache from localStorage first
+      try {
+        const cached = localStorage.getItem('cartoonx_animetoon_streams');
+        if (cached) animetoonDb = JSON.parse(cached);
+      } catch (_) {}
+
+      // 2. Load bundled streams.json from appassets or local asset
+      try {
+        const localRes = await fetch('streams.json');
+        if (localRes.ok) {
+          const data = await localRes.json();
+          if (data && data.shows) {
+            animetoonDb = data;
+            try { localStorage.setItem('cartoonx_animetoon_streams', JSON.stringify(data)); } catch (_) {}
+          }
+        }
+      } catch (e) {
+        console.log("Local streams.json load note:", e);
+      }
+
+      // 3. Background dynamic sync with GitHub repository
+      setTimeout(async () => {
+        try {
+          const remoteUrl = 'https://raw.githubusercontent.com/Zcross091/CartoonX-Hindi/main/Plugin/streams.json?t=' + Date.now();
+          const remoteRes = await fetch(remoteUrl);
+          if (remoteRes.ok) {
+            const data = await remoteRes.json();
+            if (data && data.shows) {
+              animetoonDb = data;
+              try { localStorage.setItem('cartoonx_animetoon_streams', JSON.stringify(data)); } catch (_) {}
+              console.log("Loaded fresh AnimeToon streams from remote repository!");
+            }
+          }
+        } catch (_) {}
+      }, 4000);
+    }
+
+    const ANIMETOON_SHOW_KEY_MAP = {
+      'courage-the-cowardly-dog': 'courage the cowardly dog',
+      'doraemon-classic': 'doraemon',
+      'shinchan-all': 'shin chan',
+      'ben-10-classic': 'ben 10 classic',
+      'slugterra-classic': 'slugterra',
+      'oggy-and-cockroaches': 'oggy and the cockroaches',
+    };
+
+    function findAnimetoonEpisode(showId, episode, episodeIndex) {
+      if (!animetoonDb || !animetoonDb.shows) return null;
+      let showKey = ANIMETOON_SHOW_KEY_MAP[showId];
+      if (!showKey) return null;
+
+      // Handle Ben 10 Generations
+      if (showId === 'ben-10-classic') {
+        const s = episode.targetSeason || episode.seasonNumber || 1;
+        if (s >= 5 && s <= 7) showKey = 'ben to alien force';
+        else if (s >= 8 && s <= 9) showKey = 'ben 10 ultimate alien';
+        else showKey = 'ben 10 classic';
+      }
+
+      const showData = animetoonDb.shows[showKey];
+      if (!showData || !showData.episodes || showData.episodes.length === 0) return null;
+
+      const epNum = episode.episodeNumber || (episodeIndex + 1);
+      const match = showData.episodes.find(e => e.episodeNumber === epNum) || showData.episodes[episodeIndex];
+      return match || null;
+    }
+
     let currentStreamServerIndex = 0;
     const STREAM_SERVERS = [
-      { name: 'Server 1 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff` },
-      { name: 'Server 2 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
-      { name: 'Server 3 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
-      { name: 'Server 4 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` }
+      { name: 'Server 1 (AnimeToon Direct)', type: 'animetoon' },
+      { name: 'Server 2 (VidLink HD)', buildUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff` },
+      { name: 'Server 3 (2Embed VIP)', buildUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+      { name: 'Server 4 (VidSrc TO)', buildUrl: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}?autoplay=1` },
+      { name: 'Server 5 (VidSrc ME)', buildUrl: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1` }
     ];
 
     function switchStreamServer() {
@@ -14283,8 +14356,21 @@
       }
 
       const showId = (selectedShow && selectedShow.id) || '';
+      const activeServer = STREAM_SERVERS[currentStreamServerIndex] || STREAM_SERVERS[0];
 
-      // 2. Doraemon / Shinchan / Naruto with genuine Bysekoze codes
+      // 2. Server 1: AnimeToon Direct (Razorshell JWPlayer with zero Turnstile captcha blocks)
+      if (activeServer.type === 'animetoon') {
+        const animetoonEp = findAnimetoonEpisode(showId, episode, currentEpisodeIndex);
+        if (animetoonEp && animetoonEp.watchUrl) {
+          return {
+            type: 'iframe',
+            url: animetoonEp.watchUrl
+          };
+        }
+        // If not in AnimeToon, smoothly continue to fallback below
+      }
+
+      // 3. Doraemon / Shinchan / Naruto with genuine Bysekoze codes
       if (episode.videoCode && (showId.includes('doraemon') || showId.includes('shinchan') || showId.includes('naruto') || showId.includes('rti-') || showId.includes('hello-world'))) {
         if (window.AndroidApp && window.AndroidApp.decryptStream) {
           try {
@@ -14298,7 +14384,7 @@
         return { type: 'iframe', url: 'https://bysekoze.com/e/' + episode.videoCode + '?autoplay=1&autostart=true' };
       }
 
-      // 3. Ben 10 Classic (Vidmoly direct native player support)
+      // 4. Ben 10 Classic (Vidmoly direct native player support)
       if (showId === 'ben-10-classic' && episode.vidmolyCode) {
         if (window.AndroidApp && window.AndroidApp.fetch) {
           try {
@@ -14311,25 +14397,25 @@
         return { type: 'iframe', url: 'https://vidmoly.biz/embed-' + episode.vidmolyCode + '.html' };
       }
 
-      // 4. Exact Cartoon Match via Universal Federated Embeds with Multi-Server Failover
+      // 5. Exact Cartoon Match via Universal Federated Embeds with Multi-Server Failover
       const tmdbId = episode.tmdbId || (selectedShow && selectedShow.tmdbId) || SHOW_TMDB_MAP[showId];
       if (tmdbId) {
         const { sNum, eNum } = extractSeasonEpisodeNumbers(episode);
         const targetSeason = episode.targetSeason || sNum;
-        const activeServer = STREAM_SERVERS[currentStreamServerIndex] || STREAM_SERVERS[0];
-        const streamUrl = activeServer.buildUrl(tmdbId, targetSeason, eNum);
+        const targetServer = (activeServer.buildUrl) ? activeServer : STREAM_SERVERS[1];
+        const streamUrl = targetServer.buildUrl(tmdbId, targetSeason, eNum);
         return {
           type: 'iframe',
           url: streamUrl
         };
       }
 
-      // 5. Fallback for any Bysekoze code
+      // 6. Fallback for any Bysekoze code
       if (episode.videoCode) {
         return { type: 'iframe', url: 'https://bysekoze.com/e/' + episode.videoCode };
       }
 
-      // 6. Safe default
+      // 7. Safe default
       return { type: 'iframe', url: 'https://vidlink.pro/tv/897/1/1?autoplay=true&primaryColor=dc2626&secondaryColor=ffffff&iconColor=ffffff' };
     }
 
@@ -15146,7 +15232,7 @@
       if (window.AndroidApp && window.AndroidApp.getAppVersion) {
         document.getElementById('settings-version-label').textContent = 'v' + window.AndroidApp.getAppVersion();
       } else {
-        document.getElementById('settings-version-label').textContent = 'v1.1.1';
+        document.getElementById('settings-version-label').textContent = 'v1.1.2';
       }
     }
 
